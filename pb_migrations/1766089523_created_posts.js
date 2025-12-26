@@ -121,7 +121,11 @@ migrate((app) => {
     "viewRule": ""
   });
 
-  return app.save(collection);
+  try {
+    return app.save(collection);
+  } catch (e) {
+    console.log("Migration skipped: Collection 'posts' likely already exists.");
+  }
 }, (app) => {
   const collection = app.findCollectionByNameOrId("pbc_1125843985");
 

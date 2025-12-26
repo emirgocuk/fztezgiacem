@@ -6,7 +6,8 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "deploy-hook": "node scripts/deploy.js"
   },
   "dependencies": {
     "@astrojs/check": "^0.9.6",
@@ -41,6 +42,7 @@
     "typescript": "^5.9.3"
   },
   "devDependencies": {
-    "sharp": "^0.34.5"
+    "sharp": "^0.34.5",
+    "ssh2": "^1.17.0"
   }
 }

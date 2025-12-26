@@ -124,7 +124,11 @@ migrate((app) => {
     "viewRule": ""
   });
 
-  return app.save(collection);
+  try {
+    return app.save(collection);
+  } catch (e) {
+    console.log("Migration skipped: Collection 'specializations' likely already exists.");
+  }
 }, (app) => {
   const collection = app.findCollectionByNameOrId("pbc_3636163373");
 

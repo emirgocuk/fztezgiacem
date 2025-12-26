@@ -8,10 +8,11 @@ Write-Host "Sunucu: $ServerIP" -ForegroundColor Cyan
 Write-Host "NOT: Sifre istendiginde lutfen sunucu sifresini girin (yazarken gorunmez)." -ForegroundColor Magenta
 
 # Create directory first to avoid issues
-ssh root@$ServerIP "mkdir -p /root/site"
+ssh root@$ServerIP "rm -rf /root/site/pb_migrations && mkdir -p /root/site/pb_migrations"
+scp -r dist pb_migrations pb_hooks start.sh deploy_package/nginx_site.conf "root@$($ServerIP):/root/site"
 
-# Upload files
-scp -r dist start.sh root@$ServerIP:/root/site
+# Nginx Setup Remote Command
+ssh root@$ServerIP "mv /root/site/nginx_site.conf /etc/nginx/sites-available/fztezgiacem && ln -sf /etc/nginx/sites-available/fztezgiacem /etc/nginx/sites-enabled/ && rm -f /etc/nginx/sites-enabled/default && systemctl enable nginx && systemctl restart nginx && systemctl restart fztezgiacem"
 
 Write-Host "`n===========================================" -ForegroundColor Green
 Write-Host "YUKLEME BASARILI!" -ForegroundColor Green

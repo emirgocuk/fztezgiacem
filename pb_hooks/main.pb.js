@@ -1,37 +1,39 @@
 /// <reference path="../pb_data/types.d.ts" />
 
 onRecordAfterCreateSuccess((e) => {
+    console.log("[HOOK] New message received. Preparing email...");
+
+    // e.record is guaranteed to exist in onRecordAfterCreateSuccess
     const message = e.record;
 
     try {
-        // Direct email to the verified custom address
-        const adminEmail = "iletisim@fztezgiacem.com";
+        const html = `
+            <h3>Yeni İletişim Formu Mesajı</h3>
+            <p><strong>İsim:</strong> ${message.get("name")}</p>
+            <p><strong>E-posta:</strong> ${message.get("email")}</p>
+            <p><strong>Telefon:</strong> ${message.get("phone") || "Belirtilmedi"}</p>
+            <p><strong>Mesaj:</strong></p>
+            <blockquote style="background: #f9f9f9; padding: 10px; border-left: 4px solid #FF8A65;">
+                ${message.get("message")}
+            </blockquote>
+            <p><small>Bu mesaj web sitesi iletişim formundan gönderilmiştir.</small></p>
+        `;
 
-        const email = new MailerMessage({
+        const mail = new MailerMessage({
             from: {
-                address: $app.settings().meta.senderName + " <" + $app.settings().meta.senderAddress + ">",
-                name: "Fizyoterapist İletişim Formu",
+                address: "iletisim@fztezgiacem.com",
+                name: "Fzt. Ezgi Acem",
             },
-            to: [{ address: adminEmail }],
+            to: [{ address: "iletisim@fztezgiacem.com" }],
             subject: `Yeni Mesaj: ${message.get("name")}`,
-            html: `
-                <h3>Yeni bir iletişim formu mesajı aldınız.</h3>
-                <p><strong>Gönderen:</strong> ${message.get("name")}</p>
-                <p><strong>E-posta:</strong> ${message.get("email")}</p>
-                <p><strong>Telefon:</strong> ${message.get("phone") || "Belirtilmedi"}</p>
-                <p><strong>Mesaj:</strong></p>
-                <blockquote style="background: #f9f9f9; padding: 10px; border-left: 4px solid #1E3A1A;">
-                    ${message.get("message")}
-                </blockquote>
-                <p><small>Bu mesaj otomatik olarak gönderilmiştir.</small></p>
-            `,
-        })
+            html: html,
+        });
 
-        $app.newMailClient().send(email);
-        console.log(`Notification sent to ${adminEmail}`);
+        // Use e.app as per recommended documentation
+        e.app.newMailClient().send(mail);
+        console.log("[HOOK] ✅ Email sent successfully!");
 
     } catch (err) {
-        console.error("Email notification hook error:", err);
+        console.error("[HOOK] ❌ Email send error:", err);
     }
-
 }, "messages")

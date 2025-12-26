@@ -62,7 +62,55 @@ else
     :
 fi
 
-# 4. Sunucuyu Baslat
+# 4. Servis Kurulumu (Systemd)
+if [ "$1" == "install-service" ]; then
+    if [ "$EUID" -ne 0 ]; then 
+        echo -e "${RED}HATA: Servis kurulumu icin root yetkisi gerekir.${NC}"
+        exit 1
+    fi
+
+    SERVICE_FILE="/etc/systemd/system/fztezgiacem.service"
+
+    echo -e "${YELLOW}Servis dosyasi olusturuluyor: $SERVICE_FILE${NC}"
+    
+    cat > "$SERVICE_FILE" <<EOF
+[Unit]
+Description=Fzt. Ezgi Acem Website (PocketBase)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+LimitNOFILE=4096
+Restart=always
+RestartSec=5s
+WorkingDirectory=/root/site
+ExecStart=/root/site/pocketbase serve --publicDir=/root/site/dist --hooksDir=/root/site/pb_hooks --http="127.0.0.1:8090"
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+    echo -e "${GREEN}Servis kuruldu.${NC}"
+    echo "Reloading daemon..."
+    systemctl daemon-reload
+    
+    echo "Enabling service to start on boot..."
+    systemctl enable fztezgiacem.service
+    
+    echo "Starting service now..."
+    systemctl restart fztezgiacem.service
+    
+    echo -e "${GREEN}===============================================${NC}"
+    echo -e "${GREEN}Tebrikler! Site artik arka planda calisiyor.${NC}"
+    echo -e "${GREEN}Sunucuyu kapatsaniz bile site acik kalacak.${NC}"
+    echo -e "Durumu kontrol etmek icin: ${YELLOW}systemctl status fztezgiacem${NC}"
+    echo -e "${GREEN}===============================================${NC}"
+    exit 0
+fi
+
+# 5. Normal Baslatma (Eger install-service degilse)
 echo -e "${GREEN}-------------------------------------${NC}"
 if [ "$1" == "prod" ]; then
     # Production Modu (80/443 Portlari)
@@ -76,8 +124,8 @@ if [ "$1" == "prod" ]; then
     echo -e "${YELLOW}Durdurmak icin CTRL + C basin.${NC}"
     echo -e "${GREEN}-------------------------------------${NC}"
     
-    # Port 80 ve 443 uzerinden baslat (Domainin bu IP'ye yonlenmis olmasi lazim)
-    ./pocketbase serve --publicDir=./dist --http="0.0.0.0:80" --https="0.0.0.0:443"
+    # Port 8090 uzerinden baslat (Nginx Reverse Proxy onunde olacak)
+    ./pocketbase serve --publicDir=./dist --http="127.0.0.1:8090"
 else
     # Gelistirme Modu (8090 Portu)
     echo -e "${GREEN}MOD: DEVELOPMENT (Test)${NC}"

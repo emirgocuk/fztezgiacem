@@ -10,363 +10,377 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
         </div>
     </div>
 
-    width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-    stroke-width="2" stroke-linecap="round" stroke-linejoin="round" ><path
-        d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline
-        points="9 22 9 12 15 12 15 22"></polyline></AdminLayout
->
-
-<div>
-    <p class="text-sm text-gray-300 font-medium">Toplam Ziyaretçi</p>
-    <h3 class="text-3xl font-bold" id="totalSiteVisits">-</h3>
-</div>
-
-<!-- Daily Visits -->
-<div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-    <div class="flex items-center gap-4">
-        <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
-            <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="24"
-                height="24"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2"
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                ><circle cx="12" cy="12" r="10"></circle><polyline
-                    points="12 6 12 12 16 14"></polyline></svg
-            >
-        </div>
-        <div>
-            <p class="text-sm text-gray-500 font-medium">Bugünkü Ziyaretçi</p>
-            <h3 class="text-3xl font-bold text-gray-900" id="dailySiteVisits">
-                -
-            </h3>
-        </div>
-    </div>
-</div>
-
-<h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
-    İçerik Analizi
-</h2>
-<!-- Content Stats -->
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-    <!-- Total Posts -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div class="flex items-center gap-4">
-            <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><path
-                        d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
-                    ></path><polyline points="14 2 14 8 20 8"></polyline><line
-                        x1="16"
-                        y1="13"
-                        x2="8"
-                        y2="13"></line><line x1="16" y1="17" x2="8" y2="17"
-                    ></line><polyline points="10 9 9 9 8 9"></polyline></svg
-                >
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 font-medium">Toplam Yazı</p>
-                <h3 class="text-2xl font-bold text-gray-900" id="totalPosts">
-                    -
-                </h3>
-            </div>
-        </div>
-    </div>
-
-    <!-- Total Views -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div class="flex items-center gap-4">
-            <div class="p-3 bg-green-50 text-green-600 rounded-xl">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
-                    ></path><circle cx="12" cy="12" r="3"></circle></svg
-                >
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 font-medium">Toplam Okunma</p>
-                <h3 class="text-2xl font-bold text-gray-900" id="totalViews">
-                    -
-                </h3>
-            </div>
-        </div>
-    </div>
-
-    <!-- Daily Views (NEW) -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div class="flex items-center gap-4">
-            <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><rect x="3" y="4" width="18" height="18" rx="2" ry="2"
-                    ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line
-                        x1="8"
-                        y1="2"
-                        x2="8"
-                        y2="6"></line><line x1="3" y1="10" x2="21" y2="10"
-                    ></line></svg
-                >
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 font-medium">Bugünkü Okunma</p>
-                <h3 class="text-2xl font-bold text-gray-900" id="dailyViews">
-                    -
-                </h3>
-            </div>
-        </div>
-    </div>
-
-    <!-- Most Popular -->
-    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <div class="flex items-center gap-4">
-            <div class="p-3 bg-orange-50 text-orange-600 rounded-xl">
-                <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    ><path
-                        d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"
-                    ></path><path d="M9 18h6"></path><path d="M10 22h4"
-                    ></path></svg
-                >
-            </div>
-            <div>
-                <p class="text-sm text-gray-500 font-medium">En Popüler</p>
-                <h3
-                    class="text-sm font-bold text-gray-900 line-clamp-1"
-                    id="mostPopularPost"
-                >
-                    -
-                </h3>
-            </div>
-        </div>
-    </div>
-</div>
-
-<div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-    <!-- Chart Section (Wider) -->
-    <div
-        class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
     >
-        <h3
-            class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2"
-        >
-            <span class="w-2 h-6 bg-[#1E3A1A] rounded-full"></span>
-            Okunma Analizi
-        </h3>
-        <div class="relative h-96 w-full">
-            <canvas id="viewsLineChart"></canvas>
-        </div>
+
+    <div>
+        <p class="text-sm text-gray-300 font-medium">Toplam Ziyaretçi</p>
+        <h3 class="text-3xl font-bold" id="totalSiteVisits">-</h3>
     </div>
 
-    <!-- Top Posts List -->
+    <!-- Daily Visits -->
     <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
-        <h3 class="text-lg font-bold text-gray-800 mb-6">En Çok Okunanlar</h3>
-        <div class="space-y-3" id="topPostsList">
-            <div class="text-center text-gray-400 py-4">Yükleniyor...</div>
+        <div class="flex items-center gap-4">
+            <div class="p-3 bg-indigo-50 text-indigo-600 rounded-xl">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="24"
+                    height="24"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    ><circle cx="12" cy="12" r="10"></circle><polyline
+                        points="12 6 12 12 16 14"></polyline></svg
+                >
+            </div>
+            <div>
+                <p class="text-sm text-gray-500 font-medium">
+                    Bugünkü Ziyaretçi
+                </p>
+                <h3
+                    class="text-3xl font-bold text-gray-900"
+                    id="dailySiteVisits"
+                >
+                    -
+                </h3>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Chart.js CDN -->
-<script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <h2 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-4">
+        İçerik Analizi
+    </h2>
+    <!-- Content Stats -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <!-- Total Posts -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-blue-50 text-blue-600 rounded-xl">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"
+                        ></path><polyline points="14 2 14 8 20 8"
+                        ></polyline><line x1="16" y1="13" x2="8" y2="13"
+                        ></line><line x1="16" y1="17" x2="8" y2="17"
+                        ></line><polyline points="10 9 9 9 8 9"></polyline></svg
+                    >
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">Toplam Yazı</p>
+                    <h3
+                        class="text-2xl font-bold text-gray-900"
+                        id="totalPosts"
+                    >
+                        -
+                    </h3>
+                </div>
+            </div>
+        </div>
 
-<script>
-    import { pb, type Post } from "../../lib/pocketbase";
+        <!-- Total Views -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-green-50 text-green-600 rounded-xl">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"
+                        ></path><circle cx="12" cy="12" r="3"></circle></svg
+                    >
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">
+                        Toplam Okunma
+                    </p>
+                    <h3
+                        class="text-2xl font-bold text-gray-900"
+                        id="totalViews"
+                    >
+                        -
+                    </h3>
+                </div>
+            </div>
+        </div>
 
-    let viewLogs: any[] = [];
-    let chartInstance: any = null;
+        <!-- Daily Views (NEW) -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-purple-50 text-purple-600 rounded-xl">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><rect x="3" y="4" width="18" height="18" rx="2" ry="2"
+                        ></rect><line x1="16" y1="2" x2="16" y2="6"></line><line
+                            x1="8"
+                            y1="2"
+                            x2="8"
+                            y2="6"></line><line x1="3" y1="10" x2="21" y2="10"
+                        ></line></svg
+                    >
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">
+                        Bugünkü Okunma
+                    </p>
+                    <h3
+                        class="text-2xl font-bold text-gray-900"
+                        id="dailyViews"
+                    >
+                        -
+                    </h3>
+                </div>
+            </div>
+        </div>
 
-    // Time Ranges config
-    const RANGES: {
-        [key: string]: { label: string; minutes: number; unit: string };
-    } = {
-        "1S": { label: "Son 1 Saat", minutes: 60, unit: "minute" },
-        "1G": { label: "Son 24 Saat", minutes: 60 * 24, unit: "hour" },
-        "1H": { label: "Son 7 Gün", minutes: 60 * 24 * 7, unit: "day" },
-        "1A": { label: "Son 30 Gün", minutes: 60 * 24 * 30, unit: "day" },
-    };
+        <!-- Most Popular -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <div class="flex items-center gap-4">
+                <div class="p-3 bg-orange-50 text-orange-600 rounded-xl">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"
+                        ></path><path d="M9 18h6"></path><path d="M10 22h4"
+                        ></path></svg
+                    >
+                </div>
+                <div>
+                    <p class="text-sm text-gray-500 font-medium">En Popüler</p>
+                    <h3
+                        class="text-sm font-bold text-gray-900 line-clamp-1"
+                        id="mostPopularPost"
+                    >
+                        -
+                    </h3>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    let activeRange = "1A";
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        <!-- Chart Section (Wider) -->
+        <div
+            class="lg:col-span-2 bg-white p-6 rounded-2xl shadow-sm border border-gray-100"
+        >
+            <h3
+                class="text-lg font-bold text-gray-800 mb-6 flex items-center gap-2"
+            >
+                <span class="w-2 h-6 bg-[#1E3A1A] rounded-full"></span>
+                Okunma Analizi
+            </h3>
+            <div class="relative h-96 w-full">
+                <canvas id="viewsLineChart"></canvas>
+            </div>
+        </div>
 
-    async function init() {
-        try {
-            // Fetch Data
-            const posts = await pb
-                .collection("posts")
-                .getFullList<Post>({ sort: "-views" });
+        <!-- Top Posts List -->
+        <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+            <h3 class="text-lg font-bold text-gray-800 mb-6">
+                En Çok Okunanlar
+            </h3>
+            <div class="space-y-3" id="topPostsList">
+                <div class="text-center text-gray-400 py-4">Yükleniyor...</div>
+            </div>
+        </div>
+    </div>
 
-            // Define thirtyDaysAgo for initial log fetch
-            const now = new Date();
-            const thirtyDaysAgo = new Date(
-                now.getTime() - 30 * 24 * 60 * 60 * 1000,
-            );
+    <!-- Chart.js CDN -->
+    <script is:inline src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-            console.log("Auth State:", pb.authStore.isValid);
+    <script>
+        import { pb, type Post } from "../../lib/pocketbase";
 
-            // Fetch latest logs (RAW fetch to avoid 400 errors)
-            // We fetch 500 items and sort in JS
-            let logs: any[] = [];
+        let viewLogs: any[] = [];
+        let chartInstance: any = null;
+
+        // Time Ranges config
+        const RANGES: {
+            [key: string]: { label: string; minutes: number; unit: string };
+        } = {
+            "1S": { label: "Son 1 Saat", minutes: 60, unit: "minute" },
+            "1G": { label: "Son 24 Saat", minutes: 60 * 24, unit: "hour" },
+            "1H": { label: "Son 7 Gün", minutes: 60 * 24 * 7, unit: "day" },
+            "1A": { label: "Son 30 Gün", minutes: 60 * 24 * 30, unit: "day" },
+        };
+
+        let activeRange = "1A";
+
+        async function init() {
             try {
-                // NUCLEAR OPTION: Fetch EVERYTHING without any parameters to avoid 400 Bad Request
-                // PocketBase auto-paginates this request
-                console.log("Fetching all logs...");
-                // Explicitly request created field just in case
-                const result = await pb
-                    .collection("post_view_logs")
-                    .getFullList({
-                        fields: "*,created,updated",
-                    });
-                logs = result;
+                // Fetch Data
+                const posts = await pb
+                    .collection("posts")
+                    .getFullList<Post>({ sort: "-views" });
 
-                // Client-side sort (Newest first)
-                // Use 'created' or check the object keys if undefined
-                logs.sort(
-                    (a, b) =>
-                        new Date(b.created).getTime() -
-                        new Date(a.created).getTime(),
-                );
-
-                // ... (existing post fetch) ...
-                console.log(`Fetched ${logs.length} logs successfully.`);
-            } catch (e: any) {
-                console.error("Log fetch failed:", e);
-            }
-            viewLogs = logs;
-
-            // ------------------------------
-            // Site Stats (Restored)
-            let siteVisits: any[] = [];
-            try {
-                const result = await pb
-                    .collection("site_unique_visitors")
-                    .getFullList({
-                        sort: "-created",
-                    });
-                siteVisits = result;
-
-                const total = siteVisits.length;
-
+                // Define thirtyDaysAgo for initial log fetch
                 const now = new Date();
-                const startOfToday = new Date(
-                    now.getFullYear(),
-                    now.getMonth(),
-                    now.getDate(),
+                const thirtyDaysAgo = new Date(
+                    now.getTime() - 30 * 24 * 60 * 60 * 1000,
                 );
 
-                const daily = siteVisits.filter(
-                    (v) => new Date(v.created) >= startOfToday,
-                ).length;
+                console.log("Auth State:", pb.authStore.isValid);
 
-                if (siteVisits.length > 0) {
-                    console.log(
-                        `[Site Stats Debug] Is Latest >= Today? ${new Date(siteVisits[0].created) >= startOfToday}`,
-                    );
-                    console.log(`[Site Stats Debug] Daily Count: ${daily}`);
-                }
+                // Fetch latest logs (RAW fetch to avoid 400 errors)
+                // We fetch 500 items and sort in JS
+                let logs: any[] = [];
+                try {
+                    // NUCLEAR OPTION: Fetch EVERYTHING without any parameters to avoid 400 Bad Request
+                    // PocketBase auto-paginates this request
+                    console.log("Fetching all logs...");
+                    // Explicitly request created field just in case
+                    const result = await pb
+                        .collection("post_view_logs")
+                        .getFullList({
+                            fields: "*,created,updated",
+                        });
+                    logs = result;
 
-                document.getElementById("totalSiteVisits")!.innerText =
-                    total.toLocaleString("tr-TR");
-                document.getElementById("dailySiteVisits")!.innerText =
-                    daily.toLocaleString("tr-TR");
-            } catch (err) {
-                console.error("Site stats fetch failed:", err);
-            }
-            // ------------------------------
-
-            // DEBUG PANEL UPDATE
-            const debugEl = document.getElementById("debugPanel");
-            if (debugEl) {
-                const now = new Date();
-                const startOfToday = new Date(
-                    now.getFullYear(),
-                    now.getMonth(),
-                    now.getDate(),
-                );
-
-                let msg = `Time: ${now.toLocaleString()}\nStartOfToday: ${startOfToday.toLocaleString()}\n`;
-                msg += `Total Site Views: ${siteVisits.length}\n`;
-
-                if (siteVisits.length > 0) {
-                    const first = siteVisits[0];
-                    // Sort locally for debug purposes (newest first)
-                    const sorted = [...siteVisits].sort(
+                    // Client-side sort (Newest first)
+                    // Use 'created' or check the object keys if undefined
+                    logs.sort(
                         (a, b) =>
                             new Date(b.created).getTime() -
                             new Date(a.created).getTime(),
                     );
-                    const newest = sorted[0];
 
-                    msg += `Latest Site Visit (sorted): ${JSON.stringify(newest)}\n`;
-                    msg += `Latest Created: ${newest.created}\n`;
-                    msg += `Parsed date: ${new Date(newest.created).toLocaleString()}\n`;
-                    msg += `Is >= StartOfToday? ${new Date(newest.created) >= startOfToday}\n`;
-                } else {
-                    msg += "No site visits found.\n";
+                    // ... (existing post fetch) ...
+                    console.log(`Fetched ${logs.length} logs successfully.`);
+                } catch (e: any) {
+                    console.error("Log fetch failed:", e);
+                }
+                viewLogs = logs;
+
+                // ------------------------------
+                // Site Stats (Restored)
+                let siteVisits: any[] = [];
+                try {
+                    const result = await pb
+                        .collection("site_unique_visitors")
+                        .getFullList({
+                            sort: "-created",
+                        });
+                    siteVisits = result;
+
+                    const total = siteVisits.length;
+
+                    const now = new Date();
+                    const startOfToday = new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        now.getDate(),
+                    );
+
+                    const daily = siteVisits.filter(
+                        (v) => new Date(v.created) >= startOfToday,
+                    ).length;
+
+                    if (siteVisits.length > 0) {
+                        console.log(
+                            `[Site Stats Debug] Is Latest >= Today? ${new Date(siteVisits[0].created) >= startOfToday}`,
+                        );
+                        console.log(`[Site Stats Debug] Daily Count: ${daily}`);
+                    }
+
+                    document.getElementById("totalSiteVisits")!.innerText =
+                        total.toLocaleString("tr-TR");
+                    document.getElementById("dailySiteVisits")!.innerText =
+                        daily.toLocaleString("tr-TR");
+                } catch (err) {
+                    console.error("Site stats fetch failed:", err);
+                }
+                // ------------------------------
+
+                // DEBUG PANEL UPDATE
+                const debugEl = document.getElementById("debugPanel");
+                if (debugEl) {
+                    const now = new Date();
+                    const startOfToday = new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        now.getDate(),
+                    );
+
+                    let msg = `Time: ${now.toLocaleString()}\nStartOfToday: ${startOfToday.toLocaleString()}\n`;
+                    msg += `Total Site Views: ${siteVisits.length}\n`;
+
+                    if (siteVisits.length > 0) {
+                        const first = siteVisits[0];
+                        // Sort locally for debug purposes (newest first)
+                        const sorted = [...siteVisits].sort(
+                            (a, b) =>
+                                new Date(b.created).getTime() -
+                                new Date(a.created).getTime(),
+                        );
+                        const newest = sorted[0];
+
+                        msg += `Latest Site Visit (sorted): ${JSON.stringify(newest)}\n`;
+                        msg += `Latest Created: ${newest.created}\n`;
+                        msg += `Parsed date: ${new Date(newest.created).toLocaleString()}\n`;
+                        msg += `Is >= StartOfToday? ${new Date(newest.created) >= startOfToday}\n`;
+                    } else {
+                        msg += "No site visits found.\n";
+                    }
+
+                    if (viewLogs && viewLogs.length > 0) {
+                        const firstPostView = viewLogs[0];
+                        msg += `Latest Post View: ${JSON.stringify(firstPostView)}\n`;
+                    }
+
+                    debugEl.innerText = msg;
                 }
 
-                if (viewLogs && viewLogs.length > 0) {
-                    const firstPostView = viewLogs[0];
-                    msg += `Latest Post View: ${JSON.stringify(firstPostView)}\n`;
-                }
+                updateSummaryCards(posts);
+                renderTopList(posts);
 
-                debugEl.innerText = msg;
+                setupButtons();
+                updateChart(activeRange);
+            } catch (err: any) {
+                console.error("Stats Error:", err);
+                const el = document.getElementById("topPostsList");
+                if (el)
+                    el.innerHTML = `<div class="text-red-500 text-sm p-4 text-center">Hata oluştu: ${err.message || err}</div>`;
             }
-
-            updateSummaryCards(posts);
-            renderTopList(posts);
-
-            setupButtons();
-            updateChart(activeRange);
-        } catch (err: any) {
-            console.error("Stats Error:", err);
-            const el = document.getElementById("topPostsList");
-            if (el)
-                el.innerHTML = `<div class="text-red-500 text-sm p-4 text-center">Hata oluştu: ${err.message || err}</div>`;
         }
-    }
 
-    function setupButtons() {
-        const container = document.getElementById("timeFilters");
-        if (container) {
-            container.innerHTML = Object.keys(RANGES)
-                .map(
-                    (key) => `
+        function setupButtons() {
+            const container = document.getElementById("timeFilters");
+            if (container) {
+                container.innerHTML = Object.keys(RANGES)
+                    .map(
+                        (key) => `
                     <button 
                         data-range="${key}"
                         class="filter-btn px-3 py-1 text-sm font-medium rounded-lg transition ${key === activeRange ? "bg-orange-100 text-orange-700" : "bg-gray-50 text-gray-500 hover:bg-gray-100"}"
@@ -374,210 +388,218 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                         ${key}
                     </button>
                 `,
-                )
-                .join("");
+                    )
+                    .join("");
 
-            container.querySelectorAll("button").forEach((btn) => {
-                btn.addEventListener("click", (e) => {
-                    const target = e.target as HTMLElement;
-                    const r = target.dataset.range;
-                    if (r && r !== activeRange) {
-                        activeRange = r;
+                container.querySelectorAll("button").forEach((btn) => {
+                    btn.addEventListener("click", (e) => {
+                        const target = e.target as HTMLElement;
+                        const r = target.dataset.range;
+                        if (r && r !== activeRange) {
+                            activeRange = r;
 
-                        // Update UI classes
-                        container.querySelectorAll("button").forEach((b) => {
-                            const isMsg =
-                                (b as HTMLElement).dataset.range ===
-                                activeRange;
-                            b.className = `filter-btn px-3 py-1 text-sm font-medium rounded-lg transition ${isMsg ? "bg-orange-100 text-orange-700" : "bg-gray-50 text-gray-500 hover:bg-gray-100"}`;
-                        });
+                            // Update UI classes
+                            container
+                                .querySelectorAll("button")
+                                .forEach((b) => {
+                                    const isMsg =
+                                        (b as HTMLElement).dataset.range ===
+                                        activeRange;
+                                    b.className = `filter-btn px-3 py-1 text-sm font-medium rounded-lg transition ${isMsg ? "bg-orange-100 text-orange-700" : "bg-gray-50 text-gray-500 hover:bg-gray-100"}`;
+                                });
 
-                        updateChart(activeRange);
-                    }
+                            updateChart(activeRange);
+                        }
+                    });
                 });
-            });
-        }
-    }
-
-    function updateChart(rangeKey: string) {
-        const range = RANGES[rangeKey];
-        const now = new Date();
-        // Calculate cutoff based on range minutes
-        const cutoff = new Date(now.getTime() - range.minutes * 60 * 1000);
-
-        // Filter relevant logs
-        const filtered = viewLogs.filter((l) => new Date(l.created) >= cutoff);
-
-        const counts: Record<string, number> = {};
-        const labels: string[] = [];
-
-        if (activeRange === "1S") {
-            // Minute bucketing
-            // Last 60 mins
-            for (let i = 59; i >= 0; i--) {
-                const d = new Date(now.getTime() - i * 60 * 1000);
-                const key = `${d.getHours()}:${d.getMinutes().toString().padStart(2, "0")}`;
-                counts[key] = 0;
-                labels.push(key);
             }
-            filtered.forEach((l) => {
-                const d = new Date(l.created);
-                const key = `${d.getHours()}:${d.getMinutes().toString().padStart(2, "0")}`;
-                if (counts[key] !== undefined) counts[key]++;
-            });
-        } else if (activeRange === "1G") {
-            // Hour bucketing
-            // Last 24 hours
-            for (let i = 23; i >= 0; i--) {
-                const d = new Date(now.getTime() - i * 60 * 60 * 1000);
-                const key = `${d.getHours()}:00`;
-                counts[key] = 0;
-                labels.push(key);
-            }
-            filtered.forEach((l) => {
-                const d = new Date(l.created);
-                const key = `${d.getHours()}:00`;
-                if (counts[key] !== undefined) counts[key]++;
-            });
-        } else {
-            // Day bucketing (1H, 1A)
-            const days = activeRange === "1H" ? 7 : 30;
-            for (let i = days - 1; i >= 0; i--) {
-                const d = new Date(now);
-                d.setDate(d.getDate() - i);
-                const key = d.toLocaleDateString("tr-TR", {
-                    day: "numeric",
-                    month: "short",
-                });
-                counts[key] = 0;
-                labels.push(key);
-            }
-            filtered.forEach((l) => {
-                const d = new Date(l.created);
-                const key = d.toLocaleDateString("tr-TR", {
-                    day: "numeric",
-                    month: "short",
-                });
-                if (counts[key] !== undefined) counts[key]++;
-            });
         }
 
-        renderLineChart(labels, Object.values(counts));
-    }
+        function updateChart(rangeKey: string) {
+            const range = RANGES[rangeKey];
+            const now = new Date();
+            // Calculate cutoff based on range minutes
+            const cutoff = new Date(now.getTime() - range.minutes * 60 * 1000);
 
-    function renderLineChart(labels: string[], data: number[]) {
-        const ctx = document.getElementById(
-            "viewsLineChart",
-        ) as HTMLCanvasElement;
-        if (!ctx || !(window as any).Chart) return;
+            // Filter relevant logs
+            const filtered = viewLogs.filter(
+                (l) => new Date(l.created) >= cutoff,
+            );
 
-        if (chartInstance) {
-            chartInstance.destroy();
+            const counts: Record<string, number> = {};
+            const labels: string[] = [];
+
+            if (activeRange === "1S") {
+                // Minute bucketing
+                // Last 60 mins
+                for (let i = 59; i >= 0; i--) {
+                    const d = new Date(now.getTime() - i * 60 * 1000);
+                    const key = `${d.getHours()}:${d.getMinutes().toString().padStart(2, "0")}`;
+                    counts[key] = 0;
+                    labels.push(key);
+                }
+                filtered.forEach((l) => {
+                    const d = new Date(l.created);
+                    const key = `${d.getHours()}:${d.getMinutes().toString().padStart(2, "0")}`;
+                    if (counts[key] !== undefined) counts[key]++;
+                });
+            } else if (activeRange === "1G") {
+                // Hour bucketing
+                // Last 24 hours
+                for (let i = 23; i >= 0; i--) {
+                    const d = new Date(now.getTime() - i * 60 * 60 * 1000);
+                    const key = `${d.getHours()}:00`;
+                    counts[key] = 0;
+                    labels.push(key);
+                }
+                filtered.forEach((l) => {
+                    const d = new Date(l.created);
+                    const key = `${d.getHours()}:00`;
+                    if (counts[key] !== undefined) counts[key]++;
+                });
+            } else {
+                // Day bucketing (1H, 1A)
+                const days = activeRange === "1H" ? 7 : 30;
+                for (let i = days - 1; i >= 0; i--) {
+                    const d = new Date(now);
+                    d.setDate(d.getDate() - i);
+                    const key = d.toLocaleDateString("tr-TR", {
+                        day: "numeric",
+                        month: "short",
+                    });
+                    counts[key] = 0;
+                    labels.push(key);
+                }
+                filtered.forEach((l) => {
+                    const d = new Date(l.created);
+                    const key = d.toLocaleDateString("tr-TR", {
+                        day: "numeric",
+                        month: "short",
+                    });
+                    if (counts[key] !== undefined) counts[key]++;
+                });
+            }
+
+            renderLineChart(labels, Object.values(counts));
         }
 
-        const gradient = ctx
-            .getContext("2d")
-            ?.createLinearGradient(0, 0, 0, 400);
-        gradient?.addColorStop(0, "rgba(230, 81, 0, 0.2)");
-        gradient?.addColorStop(1, "rgba(230, 81, 0, 0)");
+        function renderLineChart(labels: string[], data: number[]) {
+            const ctx = document.getElementById(
+                "viewsLineChart",
+            ) as HTMLCanvasElement;
+            if (!ctx || !(window as any).Chart) return;
 
-        chartInstance = new (window as any).Chart(ctx, {
-            type: "line",
-            data: {
-                labels: labels,
-                datasets: [
-                    {
-                        label: "Okunma",
-                        data: data,
-                        backgroundColor: gradient,
-                        borderColor: "#E65100",
-                        borderWidth: 2,
-                        pointBackgroundColor: "#FFFFFF",
-                        pointBorderColor: "#E65100",
-                        pointBorderWidth: 2,
-                        pointRadius: data.length > 30 ? 2 : 4,
-                        pointHoverRadius: 6,
-                        fill: true,
-                        tension: 0.4,
+            if (chartInstance) {
+                chartInstance.destroy();
+            }
+
+            const gradient = ctx
+                .getContext("2d")
+                ?.createLinearGradient(0, 0, 0, 400);
+            gradient?.addColorStop(0, "rgba(230, 81, 0, 0.2)");
+            gradient?.addColorStop(1, "rgba(230, 81, 0, 0)");
+
+            chartInstance = new (window as any).Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: "Okunma",
+                            data: data,
+                            backgroundColor: gradient,
+                            borderColor: "#E65100",
+                            borderWidth: 2,
+                            pointBackgroundColor: "#FFFFFF",
+                            pointBorderColor: "#E65100",
+                            pointBorderWidth: 2,
+                            pointRadius: data.length > 30 ? 2 : 4,
+                            pointHoverRadius: 6,
+                            fill: true,
+                            tension: 0.4,
+                        },
+                    ],
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    animation: { duration: 500 },
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            mode: "index",
+                            intersect: false,
+                            backgroundColor: "#1E3A1A",
+                            titleFont: { size: 13 },
+                            bodyFont: { size: 14, weight: "bold" },
+                            displayColors: false,
+                            callbacks: {
+                                label: (context: any) =>
+                                    `Okunma: ${context.parsed.y}`,
+                            },
+                        },
                     },
-                ],
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                animation: { duration: 500 },
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        mode: "index",
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: {
+                                maxTicksLimit: 8,
+                                autoSkip: true,
+                            },
+                        },
+                        y: {
+                            beginAtZero: true,
+                            grid: { color: "#F3F4F6" },
+                            suggestedMax: Math.max(...data) + 1,
+                        },
+                    },
+                    interaction: {
+                        mode: "nearest",
+                        axis: "x",
                         intersect: false,
-                        backgroundColor: "#1E3A1A",
-                        titleFont: { size: 13 },
-                        bodyFont: { size: 14, weight: "bold" },
-                        displayColors: false,
-                        callbacks: {
-                            label: (context: any) =>
-                                `Okunma: ${context.parsed.y}`,
-                        },
                     },
                 },
-                scales: {
-                    x: {
-                        grid: { display: false },
-                        ticks: {
-                            maxTicksLimit: 8,
-                            autoSkip: true,
-                        },
-                    },
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: "#F3F4F6" },
-                        suggestedMax: Math.max(...data) + 1,
-                    },
-                },
-                interaction: {
-                    mode: "nearest",
-                    axis: "x",
-                    intersect: false,
-                },
-            },
-        });
-    }
+            });
+        }
 
-    function updateSummaryCards(posts: Post[]) {
-        const totalPosts = posts.length;
-        const totalViews = posts.reduce((sum, p) => sum + (p.views || 0), 0);
-        const mostPopular = posts[0];
+        function updateSummaryCards(posts: Post[]) {
+            const totalPosts = posts.length;
+            const totalViews = posts.reduce(
+                (sum, p) => sum + (p.views || 0),
+                0,
+            );
+            const mostPopular = posts[0];
 
-        // Calculate Daily Views (Today)
-        const now = new Date();
-        const startOfToday = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-        );
-        const dailyViews = viewLogs.filter(
-            (l) => new Date(l.created) >= startOfToday,
-        ).length;
+            // Calculate Daily Views (Today)
+            const now = new Date();
+            const startOfToday = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate(),
+            );
+            const dailyViews = viewLogs.filter(
+                (l) => new Date(l.created) >= startOfToday,
+            ).length;
 
-        document.getElementById("totalPosts")!.innerText = String(totalPosts);
-        document.getElementById("totalViews")!.innerText =
-            totalViews.toLocaleString("tr-TR");
-        document.getElementById("dailyViews")!.innerText =
-            dailyViews.toLocaleString("tr-TR");
-        document.getElementById("mostPopularPost")!.innerText = mostPopular
-            ? mostPopular.title
-            : "-";
-    }
+            document.getElementById("totalPosts")!.innerText =
+                String(totalPosts);
+            document.getElementById("totalViews")!.innerText =
+                totalViews.toLocaleString("tr-TR");
+            document.getElementById("dailyViews")!.innerText =
+                dailyViews.toLocaleString("tr-TR");
+            document.getElementById("mostPopularPost")!.innerText = mostPopular
+                ? mostPopular.title
+                : "-";
+        }
 
-    function renderTopList(posts: Post[]) {
-        const topListEl = document.getElementById("topPostsList");
-        if (!topListEl) return;
+        function renderTopList(posts: Post[]) {
+            const topListEl = document.getElementById("topPostsList");
+            if (!topListEl) return;
 
-        topListEl.innerHTML = posts
-            .slice(0, 8)
-            .map(
-                (p, i) => `
+            topListEl.innerHTML = posts
+                .slice(0, 8)
+                .map(
+                    (p, i) => `
                 <div class="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition group cursor-default">
                     <div class="w-8 h-8 flex-shrink-0 flex items-center justify-center font-bold text-sm ${
                         i === 0
@@ -599,9 +621,10 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                     </div>
                 </div>
             `,
-            )
-            .join("");
-    }
+                )
+                .join("");
+        }
 
-    init();
-</script>
+        init();
+    </script>
+</AdminLayout>

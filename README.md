@@ -1,97 +1,110 @@
-# 🏥 Fizyoterapist Ezgi Acem - Official Website
+# 🏥 Fizyoterapist Ezgi Acem - Web Sitesi Projesi
 
-A modern, high-performance professional portfolio and blog website for **Physiotherapist Ezgi Acem**, built with **Astro** and **TailwindCSS**, empowered by **PocketBase** as a headless CMS.
+Bu proje, **Fizyoterapist Ezgi Acem** için geliştirilmiş modern, hızlı ve dinamik bir kurumsal web sitesidir. 
+Teknolojik altyapı olarak **Astro, React, TailwindCSS** ve backend tarafında **PocketBase** kullanılmıştır.
 
-This project is designed to provide a holistic, visually soothing, and informative digital presence for pediatric physiotherapy services.
+---
 
-![Project Banner](public/favicon.svg)
+## 🏗️ Mimari ve Teknolojiler
 
-## 🚀 Features
+- **Frontend:** [Astro](https://astro.build/) (Statik Site Üretimi & SSR)
+- **UI Framework:** React (Admin paneli interaktivitesi için)
+- **Stil:** TailwindCSS v4
+- **Backend:** PocketBase (Golang tabanlı real-time backend)
+- **Veritabanı:** SQLite (PocketBase içinde gömülü)
+- **Mail Servisi:** Brevo SMTP (PocketBase Hooks ile entegre)
 
-- **⚡ Blazing Fast Performance**: Built with [Astro](https://astro.build)'s zero-JS-by-default architecture for optimal speed and SEO.
-- **🎨 Modern & Holistic Design**: Custom aesthetics using **TailwindCSS**, featuring glassmorphism, smooth animations, and a warm, pastel color palette (Orange/Teal/Cream) to reflect a therapeutic environment.
-- **📝 Dynamic Blog System**: Integrated with **PocketBase** to manage and serve educational content and articles dynamically.
-- **🧩 Specializations Showcase**: Interactive grid layout showcasing core expertise areas like *Pediatric Physiotherapy*, *Sensory Integration*, and *Neuromotor Development*.
-- **💌 Contact & Appointment**: Functional contact form collecting inquiries directly into the secure backend.
-- **⚖️ Legal Compliance**: Dedicated, structured pages for **KVKK** (Data Protection), **Terms of Use**, and **Cookie Policies**.
-- **📱 Fully Responsive**: Optimized experience across all devices, from mobile phones to high-resolution desktops.
+---
 
-## 🛠️ Tech Stack
+## 📂 Proje Yapısı
 
-- **Frontend Framework**: [Astro v4](https://astro.build/)
-- **Styling**: [TailwindCSS](https://tailwindcss.com/)
-- **Backend / CMS**: [PocketBase](https://pocketbase.io/) (Self-hosted Go-based backend)
-- **Language**: TypeScript
-- **Deployment**: Static Site Generation (SSG) / Hybrid
+### `src/pages` (Sayfalar)
+- `index.astro`: Ana sayfa. Hero, Hizmetler, Hakkımda özetlerini içerir.
+- `hakkimda.astro`: Detaylı biyografi sayfası.
+- `iletisim.astro`: İletişim formu ve adres bilgileri.
+- `admin/`: Admin paneli sayfaları (Giriş, Dashboard, Blog Yönetimi).
+- `blog/`: Blog listesi ve dinamik blog detay sayfaları (`[slug].astro`).
 
-## 🏁 Getting Started
+### `src/components` (UI Bileşenleri)
+- **`TreatmentProcess.astro`**: Tedavi sürecini anlatan animasyonlu dikey timeline bileşeni.
+- **`WorkingAreas.astro`**: Uzmanlık alanlarını grid yapısında listeleyen bileşen.
+- **`ScrollToTop.astro`**: Sayfa aşağı inince beliren "Yukarı Çık" butonu.
+- **`Footer.astro`**: Site alt bilgisi, sosyal medya linkleri ve iletişim özeti.
 
-Follow these steps to set up the project locally.
+### `src/components/admin` (Admin Paneli React Bileşenleri)
+- **`TiptapEditor.jsx`**: Blog yazıları için gelişmiş zengin metin editörü (Bold, Italic, Link, H1-H3 vb.).
+- **`ImageUploadWithCrop.jsx`**: Blog kapak resimleri için sürükle-bırak destekli, kırpma özellikli resim yükleyici.
+- **`ImageCropper.jsx`**: `react-easy-crop` kütüphanesini kullanan yardımcı kırpma bileşeni.
 
-### Prerequisites
+### `src/layouts` (Şablonlar)
+- **`BaseLayout.astro`**: Tüm genel sayfaların ana şablonu (Header, Footer, Meta etiketleri).
+- **`AdminLayout.astro`**: Admin paneli için sidebar ve yetkilendirme kontrolü içeren şablon.
 
-- **Node.js** (v18 or higher)
-- **PocketBase** executable (placed in the root directory or installed globally)
+---
 
-### Installation
+## ⚙️ Backend ve Hook Sistemi
 
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/your-username/fztezgiacem.git
-    cd fztezgiacem
-    ```
+Backend mantığı `pb_hooks` klasörü altında çalışır.
 
-2.  **Install dependencies**
+### `pb_hooks/main.pb.js`
+Bu dosya, iletişim formundan gelen mesajları işler.
+1.  `messages` koleksiyonuna yeni bir kayıt atıldığında (`onRecordAfterCreateSuccess`) tetiklenir.
+2.  Gelen mesajın içeriğini (İsim, E-posta, Mesaj) alır.
+3.  HTML formatında şık bir e-posta şablonu oluşturur.
+4.  Tanımlı SMTP ayarları üzerinden `iletisim@fztezgiacem.com` adresine bildirim gönderir.
+
+**Örnek Kod:**
+```javascript
+onRecordAfterCreateSuccess((e) => {
+    // ... mesaj verilerini al
+    e.app.newMailClient().send(mail); // Mail gönder
+}, "messages")
+```
+
+---
+
+## 🚀 Deployment ve Sunucu Yönetimi
+
+Sunucu tarafında PocketBase çalışmaktadır. Site statik olarak build edilir (`output: static` veya `server` moduna göre değişebilir) ve sunulur.
+
+### Otomatik Hook Güncelleme
+Hook dosyasında yapılan bir değişikliği sunucuya atmak için özel bir script geliştirilmiştir. Şifre girmeden tek komutla güncelleme yapar.
+
+**Komut:**
+```bash
+npm run deploy-hook
+```
+*Bu komut `main.pb.js` dosyasını sunucuya yükler ve PocketBase servisini yeniden başlatır.*
+
+---
+
+## 🛠️ Kurulum ve Geliştirme
+
+Projeyi yerel ortamda çalıştırmak için:
+
+1.  **Bağımlılıkları Yükle:**
     ```bash
     npm install
     ```
 
-3.  **Environment Setup**
-    Create a `.env` file in the root directory with your credentials:
-    ```env
-    PUBLIC_POCKETBASE_URL=http://127.0.0.1:8090
-    ADMIN_EMAIL=admin@example.com
-    ADMIN_PASSWORD=securepassword
-    PUBLIC_IMGBB_API_KEY=your_imgbb_api_key
+2.  **Geliştirme Sunucusunu Başlat:**
+    ```bash
+    npm run dev
     ```
 
-4.  **Start Backend**
-    Run the PocketBase server:
+3.  **Build Al (Üretime Hazırlık):**
+    ```bash
+    npm run build
+    ```
+
+4.  **Local PocketBase Çalıştır (Opsiyonel):**
     ```bash
     ./pocketbase serve
     ```
 
-5.  **Start Frontend**
-    Run the Astro development server:
-    ```bash
-    npm run dev
-    ```
-    The site will be available at `http://localhost:4321`.
+---
 
-## 📂 Project Structure
-
-```text
-/
-├── public/              # Static assets (images, icons, fonts)
-├── src/
-│   ├── components/      # Reusable UI components (Footer, Navbar, etc.)
-│   ├── layouts/         # Base layouts (BaseLayout.astro)
-│   ├── lib/             # Utilities (PocketBase client, helper functions)
-│   ├── pages/           # Application routes & Views
-│   │   ├── admin/       # Custom Admin dashboard routes
-│   │   ├── blog/        # Blog listing and detail pages
-│   │   ├── yasal/       # Legal pages (KVKK, Terms, Cookies)
-│   │   └── index.astro  # Homepage
-│   └── styles/          # Global styles (Tailwind directives)
-├── scripts/             # Automation scripts (Seeding, Image Uploads)
-├── pocketbase.exe       # Backend executable
-└── astro.config.mjs     # Astro configuration
-```
-
-## 🤝 Contributing
-
-Contributions are welcome! Please feel free to submit a Pull Request.
-
-## 📄 License
-
-All rights reserved. Designed and developed for **Fizyoterapist Ezgi Acem**.
+## 📝 Notlar
+- **Admin Girişi:** `/admin` yolundan erişilir.
+- **Resimler:** Blog resimleri PocketBase `posts` koleksiyonunda saklanır.
+- **SMTP:** Brevo (Sendinblue) altyapısı kullanılmaktadır. Ayarlar PocketBase Admin Panel -> Settings -> Mail Settings altındadır.
