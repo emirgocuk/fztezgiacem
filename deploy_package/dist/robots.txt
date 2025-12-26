@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://fizyoterapist-demo.com/sitemap-index.xml

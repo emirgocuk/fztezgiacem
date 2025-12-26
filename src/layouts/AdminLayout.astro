@@ -1,0 +1,159 @@
+---
+import "@fontsource-variable/inter";
+import "../styles/global.css";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/logo.svg" />
+    <title>{title} | Admin Panel</title>
+  </head>
+  <body
+    class="bg-gradient-to-b from-orange-50/50 to-white text-gray-900 antialiased min-h-screen flex flex-col md:flex-row relative"
+  >
+    <!-- Decorative background elements -->
+    <div
+      class="fixed inset-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+    >
+      <div
+        class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
+      >
+      </div>
+      <div
+        class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"
+      >
+      </div>
+    </div>
+    <!-- Sidebar -->
+    <aside
+      id="sidebar"
+      class="w-64 bg-orange-100 border-r border-orange-200 text-slate-700 flex-shrink-0 flex flex-col fixed md:sticky md:top-0 md:h-screen inset-y-0 left-0 z-50 transform -translate-x-full md:translate-x-0 transition-transform duration-200 ease-in-out"
+    >
+      <div
+        class="h-16 flex-shrink-0 flex items-center justify-between px-6 font-bold text-xl border-b border-orange-200 text-[#E65100]"
+      >
+        <span>Admin Panel</span>
+        <button
+          id="closeSidebarBtn"
+          class="md:hidden text-slate-400 hover:text-slate-600">✕</button
+        >
+      </div>
+      <nav class="flex-1 p-4 space-y-2 overflow-y-auto custom-scrollbar">
+        <a
+          href="/admin"
+          class="block px-4 py-2 rounded-lg hover:bg-white/50 hover:text-[#E65100] transition font-medium"
+          >Yazılar</a
+        >
+        <a
+          href="/admin/settings"
+          class="block px-4 py-2 rounded-lg hover:bg-white/50 hover:text-[#E65100] transition font-medium"
+          >Ayarlar</a
+        >
+        <a
+          href="/admin/stats"
+          class="block px-4 py-2 rounded-lg hover:bg-white/50 hover:text-[#E65100] transition font-medium"
+          >İstatistikler</a
+        >
+        <a
+          href="/admin/specializations"
+          class="block px-4 py-2 rounded-lg hover:bg-white/50 hover:text-[#E65100] transition font-medium"
+          >Uzmanlıklar</a
+        >
+        <a
+          href="/"
+          href="/"
+          target="_blank"
+          class="block px-4 py-2 rounded-lg hover:bg-white/50 hover:text-[#E65100] transition mt-8 text-slate-600 text-sm"
+          >Siteye Git ↗</a
+        >
+      </nav>
+      <div class="p-4 border-t border-orange-200 flex-shrink-0">
+        <button
+          id="logoutBtn"
+          class="w-full text-left px-4 py-2 rounded-lg hover:bg-white/50 transition text-red-600 hover:text-red-700 font-medium"
+          >Çıkış Yap</button
+        >
+      </div>
+    </aside>
+
+    <!-- Overlay backdorp -->
+    <div
+      id="sidebarOverlay"
+      class="fixed inset-0 bg-black/50 z-40 hidden md:hidden glass transition-opacity"
+    >
+    </div>
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col min-h-screen w-full md:w-auto">
+      <header
+        class="h-16 bg-white/80 backdrop-blur-md border-b flex items-center justify-between px-6 md:hidden sticky top-0 z-30"
+      >
+        <span class="font-bold text-[#1E3A1A]">Admin</span>
+        <button
+          id="mobileMenuBtn"
+          class="p-2 -mr-2 text-gray-600 hover:bg-gray-100 rounded-lg"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="lucide lucide-menu"
+            ><line x1="4" x2="20" y1="12" y2="12"></line><line
+              x1="4"
+              x2="20"
+              y1="6"
+              y2="6"></line><line x1="4" x2="20" y1="18" y2="18"></line></svg
+          >
+        </button>
+      </header>
+      <div class="p-6 md:p-12 flex-1">
+        <slot />
+      </div>
+    </main>
+
+    <script>
+      import { pb } from "../lib/pocketbase";
+
+      // Check Auth
+      if (!pb.authStore.isValid) {
+        window.location.href = "/admin/login";
+      }
+
+      // Logout
+      document.getElementById("logoutBtn")?.addEventListener("click", () => {
+        pb.authStore.clear();
+        window.location.href = "/admin/login";
+      });
+
+      // Mobile Menu Logic
+      const sidebar = document.getElementById("sidebar");
+      const overlay = document.getElementById("sidebarOverlay");
+      const btn = document.getElementById("mobileMenuBtn");
+      const closeBtn = document.getElementById("closeSidebarBtn");
+
+      function toggleSidebar() {
+        sidebar?.classList.toggle("-translate-x-full");
+        overlay?.classList.toggle("hidden");
+      }
+
+      btn?.addEventListener("click", toggleSidebar);
+      closeBtn?.addEventListener("click", toggleSidebar);
+      overlay?.addEventListener("click", toggleSidebar);
+    </script>
+  </body>
+</html>

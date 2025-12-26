@@ -1,0 +1,44 @@
+---
+
+---
+
+<button
+    id="scrollToTopBtn"
+    aria-label="Yukarı Çık"
+    class="fixed bottom-6 right-6 z-40 bg-white/80 backdrop-blur-sm border border-orange-100 text-orange-400 p-3 rounded-full shadow-lg hover:bg-[#FF8A65] hover:text-white hover:shadow-orange-200 hover:-translate-y-1 transition-all duration-300 opacity-0 translate-y-10 invisible group"
+>
+    <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+        stroke-width="2.5"
+    >
+        <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M5 10l7-7m0 0l7 7m-7-7v18"></path>
+    </svg>
+</button>
+
+<script>
+    const btn = document.getElementById("scrollToTopBtn");
+
+    window.addEventListener("scroll", () => {
+        if (window.scrollY > 300) {
+            btn?.classList.remove("opacity-0", "translate-y-10", "invisible");
+            btn?.classList.add("opacity-100", "translate-y-0", "visible");
+        } else {
+            btn?.classList.add("opacity-0", "translate-y-10", "invisible");
+            btn?.classList.remove("opacity-100", "translate-y-0", "visible");
+        }
+    });
+
+    btn?.addEventListener("click", () => {
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth",
+        });
+    });
+</script>

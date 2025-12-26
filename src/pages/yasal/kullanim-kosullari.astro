@@ -1,0 +1,97 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const title = "Kullanım Koşulları";
+const description = "Web sitesi kullanım koşulları ve tıbbi sorumluluk reddi.";
+---
+
+<BaseLayout title={title} description={description}>
+    <!-- Full Width Background Wrapper -->
+    <div
+        class="w-full min-h-screen relative overflow-hidden bg-gradient-to-b from-orange-50/50 to-orange-50"
+    >
+        <!-- Decorative background elements -->
+        <div
+            class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+        >
+            <div
+                class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
+            >
+            </div>
+            <div
+                class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"
+            >
+            </div>
+            <div
+                class="absolute top-[40%] right-[20%] w-64 h-64 bg-green-200/30 rounded-full blur-3xl animate-blob animation-delay-4000"
+            >
+            </div>
+        </div>
+
+        <div class="relative z-10 pt-36 pb-20 px-6">
+            <div class="container mx-auto max-w-4xl">
+                <h1
+                    class="text-4xl font-bold text-[#FF8A65] mb-8 text-center md:text-left"
+                >
+                    {title}
+                </h1>
+
+                <div
+                    class="bg-white/80 p-8 md:p-12 rounded-3xl shadow-lg border border-orange-100 backdrop-blur-sm prose prose-slate max-w-none"
+                >
+                    <div
+                        class="bg-orange-50 border-l-4 border-orange-500 p-6 rounded-r-xl mb-8"
+                    >
+                        <h3 class="text-orange-800 mt-0">
+                            ⚠️ Tıbbi Sorumluluk Reddi (ÖNEMLİ)
+                        </h3>
+                        <p class="mb-0 text-orange-900">
+                            Bu web sitesinde (uzmanezgiacem.com) yer alan tüm
+                            içerikler (yazılar, görseller, grafikler, videolar
+                            vb.) <strong
+                                >yalnızca bilgilendirme amaçlıdır</strong
+                            >. Bu sitedeki hiçbir bilgi, doktor muayenesi, tıbbi
+                            tanı veya tedavi yerine geçmez. Sağlık sorunlarınız
+                            için lütfen mutlaka uzman bir hekime başvurunuz.
+                            Sitedeki bilgilerin yanlış anlaşılmasından veya
+                            uygulanmasından doğabilecek zararlardan
+                            Fizyoterapist Ezgi Acem sorumlu tutulamaz.
+                        </p>
+                    </div>
+
+                    <h3>1. Hizmetlerin Kapsamı</h3>
+                    <p>
+                        Bu web sitesi, Fizyoterapist Ezgi Acem'in mesleki
+                        faaliyetlerini tanıtmak, fizyoterapi alanında genel
+                        bilgiler sunmak ve danışanların randevu almasını
+                        kolaylaştırmak amacıyla hazırlanmıştır.
+                    </p>
+
+                    <h3>2. Fikri Mülkiyet Hakları</h3>
+                    <p>
+                        Sitede yer alan blog yazıları, özgün görseller ve
+                        tasarım öğelerinin tüm telif hakları Fizyoterapist Ezgi
+                        Acem'e aittir. Kaynak gösterilmeden ve izinsiz olarak
+                        kopyalanması, çoğaltılması veya ticari amaçla
+                        kullanılması yasaktır. 5846 sayılı Fikir ve Sanat
+                        Eserleri Kanunu hükümleri saklıdır.
+                    </p>
+
+                    <h3>3. Dış Bağlantılar</h3>
+                    <p>
+                        Bu site, zaman zaman üçüncü taraf web sitelerine
+                        bağlantılar içerebilir. Bu bağlantıların içeriğinden ve
+                        gizlilik uygulamalarından sitemiz sorumlu değildir.
+                    </p>
+
+                    <h3>4. Değişiklikler</h3>
+                    <p>
+                        Site yönetimi, kullanım koşullarını, site içeriğini ve
+                        hizmetleri önceden haber vermeksizin değiştirme hakkını
+                        saklı tutar.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

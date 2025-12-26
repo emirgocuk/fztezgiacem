@@ -1,0 +1,429 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+// Note: In a real SSR app we would check auth on server. For this static-first / spa-like admin, we rely on client-side check in Layout.
+// However, 'getStaticPaths' isn't needed here as we want client-side fetching for admin dashboard usually, or we build it at build time.
+// Since this is '/admin', using client:only or client-side fetching is best to avoid caching stale data in a static build.
+// WE WILL USE CLIENT SIDE FETCHING HERE inside the component script mostly, or PB SDK in frontmatter but be aware of build vs runtime.
+// Actually, for Admin in Astro Static, it works best as an SPA.
+---
+
+<AdminLayout title="Dashboard">
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold text-gray-800">Yazılar</h1>
+    <a
+      href="/admin/posts/new"
+      class="bg-[#1E3A1A] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#1E3A1A]/90 transition"
+    >
+      + Yeni Yazı
+    </a>
+  </div>
+
+  <!-- Mobile Card List -->
+  <div id="mobilePostsList" class="md:hidden space-y-4">
+    <div class="text-center py-12 text-gray-500">Yükleniyor...</div>
+  </div>
+
+  <!-- Desktop Table -->
+  <div
+    class="hidden md:block bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden"
+  >
+    <table class="w-full text-left border-collapse">
+      <thead class="bg-white border-b border-gray-100">
+        <tr>
+          <th
+            class="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider"
+            >Başlık</th
+          >
+          <th
+            class="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider"
+            >Kategori</th
+          >
+          <th
+            class="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider"
+            >Görüntül.</th
+          >
+          <th
+            class="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider"
+            >Tarih</th
+          >
+          <th
+            class="px-6 py-5 text-xs font-bold text-gray-400 uppercase tracking-wider text-right"
+            >İşlemler</th
+          >
+        </tr>
+      </thead>
+      <tbody id="desktopPostsList" class="divide-y divide-gray-50">
+        <!-- Rendered by Client JS -->
+        <tr>
+          <td colspan="4" class="px-6 py-12 text-center text-gray-400">
+            <div class="flex flex-col items-center justify-center gap-2">
+              <div
+                class="w-6 h-6 border-2 border-green-500 border-t-transparent rounded-full animate-spin"
+              >
+              </div>
+              <span class="text-xs">Yükleniyor...</span>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    import { pb, type Post } from "../../lib/pocketbase";
+
+    const desktopTbody = document.getElementById("desktopPostsList");
+    const mobileContainer = document.getElementById("mobilePostsList");
+    const featuredContainer = document.getElementById("featuredPostsList");
+
+    let allPosts: Post[] = [];
+
+    async function loadPosts() {
+      try {
+        // console.log("Fetching posts...");
+        // Fetch all posts
+        allPosts = await pb.collection("posts").getFullList<Post>();
+
+        // Client-side sort
+        allPosts.sort(
+          (a, b) =>
+            new Date(b.created).getTime() - new Date(a.created).getTime(),
+        );
+
+        renderAll();
+      } catch (err: any) {
+        console.error("Dashboard Fetch Error:", err);
+        if (desktopTbody)
+          desktopTbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-red-500">
+            Veriler yüklenirken hata oluştu.<br/>
+            <span class="text-xs text-gray-400">${err.message}</span>
+        </td></tr>`;
+      }
+    }
+
+    function renderAll() {
+      renderFeaturedSection();
+      renderDesktopTable();
+      renderMobileList();
+      bindEvents();
+    }
+
+    function renderFeaturedSection() {
+      if (!featuredContainer) return;
+
+      // Filter and Sort Featured Posts
+      const featuredPosts = allPosts
+        .filter((p) => p.is_featured)
+        .sort((a, b) => (a.featured_order || 0) - (b.featured_order || 0));
+
+      if (featuredPosts.length === 0) {
+        featuredContainer.innerHTML = `<div class="p-6 bg-gray-50 rounded-xl border border-dashed border-gray-200 text-center text-gray-400 text-sm">
+                Henüz öne çıkan yazı seçilmedi. Aşağıdaki listeden yıldız ikonuna tıklayarak ekleyebilirsiniz.
+            </div>`;
+        return;
+      }
+
+      featuredContainer.innerHTML = featuredPosts
+        .map(
+          (post, index) => `
+            <div class="flex items-center justify-between p-3 bg-orange-50/50 border border-orange-100 rounded-xl hover:bg-orange-50 transition">
+                <div class="flex items-center gap-4">
+                    <span class="text-orange-400 font-bold text-lg w-6 text-center">${index + 1}</span>
+                    <div>
+                        <div class="font-bold text-gray-800">${post.title}</div>
+                        <div class="text-xs text-gray-500">${post.category || "Genel"}</div>
+                    </div>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button class="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-orange-600 transition move-btn" data-id="${post.id}" data-dir="up" title="Yukarı Taşı" ${index === 0 ? 'disabled class="p-2 opacity-30 cursor-not-allowed"' : ""}>
+                        ⬆️
+                    </button>
+                    <button class="p-2 hover:bg-white rounded-lg text-gray-400 hover:text-orange-600 transition move-btn" data-id="${post.id}" data-dir="down" title="Aşağı Taşı" ${index === featuredPosts.length - 1 ? 'disabled class="p-2 opacity-30 cursor-not-allowed"' : ""}>
+                        ⬇️
+                    </button>
+                    <button class="p-2 hover:bg-white rounded-lg text-red-400 hover:text-red-600 transition feature-toggle-btn" data-id="${post.id}" title="Öne Çıkarmadan Kaldır">
+                        ❌
+                    </button>
+                </div>
+            </div>
+        `,
+        )
+        .join("");
+    }
+
+    function renderDesktopTable() {
+      if (!desktopTbody) return;
+
+      if (allPosts.length === 0) {
+        desktopTbody.innerHTML = `<tr><td colspan="5" class="px-6 py-8 text-center text-gray-400 text-sm">Henüz yazı bulunmamaktadır.</td></tr>`;
+        return;
+      }
+
+      desktopTbody.innerHTML = allPosts
+        .map(
+          (post) => `
+                <tr class="hover:bg-green-50/50 transition-colors group">
+                    <td class="px-6 py-4">
+                        <div class="font-semibold text-gray-900 line-clamp-1 group-hover:text-[#1E3A1A] transition-colors">${post.title}</div>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-50 text-[#1E3A1A]">
+                            ${post.category || "Genel"}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4">
+                        <span class="inline-flex items-center gap-1.5 text-sm font-medium text-gray-600 bg-gray-50 px-2.5 py-1 rounded-md border border-gray-100">
+                            <span>👁️</span>
+                            ${post.views || 0}
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 text-sm text-gray-500 whitespace-nowrap">
+                        ${(() => {
+                          try {
+                            const date = post.published_date || post.created;
+                            return new Date(date).toLocaleDateString("tr-TR", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            });
+                          } catch {
+                            return "-";
+                          }
+                        })()}
+                    </td>
+                    <td class="px-6 py-4 text-right whitespace-nowrap">
+                        <div class="flex items-center justify-end gap-3 text-sm">
+                             <a href="/admin/posts/edit?id=${post.id}" class="text-gray-500 hover:text-[#1E3A1A] font-medium transition-colors">Düzenle</a>
+                             <button class="text-gray-400 hover:text-red-600 transition-colors delete-btn" data-id="${post.id}" title="Sil">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                             </button>
+                        </div>
+                    </td>
+                </tr>
+            `,
+        )
+        .join("");
+    }
+
+    function renderMobileList() {
+      if (!mobileContainer) return;
+
+      if (allPosts.length === 0) {
+        mobileContainer.innerHTML = `<div class="p-8 text-center text-gray-400 text-sm">Henüz yazı bulunmamaktadır.</div>`;
+        return;
+      }
+
+      mobileContainer.innerHTML = allPosts
+        .map(
+          (post) => `
+            <div class="bg-white p-5 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-4">
+                <div class="flex justify-between items-start gap-4">
+                    <h3 class="font-bold text-gray-900 line-clamp-2 leading-snug">${post.title}</h3>
+                </div>
+                 <span class="self-start px-2 py-1 rounded-md text-xs font-bold bg-green-50 text-[#1E3A1A]">
+                        ${post.category || "Genel"}
+                 </span>
+                 <span class="self-start px-2 py-1 rounded-md text-xs font-bold bg-gray-50 text-gray-600 border border-gray-100 flex items-center gap-1">
+                        <span>👁️</span> ${post.views || 0}
+                 </span>
+                
+                <div class="flex items-center gap-2 text-xs text-gray-500">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    ${(() => {
+                      try {
+                        const date = post.published_date || post.created;
+                        return new Date(date).toLocaleDateString("tr-TR", {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        });
+                      } catch {
+                        return "-";
+                      }
+                    })()}
+                </div>
+
+                <div class="flex gap-3 pt-2 border-t border-gray-50 mt-1">
+                    <a href="/admin/posts/edit?id=${post.id}" class="flex-1 bg-gray-50 text-gray-700 hover:bg-gray-100 text-center py-2.5 rounded-xl text-sm font-bold transition-colors">
+                        Düzenle
+                    </a>
+                    <button class="w-12 flex items-center justify-center bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-colors delete-btn" data-id="${post.id}" title="Sil">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                    </button>
+                </div>
+            </div>
+            `,
+        )
+        .join("");
+    }
+
+    function bindEvents() {
+      // Delete Buttons
+      document.querySelectorAll(".delete-btn").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          const target = (e.target as HTMLElement).closest(
+            ".delete-btn",
+          ) as HTMLElement;
+          if (!target) return;
+
+          if (!confirm("Bu yazıyı silmek istediğinize emin misiniz?")) return;
+
+          const id = target.dataset.id;
+          if (id) {
+            try {
+              await pb.collection("posts").delete(id);
+              await loadPosts();
+            } catch (delErr: any) {
+              alert("Silme işlemi başarısız: " + delErr.message);
+            }
+          }
+        });
+      });
+
+      // Toggle Feature Buttons
+      document.querySelectorAll(".feature-toggle-btn").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          const target = (e.target as HTMLElement).closest(
+            ".feature-toggle-btn",
+          ) as HTMLElement;
+          if (!target) return;
+
+          const id = target.dataset.id;
+          const postIndex = allPosts.findIndex((p) => p.id === id);
+          if (postIndex === -1) return;
+
+          const post = allPosts[postIndex];
+          const oldStatus = post.is_featured;
+          const newStatus = !oldStatus;
+
+          // 1. OPTIMISTIC UPDATE (Local State)
+          post.is_featured = newStatus;
+
+          let data: any = { is_featured: newStatus };
+
+          if (newStatus) {
+            // Assign a new order (last + 1)
+            const maxOrder = allPosts
+              .filter((p) => p.is_featured)
+              .reduce((max, p) => Math.max(max, p.featured_order || 0), 0);
+            post.featured_order = maxOrder + 1;
+            data.featured_order = post.featured_order;
+          } else {
+            post.featured_order = 0;
+            data.featured_order = 0;
+          }
+
+          // 2. RENDER IMMEDIATELY
+          renderAll();
+
+          // 3. SEND TO SERVER
+          try {
+            const result = await pb.collection("posts").update(id!, data);
+
+            // CRITICAL CHECK: Did the DB actually accept the field?
+            if (result.is_featured !== newStatus) {
+              throw new Error(
+                "Veritabanı 'is_featured' alanını kaydetmedi. Şema eksik olabilir.",
+              );
+            }
+          } catch (err: any) {
+            console.error("Feature update failed:", err);
+
+            // Revert local state
+            post.is_featured = oldStatus;
+            post.featured_order = 0; // Simplified revert, usually enough
+
+            renderAll(); // Re-render to show revert
+
+            alert(
+              "Kayıt BAŞARISIZ! \n" +
+                "Hata: " +
+                err.message +
+                "\n\n" +
+                "LÜTFEN DİKKAT: PocketBase 'posts' koleksiyonuna 'is_featured' (Bool) ve 'featured_order' (Number) alanlarını eklediğinizden emin olun.",
+            );
+          }
+        });
+      });
+
+      // Move Buttons (Up/Down)
+      document.querySelectorAll(".move-btn").forEach((btn) => {
+        btn.addEventListener("click", async (e) => {
+          const target = (e.target as HTMLElement).closest(
+            ".move-btn",
+          ) as HTMLElement;
+          if (!target) return;
+
+          const id = target.dataset.id;
+          const direction = target.dataset.dir; // 'up' or 'down'
+
+          // Get featured list sorted from LOCAL state
+          const featured = allPosts
+            .filter((p) => p.is_featured)
+            .sort((a, b) => (a.featured_order || 0) - (b.featured_order || 0));
+
+          const index = featured.findIndex((p) => p.id === id);
+          if (index === -1) return;
+
+          const currentPost = featured[index];
+
+          if (direction === "up" && index > 0) {
+            const prevPost = featured[index - 1];
+            await swapOrders(currentPost, prevPost);
+          } else if (direction === "down" && index < featured.length - 1) {
+            const nextPost = featured[index + 1];
+            await swapOrders(currentPost, nextPost);
+          }
+        });
+      });
+    }
+
+    async function swapOrders(postA: Post, postB: Post) {
+      // 1. Local Optimistic Swap
+      const orderA = postA.featured_order || 0;
+      const orderB = postB.featured_order || 0;
+
+      // Swap values locally
+      postA.featured_order = orderB;
+      postB.featured_order = orderA;
+
+      // Re-render immediately
+      renderAll();
+
+      try {
+        // 2. Send to Server
+        // We use Promise.all to send both updates
+        const [updateA, updateB] = await Promise.all([
+          pb.collection("posts").update(postA.id, { featured_order: orderB }),
+          pb.collection("posts").update(postB.id, { featured_order: orderA }),
+        ]);
+
+        // 3. Verification
+        // Check if the server actually returned the new values
+        if (
+          updateA.featured_order !== orderB ||
+          updateB.featured_order !== orderA
+        ) {
+          throw new Error(
+            "Veritabanı sıralamayı kaydetmedi. 'featured_order' alanı eksik olabilir.",
+          );
+        }
+      } catch (err: any) {
+        console.error(err);
+
+        // Revert logic could be complex here, usually simplest to just reload from server
+        // But if server didn't save, reload will revert effectively.
+        alert(
+          "Sıralama Kaydedilemedi!\n" +
+            err.message +
+            "\nLütfen 'featured_order' (Number) alanının PocketBase'de ekli olduğunu kontrol edin.",
+        );
+
+        // Reload to ensure truth
+        await loadPosts();
+      }
+    }
+
+    loadPosts();
+  </script>
+</AdminLayout>

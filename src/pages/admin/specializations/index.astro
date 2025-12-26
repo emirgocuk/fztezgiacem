@@ -1,0 +1,131 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="Uzmanlık Alanları">
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-3xl font-bold">Uzmanlık Alanları</h1>
+        <a
+            href="/admin/specializations/new"
+            class="bg-[#1E3A1A] text-white px-4 py-2 rounded-lg hover:bg-[#1E3A1A]/90 transition"
+        >
+            + Yeni Ekle
+        </a>
+    </div>
+
+    <div
+        class="bg-white rounded-xl shadow-sm overflow-hidden min-h-[200px] relative"
+    >
+        <div
+            id="loading"
+            class="absolute inset-0 flex items-center justify-center bg-white z-10"
+        >
+            <div
+                class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#1E3A1A]"
+            >
+            </div>
+        </div>
+
+        <table class="w-full text-left" id="dataTable">
+            <thead class="bg-gray-50 border-b">
+                <tr>
+                    <th class="p-4 font-semibold text-gray-600">Başlık</th>
+                    <th class="p-4 font-semibold text-gray-600">Icon</th>
+                    <th class="p-4 font-semibold text-gray-600">Renk</th>
+                    <th class="p-4 font-semibold text-gray-600 text-right"
+                        >İşlemler</th
+                    >
+                </tr>
+            </thead>
+            <tbody class="divide-y" id="tableBody">
+                <!-- Rows will be populated by JS -->
+            </tbody>
+        </table>
+
+        <div id="emptyState" class="hidden p-8 text-center text-gray-500">
+            Henüz uzmanlık alanı eklenmemiş.
+        </div>
+    </div>
+
+    <script>
+        import { pb } from "../../../lib/pocketbase";
+
+        const tableBody = document.getElementById("tableBody");
+        const loading = document.getElementById("loading");
+        const emptyState = document.getElementById("emptyState");
+
+        async function loadData() {
+            loading?.classList.remove("hidden");
+            emptyState?.classList.add("hidden");
+            if (tableBody) tableBody.innerHTML = ""; // Clear existing rows
+
+            try {
+                // Fetch without sort first to inspect if strict mode issue
+                const records = await pb
+                    .collection("specializations")
+                    .getFullList();
+
+                if (records.length === 0) {
+                    emptyState?.classList.remove("hidden");
+                    return;
+                }
+
+                if (tableBody)
+                    tableBody.innerHTML = records
+                        .map(
+                            (record) => `
+                    <tr class="hover:bg-gray-50">
+                        <td class="p-4 font-medium">${record.title}</td>
+                        <td class="p-4 text-2xl">${record.icon}</td>
+                        <td class="p-4">
+                            <span class="inline-block w-4 h-4 rounded-full bg-${record.color}-500 border border-gray-200"></span>
+                            <span class="ml-2 capitalize text-sm text-gray-500">${record.color}</span>
+                        </td>
+                        <td class="p-4 text-right space-x-2">
+                            <a href="/admin/specializations/edit?id=${record.id}" class="text-blue-600 hover:underline">Düzenle</a>
+                            <button 
+                                data-id="${record.id}"
+                                class="delete-btn text-red-600 hover:underline"
+                            >
+                                Sil
+                            </button>
+                        </td>
+                    </tr>
+                `,
+                        )
+                        .join("");
+
+                // Re-attach listeners
+                attachListeners();
+            } catch (err) {
+                console.error("Veri yüklenemedi:", err);
+                alert("Veriler yüklenirken bir sorun oluştu.");
+            } finally {
+                loading?.classList.add("hidden");
+            }
+        }
+
+        function attachListeners() {
+            const deleteBtns = document.querySelectorAll(".delete-btn");
+            deleteBtns.forEach((btn) => {
+                btn.addEventListener("click", async () => {
+                    if (!confirm("Bu kaydı silmek istediğinize emin misiniz?"))
+                        return;
+
+                    const id = btn.getAttribute("data-id");
+                    if (!id) return;
+
+                    try {
+                        await pb.collection("specializations").delete(id);
+                        loadData(); // Reload list
+                    } catch (err) {
+                        alert("Silme işlemi başarısız!");
+                        console.error(err);
+                    }
+                });
+            });
+        }
+
+        loadData();
+    </script>
+</AdminLayout>

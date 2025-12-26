@@ -1,0 +1,508 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pb, type Post, getPbImageURL } from "../../lib/pocketbase";
+import { Image } from "astro:assets";
+
+const title = "Blog | Sağlık ve Rehabilitasyon Rehberi";
+
+// Fetch all posts sorted by date
+let posts: Post[] = [];
+try {
+  posts = await pb.collection("posts").getFullList<Post>({
+    sort: "-published_date",
+  });
+} catch (e) {
+  console.error("Error fetching blog posts:", e);
+}
+
+// Extract unique categories
+const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
+---
+
+<BaseLayout
+  title={title}
+  description="Fizyoterapi, egzersiz ve sağlıklı yaşam üzerine güncel makaleler."
+>
+  <section
+    class="pt-28 pb-20 relative overflow-hidden bg-gradient-to-b from-orange-50/50 to-white min-h-screen"
+  >
+    <!-- Decorative background elements -->
+    <div
+      class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+    >
+      <div
+        class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
+      >
+      </div>
+      <div
+        class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"
+      >
+      </div>
+    </div>
+    <div class="container mx-auto px-4">
+      {/* Interactive Toolbar */}
+      <div
+        class="flex justify-between items-center mb-8 max-w-3xl mx-auto relative z-20"
+      >
+        <div class="flex items-center gap-4">
+          {/* Filter Trigger */}
+          <div class="relative">
+            <button
+              id="filterBtn"
+              class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full text-gray-600 hover:text-[#1E3A1A] hover:border-[#1E3A1A] transition-all shadow-sm group"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="18"
+                height="18"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                class="group-hover:scale-110 transition-transform"
+                ><line x1="4" x2="20" y1="21" y2="21"></line><line
+                  x1="4"
+                  x2="20"
+                  y1="3"
+                  y2="3"></line><line x1="4" x2="20" y1="12" y2="12"
+                ></line><line x1="4" x2="8" y1="12" y2="8"></line><line
+                  x1="4"
+                  x2="8"
+                  y1="12"
+                  y2="16"></line><line x1="20" x2="16" y1="12" y2="8"
+                ></line><line x1="20" x2="16" y1="12" y2="16"></line></svg
+              >
+              <span class="font-medium text-sm">Filtrele</span>
+            </button>
+
+            {/* Filter Dropdown */}
+            <div
+              id="filterDropdown"
+              class="hidden absolute top-full left-0 mt-3 w-64 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-xl p-4 z-30 origin-top-left transition-all animate-in fade-in slide-in-from-top-2"
+            >
+              <div class="flex items-center justify-between mb-3 px-1">
+                <h3
+                  class="text-xs font-bold text-gray-400 uppercase tracking-wider"
+                >
+                  Konular
+                </h3>
+                <div class="flex items-center gap-3">
+                  <button
+                    id="clearFiltersBtn"
+                    class="text-xs font-medium text-red-500 hover:text-red-600 flex items-center gap-1 transition-colors group/clear"
+                    title="Filtreleri Sıfırla"
+                  >
+                    <span>Temizle</span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="12"
+                      height="12"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      class="group-hover/clear:rotate-180 transition-transform"
+                      ><path
+                        d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"
+                      ></path></svg
+                    >
+                  </button>
+                  <div class="w-px h-3 bg-gray-200"></div>
+                  <button
+                    id="closeFilter"
+                    class="text-gray-400 hover:text-red-500"
+                    ><svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="14"
+                      height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="currentColor"
+                      stroke-width="2"
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      ><line x1="18" x2="6" y1="6" y2="18"></line><line
+                        x1="6"
+                        x2="18"
+                        y1="6"
+                        y2="18"></line></svg
+                    ></button
+                  >
+                </div>
+              </div>
+              <div class="flex flex-col gap-1">
+                {
+                  categories.map((cat) => (
+                    <button
+                      class="category-btn text-sm px-3 py-2 rounded-xl text-left transition-colors flex items-center justify-between group hover:bg-gray-50 text-gray-600"
+                      data-category={cat}
+                    >
+                      <span class="font-medium group-hover:text-[#1E3A1A] transition-colors">
+                        {cat}
+                      </span>
+                    </button>
+                  ))
+                }
+              </div>
+            </div>
+          </div>
+
+          {/* Total Count - Left aligned next to filter */}
+          <span
+            id="totalPostsCount"
+            class="text-slate-400 font-medium text-xs md:text-sm"
+          >
+            Toplam <strong>{posts.length}</strong> yazı
+          </span>
+        </div>
+
+        {/* Expandable Search */}
+        <div class="relative z-20">
+          <div class="relative w-10 h-10">
+            <div
+              id="searchContainer"
+              class="absolute right-0 top-0 flex items-center bg-white border border-gray-200 rounded-full shadow-sm overflow-hidden transition-none md:transition-[width] md:duration-200 md:ease-out md:will-change-[width] transform-gpu w-10 hover:w-64 focus-within:w-64 focus-within:border-[#1E3A1A]"
+            >
+              <label
+                for="searchInput"
+                class="p-2.5 text-gray-500 hover:text-[#1E3A1A] cursor-pointer flex-shrink-0"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="18"
+                  height="18"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  ><circle cx="11" cy="11" r="8"></circle><line
+                    x1="21"
+                    x2="16.65"
+                    y1="21"
+                    y2="16.65"></line></svg
+                >
+              </label>
+              <input
+                id="searchInput"
+                type="text"
+                placeholder="Blogda ara..."
+                class="w-full bg-transparent border-none focus:ring-0 text-sm px-2 text-gray-700 placeholder-gray-400 h-10 outline-none"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <script>
+        document.addEventListener("DOMContentLoaded", () => {
+          const filterBtn = document.getElementById("filterBtn");
+          const filterDropdown = document.getElementById("filterDropdown");
+          const closeFilter = document.getElementById("closeFilter");
+          const clearFiltersBtn = document.getElementById("clearFiltersBtn");
+          const categoryBtns = document.querySelectorAll(".category-btn");
+          const searchInput = document.getElementById(
+            "searchInput",
+          ) as HTMLInputElement | null;
+          const totalPostsCountEl = document.getElementById("totalPostsCount");
+
+          let currentPage = 1;
+          const itemsPerPage = 10;
+          let visibleCards: HTMLElement[] = []; // List of currently matching card elements
+
+          // Initialize
+          const allCards = Array.from(
+            document.querySelectorAll(".blog-card"),
+          ) as HTMLElement[];
+          visibleCards = allCards; // Start with all visible
+
+          function updatePagination() {
+            const totalItems = visibleCards.length;
+            const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+            // Validate current page
+            if (currentPage > totalPages) currentPage = totalPages || 1;
+            if (currentPage < 1) currentPage = 1;
+
+            // Update Total Count Text
+            if (totalPostsCountEl) {
+              totalPostsCountEl.innerHTML = `Toplam <strong>${totalItems}</strong> yazı`;
+            }
+
+            // Hide all first
+            allCards.forEach((card) => (card.style.display = "none"));
+
+            // Show slice of visibleCards
+            const start = (currentPage - 1) * itemsPerPage;
+            const end = start + itemsPerPage;
+            const chunk = visibleCards.slice(start, end);
+
+            chunk.forEach((card) => (card.style.display = "block"));
+
+            renderPaginationControls(totalPages);
+          }
+
+          function renderPaginationControls(totalPages: number) {
+            const containerId = "paginationControls";
+            let container = document.getElementById(containerId);
+
+            if (!container) {
+              // Create container if missing
+              container = document.createElement("div");
+              container.id = containerId;
+              container.className =
+                "flex justify-center items-center gap-4 mt-12";
+              const grid = document.querySelector(".grid");
+              if (grid) grid.after(container);
+            }
+
+            if (container) container.innerHTML = "";
+
+            if (totalPages <= 1) return; // No controls needed
+
+            // Prev Button
+            const prevBtn = document.createElement("button");
+            prevBtn.innerText = "← Önceki";
+            prevBtn.className = `px-4 py-2 rounded-full font-medium transition ${currentPage === 1 ? "text-gray-300 cursor-not-allowed" : "text-slate-600 hover:bg-orange-50 hover:text-orange-500"}`;
+            prevBtn.disabled = currentPage === 1;
+            prevBtn.onclick = () => {
+              if (currentPage > 1) {
+                currentPage--;
+                updatePagination();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            };
+            container?.appendChild(prevBtn);
+
+            // Page Info
+            const info = document.createElement("span");
+            info.className = "text-slate-500 font-medium text-sm";
+            info.innerText = `Sayfa ${currentPage} / ${totalPages}`;
+            container?.appendChild(info);
+
+            // Next Button
+            const nextBtn = document.createElement("button");
+            nextBtn.innerText = "Sonraki →";
+            nextBtn.className = `px-4 py-2 rounded-full font-medium transition ${currentPage === totalPages ? "text-gray-300 cursor-not-allowed" : "text-slate-600 hover:bg-orange-50 hover:text-orange-500"}`;
+            nextBtn.disabled = currentPage === totalPages;
+            nextBtn.onclick = () => {
+              if (currentPage < totalPages) {
+                currentPage++;
+                updatePagination();
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            };
+            container?.appendChild(nextBtn);
+          }
+
+          // Search Logic
+          const handleSearch = (e: Event) => {
+            const target = e.target as HTMLInputElement;
+            const val = target.value.toLowerCase();
+            applyFilters(val);
+          };
+          searchInput?.addEventListener("input", handleSearch);
+
+          // Combined Filter Logic
+          const applyFilters = (searchTerm: string | null = null) => {
+            // 1. Determine active categories
+            const activeCats = Array.from(
+              document.querySelectorAll(".category-btn.bg-green-50"),
+            ).map((btn) => btn.getAttribute("data-category"));
+
+            // 2. Determine search term (use passed or current value)
+            const currentSearch =
+              searchTerm !== null
+                ? searchTerm
+                : searchInput
+                  ? searchInput.value.toLowerCase()
+                  : "";
+
+            // 3. Filter the list
+            visibleCards = allCards.filter((card) => {
+              const text = card.innerText.toLowerCase();
+              const matchesSearch = text.includes(currentSearch);
+
+              let matchesCat = false;
+              if (activeCats.length === 0) {
+                matchesCat = true;
+              } else {
+                for (const cat of activeCats) {
+                  if (
+                    card.classList.contains(`cat-${cat?.replace(/ /g, "-")}`)
+                  ) {
+                    matchesCat = true;
+                    break;
+                  }
+                }
+              }
+              return matchesSearch && matchesCat;
+            });
+
+            // 4. Reset to page 1 and update UI
+            currentPage = 1;
+            updatePagination();
+          };
+
+          // Toggle Filter Menu
+          filterBtn?.addEventListener("click", (e) => {
+            e.stopPropagation();
+            filterDropdown?.classList.toggle("hidden");
+          });
+
+          closeFilter?.addEventListener("click", () => {
+            filterDropdown?.classList.add("hidden");
+          });
+
+          // Clear Filters
+          clearFiltersBtn?.addEventListener("click", () => {
+            categoryBtns.forEach((btn) => deselect(btn as HTMLButtonElement));
+            applyFilters();
+          });
+
+          // Click Outside
+          document.addEventListener("click", (e) => {
+            if (
+              filterDropdown &&
+              !filterDropdown.classList.contains("hidden")
+            ) {
+              const target = e.target as Node;
+              if (
+                !filterDropdown.contains(target) &&
+                filterBtn &&
+                !filterBtn.contains(target)
+              ) {
+                filterDropdown.classList.add("hidden");
+              }
+            }
+          });
+
+          // Category Selection
+          categoryBtns.forEach((btn) => {
+            btn.addEventListener("click", (e) => {
+              const btnEl = e.currentTarget as HTMLButtonElement;
+              if (btnEl.classList.contains("bg-green-50")) {
+                deselect(btnEl);
+              } else {
+                select(btnEl);
+              }
+              applyFilters();
+            });
+          });
+
+          function select(btn: HTMLButtonElement) {
+            btn.classList.remove("text-gray-600");
+            btn.classList.add("bg-green-50", "text-green-900", "font-bold");
+            if (!btn.querySelector(".check-icon")) {
+              const check = document.createElement("span");
+              check.className = "text-xs text-green-900 check-icon";
+              check.innerText = "✓";
+              btn.appendChild(check);
+            }
+          }
+
+          function deselect(btn: HTMLButtonElement) {
+            btn.classList.remove("bg-green-50", "text-green-900", "font-bold");
+            btn.classList.add("text-gray-600");
+            btn.querySelector(".check-icon")?.remove();
+          }
+
+          // Initial Render
+          updatePagination();
+        });
+      </script>
+
+      <div class="grid grid-cols-1 gap-12 max-w-3xl mx-auto">
+        {
+          posts.map((post) => (
+            <article
+              class={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 blog-card h-full flex flex-col cat-${post.category?.replace(/ /g, "-")}`}
+            >
+              <a href={`/blog/${post.slug}`} class="flex flex-col h-full">
+                <div class="block aspect-video bg-gray-200 overflow-hidden relative">
+                  {post.image ? (
+                    <Image
+                      src={getPbImageURL(
+                        post.collectionId,
+                        post.id,
+                        post.image,
+                      )}
+                      alt={post.title}
+                      width={800}
+                      height={450}
+                      class="w-full h-full object-cover group-hover:scale-105 transition duration-700"
+                    />
+                  ) : (
+                    <div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">
+                      Görsel Yok
+                    </div>
+                  )}
+                </div>
+                <div class="p-8 flex flex-col flex-grow">
+                  <div class="mb-4">
+                    <span class="inline-block text-xs font-bold text-[#1E3A1A] bg-green-50 px-3 py-1 rounded-full">
+                      {post.category}
+                    </span>
+                  </div>
+                  <h3 class="text-xl md:text-2xl font-bold mb-3 text-slate-800 group-hover:text-[#FF8A65] transition-colors">
+                    {post.title}
+                  </h3>
+                  <p class="text-gray-600 text-base line-clamp-3 mb-6 flex-grow">
+                    {post.summary}
+                  </p>
+                  <div class="flex items-center justify-between text-sm text-gray-400 mt-auto pt-4 border-t border-gray-50">
+                    <span>
+                      {new Date(post.published_date).toLocaleDateString(
+                        "tr-TR",
+                        {
+                          day: "numeric",
+                          month: "long",
+                          year: "numeric",
+                        },
+                      )}
+                    </span>
+                    <span class="flex items-center gap-1">
+                      {Math.ceil(
+                        (post.content?.split(/\s+/).length || 0) / 200,
+                      )}{" "}
+                      dk okuma
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="16"
+                        height="16"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="w-4 h-4 group-hover:translate-x-1 transition-transform"
+                      >
+                        <>
+                          <path d="M5 12h14" />
+                          <path d="m12 5 7 7-7 7" />
+                        </>
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          ))
+        }
+        {
+          posts.length === 0 && (
+            <p class="col-span-full text-center text-gray-500">
+              Henüz yazı bulunmamaktadır.
+            </p>
+          )
+        }
+      </div>
+    </div>
+  </section>
+</BaseLayout>

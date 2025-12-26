@@ -1,0 +1,121 @@
+---
+const areas = [
+    {
+        id: "otizm",
+        title: "Otizm",
+        desc: "Duyusal işlemleme farklılıkları ve sosyal katılım üzerine destekleyici yaklaşımlar.",
+        icon: "🧩",
+        image: "https://images.unsplash.com/photo-1606092195730-5d7b9af1ef4d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+        color: "bg-orange-100",
+        borderColor: "border-orange-200",
+        textColor: "text-orange-600",
+    },
+    {
+        id: "hiperaktivite",
+        title: "Hiperaktivite",
+        desc: "Hareket arayışını organize ederek dikkat ve regülasyon becerilerini geliştiriyoruz.",
+        icon: "⚡",
+        image: "https://images.unsplash.com/photo-1596464716127-f9a8625579c3?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+        color: "bg-yellow-100",
+        borderColor: "border-yellow-200",
+        textColor: "text-yellow-600",
+    },
+    {
+        id: "duyu-butunleme",
+        title: "Duyu Bütünleme",
+        desc: "Günlük yaşamı etkileyen duyusal hassasiyetler için bütüncül çözümler.",
+        icon: "🎨",
+        image: "https://images.unsplash.com/photo-1502781252888-9143ba7f323b?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+        color: "bg-blue-100",
+        borderColor: "border-blue-200",
+        textColor: "text-blue-600",
+    },
+    {
+        id: "beslenme",
+        title: "Beslenme Sorunları",
+        desc: "Seçici yeme ve yeme reddi gibi durumlarda duyusal temelli müdahaleler.",
+        icon: "🍎",
+        image: "https://images.unsplash.com/photo-1566415783590-db58e82d73ff?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+        color: "bg-green-100",
+        borderColor: "border-green-200",
+        textColor: "text-green-600",
+    },
+    {
+        id: "noromotor",
+        title: "Gelişim Geriliği",
+        desc: "Nöromotor basamakları destekleyerek kaba ve ince motor becerileri artırıyoruz.",
+        icon: "🐢",
+        image: "https://images.unsplash.com/photo-1541963463532-d68292c34b19?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+        color: "bg-purple-100",
+        borderColor: "border-purple-200",
+        textColor: "text-purple-600",
+    },
+];
+---
+
+<section class="py-16 bg-white relative overflow-hidden">
+    <!-- Decorative Background Blob -->
+    <div
+        class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+    >
+        <div
+            class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-slate-50 rounded-full blur-3xl opacity-60"
+        >
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 max-w-6xl">
+        <div class="text-center mb-12">
+            <h2 class="text-3xl md:text-5xl font-bold text-[#FF8A65] mb-4">
+                Çalışma Alanlarım
+            </h2>
+            <p class="text-lg text-slate-500 max-w-2xl mx-auto">
+                Çocuğunuzun ihtiyaçlarına özel, sevgi dolu ve bilimsel
+                yaklaşımlar.
+            </p>
+        </div>
+
+        <div
+            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 justify-center"
+        >
+            {
+                areas.map((area) => (
+                    <div
+                        class={`relative flex flex-col rounded-3xl overflow-hidden border ${area.borderColor} bg-white shadow-sm hover:shadow-lg transition-all duration-300 group`}
+                    >
+                        <div class="relative h-48 overflow-hidden">
+                            <div
+                                class={`absolute inset-0 ${area.color} opacity-20 z-10`}
+                            />
+                            <img
+                                src={area.image}
+                                alt={area.title}
+                                class="w-full h-full object-cover transform group-hover:scale-110 transition-transform duration-700"
+                            />
+                            <div class="absolute top-4 right-4 bg-white/90 backdrop-blur-sm p-2 rounded-full shadow-sm z-20 text-2xl">
+                                {area.icon}
+                            </div>
+                        </div>
+
+                        <div class="p-6 flex flex-col flex-1">
+                            <h3
+                                class={`text-xl font-bold mb-2 ${area.textColor}`}
+                            >
+                                {area.title}
+                            </h3>
+                            <p class="text-slate-500 text-sm mb-6 flex-1">
+                                {area.desc}
+                            </p>
+                            <a
+                                href={`/uzmanlik-alanlarim#${area.id}`}
+                                class={`inline-flex items-center justify-center py-2.5 px-4 rounded-xl text-sm font-bold ${area.color} ${area.textColor} hover:brightness-95 transition-colors`}
+                            >
+                                Devamını Oku
+                            </a>
+                        </div>
+                    </div>
+                ))
+            }
+        </div>
+    </div>
+</section>

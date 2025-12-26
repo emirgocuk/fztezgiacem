@@ -1,0 +1,84 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const title = "Çerez Politikası";
+const description = "Web sitemizde kullanılan çerezler hakkında bilgilendirme.";
+---
+
+<BaseLayout title={title} description={description}>
+    <!-- Full Width Background Wrapper -->
+    <div
+        class="w-full min-h-screen relative overflow-hidden bg-gradient-to-b from-orange-50/50 to-orange-50"
+    >
+        <!-- Decorative background elements -->
+        <div
+            class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+        >
+            <div
+                class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
+            >
+            </div>
+            <div
+                class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"
+            >
+            </div>
+            <div
+                class="absolute top-[40%] right-[20%] w-64 h-64 bg-green-200/30 rounded-full blur-3xl animate-blob animation-delay-4000"
+            >
+            </div>
+        </div>
+
+        <div class="relative z-10 pt-36 pb-20 px-6">
+            <div class="container mx-auto max-w-4xl">
+                <h1
+                    class="text-4xl font-bold text-[#FF8A65] mb-8 text-center md:text-left"
+                >
+                    {title}
+                </h1>
+
+                <div
+                    class="bg-white/80 p-8 md:p-12 rounded-3xl shadow-lg border border-orange-100 backdrop-blur-sm prose prose-slate max-w-none"
+                >
+                    <p>
+                        Fizyoterapist Ezgi Acem olarak, web sitemizden en
+                        verimli şekilde faydalanabilmeniz ve kullanıcı
+                        deneyiminizi geliştirebilmek amacıyla Çerez (Cookie)
+                        kullanıyoruz.
+                    </p>
+
+                    <h3>1. Çerez (Cookie) Nedir?</h3>
+                    <p>
+                        Çerezler, ziyaret ettiğiniz internet siteleri tarafından
+                        tarayıcılar aracılığıyla cihazınıza veya ağ sunucusuna
+                        depolanan küçük metin dosyalarıdır.
+                    </p>
+
+                    <h3>2. Hangi Tür Çerezleri Kullanıyoruz?</h3>
+                    <ul>
+                        <li>
+                            <strong>Zorunlu Çerezler:</strong> Web sitesinin doğru
+                            çalışması için gerekli olan teknik çerezlerdir.
+                        </li>
+                        <li>
+                            <strong>Analitik Çerezler:</strong> Ziyaretçi sayısını
+                            ve trafik kaynaklarını ölçerek sitemizin performansını
+                            değerlendirmemize yardımcı olan çerezlerdir (Örn. Google
+                            Analytics). Bu veriler anonim olarak işlenir.
+                        </li>
+                    </ul>
+
+                    <h3>3. Çerezleri Nasıl Yönetebilirsiniz?</h3>
+                    <p>
+                        İnternet tarayıcınızın ayarlarını değiştirerek çerezlere
+                        ilişkin tercihlerinizi kişiselleştirme imkanına
+                        sahipsiniz. Tarayıcınızın "Ayarlar" veya "Gizlilik"
+                        bölümünden çerezleri silebilir veya engelleyebilirsiniz.
+                        Ancak, çerezleri devre dışı bırakmanız durumunda
+                        sitemizin bazı fonksiyonlarının çalışmayabileceğini
+                        hatırlatmak isteriz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

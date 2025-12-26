@@ -1,0 +1,164 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pb } from "../../lib/pocketbase";
+
+// Generate static paths for all specializations
+export const prerender = true;
+
+export async function getStaticPaths() {
+    console.log("Building Specialization Paths...");
+    try {
+        const records = await pb
+            .collection("specializations")
+            .getFullList({ requestKey: null });
+        return records.map((record) => {
+            // Create paths for both ID and Slug to be safe, or just prefer Slug if available
+            // Here we render the page for the unique identifier used in the URL
+            const paramId = record.slug || record.id;
+            return {
+                params: { id: paramId },
+                props: { record },
+            };
+        });
+    } catch (e) {
+        console.error("Error fetching specializations:", e);
+        return [];
+    }
+}
+
+const { record } = Astro.props;
+
+if (!record) {
+    return Astro.redirect("/404");
+}
+
+const description = record.summary || "Ezgi Acem - Uzmanlık Alanı";
+---
+
+<BaseLayout
+    title={`${record.title} - Fzt. Ezgi Acem`}
+    description={description}
+>
+    <section
+        class="min-h-screen pt-36 pb-24 px-6 md:px-12 flex flex-col items-center relative overflow-hidden bg-gradient-to-b from-orange-50/50 to-white"
+    >
+        <!-- Decorative background elements -->
+        <div
+            class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+        >
+            <div
+                class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
+            >
+            </div>
+            <div
+                class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"
+            >
+            </div>
+        </div>
+        <div class="max-w-4xl w-full animate-fadeIn">
+            {/* Header / Image Section */}
+            <div
+                class="relative w-full h-64 md:h-96 rounded-3xl overflow-hidden shadow-2xl mb-12 group"
+            >
+                <img
+                    src={record.image}
+                    alt={record.title}
+                    class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div
+                    class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent flex items-end p-8"
+                >
+                    <h1
+                        class="text-4xl md:text-6xl font-black text-white drop-shadow-md"
+                    >
+                        {record.title}
+                    </h1>
+                </div>
+                <a
+                    href="/uzmanlik-alanlarim"
+                    class="absolute top-6 left-6 bg-white/20 backdrop-blur-md text-white px-4 py-2 rounded-full font-bold hover:bg-white/30 transition flex items-center gap-2"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><line x1="19" y1="12" x2="5" y2="12"></line><polyline
+                            points="12 19 5 12 12 5"></polyline></svg
+                    >
+                    Geri Dön
+                </a>
+            </div>
+
+            {/* Content Section */}
+            <article
+                class="prose prose-lg md:prose-xl max-w-none text-[#1E3A1A]"
+            >
+                <div
+                    class="bg-orange-50 p-6 rounded-2xl border-l-4 border-orange-400 mb-8 italic text-gray-700"
+                >
+                    {record.summary}
+                </div>
+
+                <div set:html={record.details} />
+            </article>
+
+            {/* Bottom Navigation */}
+            <div
+                class="mt-16 pt-8 border-t border-gray-100 flex justify-center"
+            >
+                <a
+                    href="/uzmanlik-alanlarim"
+                    class="inline-flex items-center gap-2 text-[#1E3A1A] font-bold hover:text-orange-500 transition"
+                >
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        width="20"
+                        height="20"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        ><path
+                            d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"
+                        ></path><polyline points="9 22 9 12 15 12 15 22"
+                        ></polyline></svg
+                    >
+                    Diğer Uzmanlık Alanlarını İncele
+                </a>
+            </div>
+        </div>
+    </section>
+</BaseLayout>
+
+<style>
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .animate-fadeIn {
+        animation: fadeIn 0.8s ease-out forwards;
+    }
+
+    /* Mobile Interaction Fixes */
+    @media (max-width: 768px) {
+        .animate-fadeIn {
+            /* Simpler animation for mobile to prevent jitter */
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    }
+</style>

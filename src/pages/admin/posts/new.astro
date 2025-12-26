@@ -1,0 +1,388 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import TiptapEditor from "../../../components/admin/TiptapEditor.jsx";
+import ImageUploadWithCrop from "../../../components/admin/ImageUploadWithCrop.jsx";
+
+const { id } = Astro.params;
+const isEdit = !!id;
+const title = isEdit ? "Yazıyı Düzenle" : "Yeni Yazı Ekle";
+
+// Note: For [id].astro we need getStaticPaths if we want to pre-render.
+// But internal admin pages are better as SPA/Client-only in Astro if the content is dynamic and private.
+// Astro supports 'output: hybrid' or 'server'. But we are on 'static' default.
+// To make this work dynamically without rebuilding for every admin page visit, we should use a CLIENT SIDE ROUTER or just rely on a catch-all route if possible, OR just use query params?
+// Actually, in Static mode, [id].astro REQUIRES getStaticPaths.
+// CHANGE STRATEGY: Use `src/pages/admin/editor.astro` with query param `?id=` for simplicity in Static mode without full re-builds for admin panel structure.
+// OR use `src/pages/admin/posts/[...id].astro` but again requires static paths.
+// LET'S USE: `src/pages/admin/posts/new.astro` and `src/pages/admin/posts/edit.astro` (taking ID from URL param via JS).
+
+// This file will represent the EDITOR generic structure, we'll save it as 'new.astro' first.
+---
+
+<AdminLayout title={title}>
+    <div class="max-w-4xl mx-auto">
+        <h1 class="text-2xl font-bold mb-6">{title}</h1>
+
+        <form
+            id="postForm"
+            class="space-y-6 bg-white p-8 rounded-xl shadow-sm border border-gray-100"
+        >
+            <!-- Developer Tools -->
+            <div id="devTools" class="hidden justify-end mb-4">
+                <button
+                    type="button"
+                    id="fillTestDataBtn"
+                    class="bg-purple-600 text-white px-4 py-2 rounded-lg text-sm hover:bg-purple-700 transition flex items-center gap-2"
+                >
+                    <span>🧪 Test Verisi Doldur</span>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Başlık</label
+                        >
+                        <input
+                            type="text"
+                            name="title"
+                            required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                            placeholder="Yazı başlığı"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Slug (URL)</label
+                        >
+                        <input
+                            type="text"
+                            name="slug"
+                            class="w-full px-4 py-2 border rounded-lg bg-gray-50 text-gray-500"
+                            placeholder="Otomatik oluşturulur"
+                            readonly
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Kategori</label
+                        >
+                        <select
+                            name="category"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                        >
+                            <option value="Genel">Genel</option>
+                            <option value="Manuel Terapi">Manuel Terapi</option>
+                            <option value="DEHB">DEHB</option>
+                            <option value="Egzersiz">Egzersiz</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <ImageUploadWithCrop client:load />
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Özet</label
+                        >
+                        <textarea
+                            name="summary"
+                            rows="4"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none resize-none"
+                            placeholder="Kısa açıklama..."></textarea>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Yayın Tarihi</label
+                        >
+                        <input
+                            type="date"
+                            name="published_date"
+                            required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2"
+                        >İçerik</label
+                    >
+                    <TiptapEditor
+                        client:only="react"
+                        content=""
+                        targetInputId="contentHidden"
+                    />
+                    <!-- Removed 'required' attribute to prevent browser validation on invisible field -->
+                    <input
+                        type="text"
+                        name="content"
+                        id="contentHidden"
+                        class="opacity-0 h-1 pointer-events-none"
+                    />
+                </div>
+
+                <div class="flex justify-end pt-4">
+                    <button
+                        type="submit"
+                        id="submitBtn"
+                        class="bg-[#1E3A1A] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#1E3A1A]/90 transition"
+                    >
+                        Kaydet
+                    </button>
+                </div>
+            </div>
+        </form>
+
+        <script>
+            import { pb } from "../../../lib/pocketbase";
+            import { uploadToImgBB } from "../../../lib/imgbb";
+
+            // Turkish Character Map for Slug
+            const trMap: { [key: string]: string } = {
+                ç: "c",
+                ğ: "g",
+                ş: "s",
+                ü: "u",
+                ö: "o",
+                ı: "i",
+                Ç: "c",
+                Ğ: "g",
+                Ş: "s",
+                Ü: "u",
+                Ö: "o",
+                İ: "i",
+            };
+
+            // Slug Generator
+            document
+                .querySelector('input[name="title"]')
+                ?.addEventListener("input", (e) => {
+                    const val = (e.target as HTMLInputElement).value;
+
+                    let slug = val
+                        .split("")
+                        .map((c) => trMap[c] || c)
+                        .join("")
+                        .toLowerCase();
+                    slug = slug
+                        .replace(/[^a-z0-9\s-]/g, "") // Remove non-alphanumeric chars (except spaces and hyphens)
+                        .replace(/\s+/g, "-") // Replace spaces with hyphens
+                        .replace(/-+/g, "-"); // Remove duplicate hyphens
+
+                    const slugInput = document.querySelector(
+                        'input[name="slug"]',
+                    ) as HTMLInputElement;
+                    if (slugInput) slugInput.value = slug;
+                });
+
+            // Form Submission
+            const form = document.getElementById("postForm") as HTMLFormElement;
+            form?.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                // Manual Content Validation
+                const contentInput = document.getElementById(
+                    "contentHidden",
+                ) as HTMLInputElement;
+                if (
+                    !contentInput ||
+                    !contentInput.value.trim() ||
+                    contentInput.value === "<p></p>"
+                ) {
+                    alert("Lütfen içerik alanını doldurun.");
+                    return;
+                }
+
+                const btn = document.getElementById(
+                    "submitBtn",
+                ) as HTMLButtonElement;
+                const originalText = btn.innerText;
+
+                try {
+                    btn.disabled = true;
+                    btn.innerText = "Yükleniyor...";
+
+                    const formData = new FormData(form);
+                    // Handle Cropped Image (Base64)
+                    const croppedBase64 = formData.get(
+                        "cropped_image",
+                    ) as string;
+                    let imageUrl = "";
+
+                    if (
+                        croppedBase64 &&
+                        croppedBase64.startsWith("data:image")
+                    ) {
+                        btn.innerText = "Görsel Yükleniyor...";
+                        const res = await fetch(croppedBase64);
+                        const blob = await res.blob();
+                        const file = new File([blob], "cover_image.jpg", {
+                            type: "image/jpeg",
+                        });
+                        imageUrl = await uploadToImgBB(file);
+                    }
+
+                    // Prepare PB Data
+                    // Prepare PB Data
+                    // Convert date to ISO string for PocketBase
+                    let pubDate = formData.get("published_date");
+
+                    // Tarih boşsa veya geçersizse undefined gönder (PB null kabul eder)
+                    let isoDate = "";
+                    if (pubDate) {
+                        const d = new Date(pubDate as string);
+                        if (!isNaN(d.getTime())) {
+                            isoDate = d.toISOString();
+                        }
+                    }
+
+                    const data = {
+                        title: formData.get("title"),
+                        slug: formData.get("slug"),
+                        category: formData.get("category"),
+                        summary: formData.get("summary"),
+                        published_date: isoDate || null, // Boşsa null gönder
+                        content: contentInput.value, // Tiptap content
+                        image: imageUrl,
+                    };
+
+                    console.log(
+                        "📤 Sending Data to PB (JSON):",
+                        JSON.stringify(data, null, 2),
+                    ); // Debug log full JSON
+
+                    await pb.collection("posts").create(data);
+                    alert("Yazı başarıyla oluşturuldu!");
+                    window.location.href = "/admin";
+                } catch (err: any) {
+                    console.error(err);
+                    let msg = err.message;
+                    if (err.response?.data) {
+                        // Format PocketBase validation errors (e.g. title: cannot be empty)
+                        msg +=
+                            "\n" +
+                            Object.entries(err.response.data)
+                                .map(
+                                    ([key, val]: [string, any]) =>
+                                        `• ${key}: ${val.message}`,
+                                )
+                                .join("\n");
+                    }
+                    alert("Hata Oluştu:\n" + msg);
+                } finally {
+                    btn.disabled = false;
+                    btn.innerText = originalText;
+                }
+            });
+            // Dev Mode Check & Test Data Generator
+            const isDevMode = localStorage.getItem("devMode") === "true";
+            if (isDevMode) {
+                document.getElementById("devTools")?.classList.remove("hidden");
+                document.getElementById("devTools")?.classList.add("flex");
+            }
+
+            document
+                .getElementById("fillTestDataBtn")
+                ?.addEventListener("click", () => {
+                    const titles = [
+                        "Bel Ağrısı İçin 5 Etkili Egzersiz",
+                        "Masa Başı Çalışanlar İçin Duruş Önerileri",
+                        "Skolyoz Tedavisinde Yeni Yaklaşımlar",
+                        "Spor Yaralanmalarından Korunma Yolları",
+                        "Manuel Terapi Nedir? Kimlere Uygulanır?",
+                        "Boyun Düzleşmesi ve Tedavisi",
+                        "Hamilelikte Bel Ağrısı ile Başa Çıkma",
+                    ];
+                    const categories = [
+                        "Genel",
+                        "Manuel Terapi",
+                        "DEHB",
+                        "Egzersiz",
+                    ];
+
+                    const randomTitle =
+                        titles[Math.floor(Math.random() * titles.length)];
+                    const randomCategory =
+                        categories[
+                            Math.floor(Math.random() * categories.length)
+                        ];
+
+                    // Lorem Ipsum
+                    const lorem = `
+            <h2>Giriş</h2>
+            <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+            <h3>Neden Önemli?</h3>
+            <p>Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            <ul>
+                <li>Önemli nokta 1</li>
+                <li>Önemli nokta 2</li>
+                <li>Önemli nokta 3</li>
+            </ul>
+            <blockquote>"Sağlık en büyük hazinedir." - Anonim</blockquote>
+            <p>Sonuç olarak, düzenli egzersiz ve doğru duruş hayat kalitesini artırır.</p>
+        `;
+
+                    // Fill Form
+                    (
+                        document.querySelector(
+                            'input[name="title"]',
+                        ) as HTMLInputElement
+                    ).value = randomTitle;
+                    (
+                        document.querySelector(
+                            'select[name="category"]',
+                        ) as HTMLSelectElement
+                    ).value = randomCategory;
+                    (
+                        document.querySelector(
+                            'textarea[name="summary"]',
+                        ) as HTMLTextAreaElement
+                    ).value =
+                        "Bu otomatik oluşturulmuş bir test özetidir. Lorem ipsum dolor sit amet.";
+                    (
+                        document.querySelector(
+                            'input[name="published_date"]',
+                        ) as HTMLInputElement
+                    ).value = new Date().toISOString().split("T")[0];
+
+                    // Trigger Slug Generation & Make Unique
+                    const slugInput = document.querySelector(
+                        'input[name="slug"]',
+                    ) as HTMLInputElement;
+                    document
+                        .querySelector('input[name="title"]')
+                        ?.dispatchEvent(new Event("input"));
+
+                    // Add current timestamp to slug to ensure uniqueness during testing
+                    setTimeout(() => {
+                        if (slugInput)
+                            slugInput.value =
+                                slugInput.value +
+                                "-" +
+                                Date.now().toString().slice(-4);
+                    }, 100);
+
+                    // Fill Editor via Custom Event
+                    window.dispatchEvent(
+                        new CustomEvent("set-tiptap-content", {
+                            detail: lorem,
+                        }),
+                    );
+                });
+        </script>
+    </div>
+</AdminLayout>

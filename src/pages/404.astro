@@ -1,0 +1,42 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+---
+
+<BaseLayout
+    title="Sayfa Bulunamadı - 404"
+    description="Aradığınız sayfa bulunamadı."
+>
+    <div
+        class="min-h-[70vh] flex flex-col items-center justify-center text-center px-4"
+    >
+        <div class="space-y-6 max-w-lg mx-auto">
+            <!-- Icon/Illustration -->
+            <div class="relative">
+                <span class="text-9xl font-bold text-gray-100 select-none"
+                    >404</span
+                >
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <span class="text-6xl">🤔</span>
+                </div>
+            </div>
+
+            <h1 class="text-3xl md:text-4xl font-bold text-[#1E3A1A]">
+                Ops! Sayfa Bulunamadı
+            </h1>
+
+            <p class="text-gray-600 text-lg">
+                Aradığınız sayfa silinmiş, taşınmış veya hiç var olmamış
+                olabilir.
+            </p>
+
+            <div class="pt-6">
+                <a
+                    href="/"
+                    class="inline-flex items-center gap-2 px-8 py-3 bg-[#1E3A1A] text-white rounded-full font-medium hover:bg-[#2d5527] transition-colors shadow-lg hover:shadow-xl transform hover:-translate-y-0.5 transition-all duration-200"
+                >
+                    <span>←</span> Ana Sayfaya Dön
+                </a>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

@@ -1,0 +1,320 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+import TiptapEditor from "../../../components/admin/TiptapEditor.jsx";
+import ImageUploadWithCrop from "../../../components/admin/ImageUploadWithCrop.jsx";
+
+const title = "Yazıyı Düzenle";
+---
+
+<AdminLayout title={title}>
+    <div class="max-w-4xl mx-auto">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-bold">{title}</h1>
+            <a
+                href="/admin"
+                class="text-gray-500 hover:text-gray-900 border px-3 py-1 rounded"
+                >← Geri</a
+            >
+        </div>
+
+        <div id="loadingState" class="text-center py-12">
+            <p class="text-gray-500">Yazı bilgileri yükleniyor...</p>
+        </div>
+
+        <form
+            id="postForm"
+            class="hidden space-y-6 bg-white p-8 rounded-xl shadow-sm border border-gray-100"
+        >
+            <input type="hidden" name="id" id="postId" />
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Başlık</label
+                        >
+                        <input
+                            type="text"
+                            name="title"
+                            required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                            placeholder="Yazı başlığı"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Slug (URL)</label
+                        >
+                        <input
+                            type="text"
+                            name="slug"
+                            class="w-full px-4 py-2 border rounded-lg bg-gray-50 text-gray-500"
+                            placeholder="Otomatik oluşturulur"
+                        />
+                    </div>
+
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Kategori</label
+                        >
+                        <select
+                            name="category"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                        >
+                            <option value="Genel">Genel</option>
+                            <option value="Manuel Terapi">Manuel Terapi</option>
+                            <option value="DEHB">DEHB</option>
+                            <option value="Egzersiz">Egzersiz</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <ImageUploadWithCrop client:load />
+                    </div>
+                </div>
+
+                <div class="space-y-4">
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Özet</label
+                        >
+                        <textarea
+                            name="summary"
+                            rows="4"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none resize-none"
+                            placeholder="Kısa açıklama..."></textarea>
+                    </div>
+                    <div>
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                            >Yayın Tarihi</label
+                        >
+                        <input
+                            type="date"
+                            name="published_date"
+                            required
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                        />
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >İçerik</label
+                >
+                <TiptapEditor
+                    client:only="react"
+                    content=""
+                    targetInputId="contentHidden"
+                />
+                <input
+                    type="text"
+                    name="content"
+                    id="contentHidden"
+                    class="opacity-0 h-1 pointer-events-none"
+                />
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button
+                    type="submit"
+                    id="submitBtn"
+                    class="bg-[#1E3A1A] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#1E3A1A]/90 transition"
+                >
+                    Güncelle
+                </button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        import { pb } from "../../../lib/pocketbase";
+        import { uploadToImgBB } from "../../../lib/imgbb";
+
+        // Turkish Character Map
+        const trMap: { [key: string]: string } = {
+            ç: "c",
+            ğ: "g",
+            ş: "s",
+            ü: "u",
+            ö: "o",
+            ı: "i",
+            Ç: "c",
+            Ğ: "g",
+            Ş: "s",
+            Ü: "u",
+            Ö: "o",
+            İ: "i",
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const postId = urlParams.get("id");
+        const form = document.getElementById("postForm") as HTMLFormElement;
+        const loadingState = document.getElementById("loadingState");
+        let post: any;
+
+        if (!postId) {
+            alert("Hata: Yazı ID bulunamadı.");
+            window.location.href = "/admin";
+        }
+
+        async function init() {
+            try {
+                if (!postId) return;
+                post = await pb.collection("posts").getOne(postId);
+
+                // Fill Form
+                (document.getElementById("postId") as HTMLInputElement).value =
+                    post.id;
+                (
+                    document.querySelector(
+                        'input[name="title"]',
+                    ) as HTMLInputElement
+                ).value = post.title;
+                (
+                    document.querySelector(
+                        'input[name="slug"]',
+                    ) as HTMLInputElement
+                ).value = post.slug;
+                (
+                    document.querySelector(
+                        'select[name="category"]',
+                    ) as HTMLSelectElement
+                ).value = post.category || "Genel";
+                (
+                    document.querySelector(
+                        'textarea[name="summary"]',
+                    ) as HTMLTextAreaElement
+                ).value = post.summary || "";
+
+                if (post.published_date) {
+                    (
+                        document.querySelector(
+                            'input[name="published_date"]',
+                        ) as HTMLInputElement
+                    ).value = new Date(post.published_date)
+                        .toISOString()
+                        .split("T")[0];
+                }
+
+                if (post.image) {
+                    const setImageInterval = setInterval(() => {
+                        window.dispatchEvent(
+                            new CustomEvent("set-initial-image", {
+                                detail: post.image,
+                            }),
+                        );
+                    }, 500);
+                    setTimeout(() => clearInterval(setImageInterval), 3000);
+                }
+
+                const content = post.content || "";
+                const setContentInterval = setInterval(() => {
+                    const event = new CustomEvent("set-tiptap-content", {
+                        detail: content,
+                    });
+                    window.dispatchEvent(event);
+                }, 500);
+
+                setTimeout(() => clearInterval(setContentInterval), 3000);
+                (
+                    document.getElementById("contentHidden") as HTMLInputElement
+                ).value = content;
+
+                loadingState?.classList.add("hidden");
+                form?.classList.remove("hidden");
+            } catch (err: any) {
+                alert("Yazı yüklenirken hata: " + err.message);
+                window.location.href = "/admin";
+            }
+        }
+
+        init();
+
+        document
+            .querySelector('input[name="title"]')
+            ?.addEventListener("input", (e) => {
+                const val = (e.target as HTMLInputElement).value;
+                let slug = val
+                    .split("")
+                    .map((c) => trMap[c] || c)
+                    .join("")
+                    .toLowerCase();
+                slug = slug
+                    .replace(/[^a-z0-9\s-]/g, "")
+                    .replace(/\s+/g, "-")
+                    .replace(/-+/g, "-");
+                const slugInput = document.querySelector(
+                    'input[name="slug"]',
+                ) as HTMLInputElement;
+                if (slugInput) slugInput.value = slug;
+            });
+
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById(
+                "submitBtn",
+            ) as HTMLButtonElement;
+            const originalText = btn.innerText;
+            const contentInput = document.getElementById(
+                "contentHidden",
+            ) as HTMLInputElement;
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "Güncelleniyor...";
+
+                const formData = new FormData(form);
+                let imageUrl = "";
+
+                const croppedBase64 = formData.get("cropped_image") as string;
+                if (croppedBase64 && croppedBase64.startsWith("data:image")) {
+                    btn.innerText = "Görsel Yükleniyor...";
+                    const res = await fetch(croppedBase64);
+                    const blob = await res.blob();
+                    const file = new File([blob], "cover_image.jpg", {
+                        type: "image/jpeg",
+                    });
+                    imageUrl = await uploadToImgBB(file);
+                }
+
+                let isoDate = "";
+                let pDate = formData.get("published_date");
+                if (pDate) {
+                    let d = new Date(pDate as string);
+                    if (!isNaN(d.getTime())) isoDate = d.toISOString();
+                }
+
+                const data: any = {
+                    title: formData.get("title"),
+                    slug: formData.get("slug"),
+                    category: formData.get("category"),
+                    summary: formData.get("summary"),
+                    published_date: isoDate || null,
+                    content: contentInput.value,
+                };
+                if (imageUrl) {
+                    data.image = imageUrl;
+                }
+
+                if (!postId) throw new Error("ID Missing");
+
+                await pb.collection("posts").update(postId, data);
+                alert("Güncelleme başarılı!");
+                window.location.href = "/admin";
+            } catch (err: any) {
+                console.error(err);
+                alert("Hata: " + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        });
+    </script>
+</AdminLayout>

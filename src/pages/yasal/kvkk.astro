@@ -1,0 +1,123 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+
+const title = "KVKK Aydınlatma Metni";
+const description =
+    "6698 sayılı Kişisel Verilerin Korunması Kanunu uyarınca aydınlatma metni.";
+---
+
+<BaseLayout title={title} description={description}>
+    <!-- Full Width Background Wrapper -->
+    <div
+        class="w-full min-h-screen relative overflow-hidden bg-gradient-to-b from-orange-50/50 to-orange-50"
+    >
+        <!-- Decorative background elements -->
+        <div
+            class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+        >
+            <div
+                class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
+            >
+            </div>
+            <div
+                class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"
+            >
+            </div>
+            <div
+                class="absolute top-[40%] right-[20%] w-64 h-64 bg-green-200/30 rounded-full blur-3xl animate-blob animation-delay-4000"
+            >
+            </div>
+        </div>
+
+        <div class="relative z-10 pt-36 pb-20 px-6">
+            <div class="container mx-auto max-w-4xl">
+                <h1
+                    class="text-4xl font-bold text-[#FF8A65] mb-8 text-center md:text-left"
+                >
+                    {title}
+                </h1>
+
+                <div
+                    class="bg-white/80 p-8 md:p-12 rounded-3xl shadow-lg border border-orange-100 backdrop-blur-sm prose prose-slate max-w-none"
+                >
+                    <p>
+                        <strong>Veri Sorumlusu:</strong> Fizyoterapist Ezgi Acem<br
+                        />
+                        <strong>Adres:</strong> İstanbul, Türkiye
+                    </p>
+
+                    <h3>1. Kişisel Verilerin İşlenme Amacı</h3>
+                    <p>
+                        6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK")
+                        uyarınca, web sitemiz üzerinden bizimle paylaştığınız
+                        kimlik (ad, soyad) ve iletişim (telefon, e-posta)
+                        bilgileriniz; randevu oluşturulması, tarafınızla
+                        iletişime geçilmesi, hizmetlerimiz hakkında bilgi
+                        verilmesi ve yasal yükümlülüklerin yerine getirilmesi
+                        amacıyla işlenmektedir.
+                    </p>
+
+                    <h3>
+                        2. Kişisel Verilerin Toplanma Yöntemi ve Hukuki Sebebi
+                    </h3>
+                    <p>
+                        Kişisel verileriniz, web sitemizdeki iletişim formları
+                        veya e-posta yoluyla elektronik ortamda toplanmaktadır.
+                        Bu veriler, KVKK'nın 5. maddesinde belirtilen "ilgili
+                        kişinin temel hak ve özgürlüklerine zarar vermemek
+                        kaydıyla, veri sorumlusunun meşru menfaatleri için veri
+                        işlenmesinin zorunlu olması" ve "bir sözleşmenin
+                        kurulması veya ifası" hukuki sebeplerine dayanarak
+                        işlenmektedir.
+                    </p>
+
+                    <h3>
+                        3. İşlenen Kişisel Verilerin Kimlere ve Hangi Amaçla
+                        Aktarılabileceği
+                    </h3>
+                    <p>
+                        Toplanan kişisel verileriniz, yasal düzenlemelerin
+                        öngördüğü kapsamda yetkili kamu kurum ve kuruluşları
+                        hariç olmak üzere, açık rızanız olmaksızın üçüncü
+                        kişilerle paylaşılmamaktadır.
+                    </p>
+
+                    <h3>4. Veri Sahibinin Hakları</h3>
+                    <p>KVKK'nın 11. maddesi uyarınca veri sahibi olarak;</p>
+                    <ul>
+                        <li>
+                            Kişisel verilerinizin işlenip işlenmediğini öğrenme,
+                        </li>
+                        <li>
+                            Kişisel verileriniz işlenmişse buna ilişkin bilgi
+                            talep etme,
+                        </li>
+                        <li>
+                            Kişisel verilerin işlenme amacını ve bunların
+                            amacına uygun kullanılıp kullanılmadığını öğrenme,
+                        </li>
+                        <li>
+                            Yurt içinde veya yurt dışında kişisel verilerin
+                            aktarıldığı üçüncü kişileri bilme,
+                        </li>
+                        <li>
+                            Kişisel verilerin eksik veya yanlış işlenmiş olması
+                            hâlinde bunların düzeltilmesini isteme,
+                        </li>
+                        <li>
+                            Kişisel verilerinizin silinmesini veya yok
+                            edilmesini isteme haklarına sahipsiniz.
+                        </li>
+                    </ul>
+
+                    <p class="mt-8 text-sm text-slate-500">
+                        Bu haklarınızı kullanmak için <a
+                            href="/iletisim"
+                            class="text-orange-500 underline">İletişim</a
+                        > sayfasındaki kanallardan bize ulaşabilirsiniz.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</BaseLayout>

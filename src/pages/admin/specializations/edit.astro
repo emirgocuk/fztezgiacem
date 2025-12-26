@@ -1,0 +1,288 @@
+---
+import AdminLayout from "../../../layouts/AdminLayout.astro";
+
+const title = "Uzmanlık Alanı Düzenle";
+---
+
+<AdminLayout title={title}>
+    <div class="max-w-2xl mx-auto">
+        <div class="flex items-center justify-between mb-8">
+            <h1 class="text-3xl font-bold">{title}</h1>
+            <a
+                href="/admin/specializations"
+                class="text-gray-500 hover:text-gray-700">← Listeye Dön</a
+            >
+        </div>
+
+        <div id="loadingState" class="text-center py-12">
+            <p class="text-gray-500">Yükleniyor...</p>
+        </div>
+
+        <form
+            id="editForm"
+            class="hidden bg-white p-8 rounded-xl shadow-sm space-y-6"
+        >
+            <input type="hidden" name="id" id="recordId" />
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Başlık</label
+                >
+                <input
+                    type="text"
+                    name="title"
+                    required
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                />
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Slug (URL Kısmı)</label
+                >
+                <input
+                    type="text"
+                    name="slug"
+                    required
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none bg-gray-50"
+                />
+            </div>
+
+            <div class="grid grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                        >İkon (Emoji)</label
+                    >
+                    <input
+                        type="text"
+                        name="icon"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                    />
+                </div>
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-1"
+                        >Renk Teması</label
+                    >
+                    <select
+                        name="color"
+                        class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none bg-white"
+                    >
+                        <option value="orange">Turuncu</option>
+                        <option value="yellow">Sarı</option>
+                        <option value="blue">Mavi</option>
+                        <option value="green">Yeşil</option>
+                        <option value="purple">Mor</option>
+                    </select>
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Görsel (Mevcut veya Yeni)</label
+                >
+                <div class="flex items-center gap-4">
+                    <img
+                        id="previewImage"
+                        src=""
+                        class="hidden w-16 h-16 object-cover rounded-lg border"
+                    />
+                    <label
+                        class="cursor-pointer bg-white border border-gray-300 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium text-gray-700 transition"
+                    >
+                        <span>Resim Değiştir</span>
+                        <input
+                            type="file"
+                            id="fileInput"
+                            accept="image/*"
+                            class="hidden"
+                        />
+                    </label>
+                    <span id="fileName" class="text-sm text-gray-500"
+                        >Dosya seçilmedi</span
+                    >
+                </div>
+                <input type="hidden" name="image" id="imageUrl" />
+                <p id="uploadStatus" class="text-xs text-gray-500 mt-1">
+                    Görseli değiştirmek için yeni bir dosya seçin.
+                </p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Özet</label
+                >
+                <textarea
+                    name="summary"
+                    rows="2"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                ></textarea>
+            </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1"
+                    >Detaylı İçerik</label
+                >
+                <textarea
+                    name="details"
+                    rows="6"
+                    class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                ></textarea>
+            </div>
+
+            <div class="pt-4 flex justify-end gap-3">
+                <button
+                    type="submit"
+                    id="submitBtn"
+                    class="bg-[#1E3A1A] text-white px-6 py-2 rounded-lg hover:bg-[#1E3A1A]/90 transition"
+                    >Güncelle</button
+                >
+            </div>
+        </form>
+    </div>
+
+    <script>
+        import { pb } from "../../../lib/pocketbase";
+        import { uploadToImgBB } from "../../../lib/imgbb";
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const recordId = urlParams.get("id");
+
+        const form = document.getElementById("editForm") as HTMLFormElement;
+        const loadingState = document.getElementById("loadingState");
+        const fileInput = document.getElementById(
+            "fileInput",
+        ) as HTMLInputElement;
+        const imageUrl = document.getElementById(
+            "imageUrl",
+        ) as HTMLInputElement;
+        const previewImage = document.getElementById(
+            "previewImage",
+        ) as HTMLImageElement;
+        const fileName = document.getElementById("fileName");
+        const uploadStatus = document.getElementById("uploadStatus");
+
+        if (!recordId) {
+            alert("ID bulunamadı!");
+            window.location.href = "/admin/specializations";
+        }
+
+        async function init() {
+            try {
+                if (!recordId) return;
+                const record = await pb
+                    .collection("specializations")
+                    .getOne(recordId);
+
+                // Populate Form
+                (
+                    document.getElementById("recordId") as HTMLInputElement
+                ).value = record.id;
+                (
+                    document.querySelector(
+                        'input[name="title"]',
+                    ) as HTMLInputElement
+                ).value = record.title;
+                (
+                    document.querySelector(
+                        'input[name="slug"]',
+                    ) as HTMLInputElement
+                ).value = record.slug;
+                (
+                    document.querySelector(
+                        'input[name="icon"]',
+                    ) as HTMLInputElement
+                ).value = record.icon || "";
+                (
+                    document.querySelector(
+                        'select[name="color"]',
+                    ) as HTMLSelectElement
+                ).value = record.color || "orange";
+                (
+                    document.querySelector(
+                        'textarea[name="summary"]',
+                    ) as HTMLTextAreaElement
+                ).value = record.summary || "";
+                (
+                    document.querySelector(
+                        'textarea[name="details"]',
+                    ) as HTMLTextAreaElement
+                ).value = record.details || "";
+
+                if (record.image) {
+                    imageUrl.value = record.image;
+                    previewImage.src = record.image;
+                    previewImage.classList.remove("hidden");
+                }
+
+                loadingState?.classList.add("hidden");
+                form?.classList.remove("hidden");
+            } catch (err: any) {
+                alert("Veri yüklenemedi: " + err.message);
+                window.location.href = "/admin/specializations";
+            }
+        }
+
+        init();
+
+        // File Upload Logic
+        fileInput?.addEventListener("change", async () => {
+            const file = fileInput.files?.[0];
+            if (!file) return;
+
+            if (fileName) fileName.textContent = file.name;
+            if (uploadStatus) {
+                uploadStatus.textContent = "Yükleniyor...";
+                uploadStatus.className =
+                    "text-xs text-blue-500 mt-1 font-medium";
+            }
+
+            try {
+                const url = await uploadToImgBB(file);
+                imageUrl.value = url;
+
+                previewImage.src = url;
+                previewImage.classList.remove("hidden");
+
+                if (uploadStatus) {
+                    uploadStatus.textContent = "Resim başarıyla yüklendi.";
+                    uploadStatus.className =
+                        "text-xs text-green-600 mt-1 font-medium";
+                }
+            } catch (err: any) {
+                console.error(err);
+                if (uploadStatus) {
+                    uploadStatus.textContent = "Hata: " + err.message;
+                    uploadStatus.className =
+                        "text-xs text-red-500 mt-1 font-medium";
+                }
+            }
+        });
+
+        // Submit Logic
+        form?.addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById(
+                "submitBtn",
+            ) as HTMLButtonElement;
+            const originalText = btn.innerText;
+
+            try {
+                btn.disabled = true;
+                btn.innerText = "Kaydediliyor...";
+
+                const formData = new FormData(form);
+                const data = Object.fromEntries(formData);
+
+                await pb.collection("specializations").update(recordId!, data);
+                alert("Güncelleme başarılı!");
+                window.location.href = "/admin/specializations";
+            } catch (err: any) {
+                console.error(err);
+                alert("Hata oluştu: " + (err.message || "Bilinmeyen hata"));
+            } finally {
+                btn.disabled = false;
+                btn.innerText = originalText;
+            }
+        });
+    </script>
+</AdminLayout>

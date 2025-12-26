@@ -1,0 +1,51 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  /* ... Custom Theme Config if any ... */
+}
+
+/* 
+  Reset & Global Mobile Optimization 
+*/
+*,
+*::before,
+*::after {
+  /* Removes the grey tap highlight on Mobile (iOS/Android) */
+  -webkit-tap-highlight-color: transparent;
+}
+
+html,
+body {
+  /* Improves scrolling performance */
+  overscroll-behavior-y: none;
+}
+
+a,
+button,
+input,
+label,
+select,
+summary,
+textarea {
+  /* Disables 300ms click delay on touch devices */
+  touch-action: manipulation;
+}
+
+/* 
+  Prevent sticky hover states on mobile
+  Only apply hover styles if the device actually has a cursor
+*/
+@media (hover: hover) {
+  a:hover {
+    /* Your general hover logic is usually handled by Tailwind's 'hover:', 
+           which automatically deals with this in most cases, 
+           but system-wide resets help. */
+  }
+}
+
+/* 
+  Optional: If ViewTransitions are causing flickering, 
+  we can customize the ::view-transition-old/new here. 
+  For now, standard defaults usually work 
+*/

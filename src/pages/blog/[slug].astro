@@ -1,0 +1,254 @@
+---
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { pb, type Post, getPbImageURL } from "../../lib/pocketbase";
+
+export async function getStaticPaths() {
+  try {
+    const posts = await pb.collection("posts").getFullList<Post>();
+    return posts.map((post) => ({
+      params: { slug: post.slug },
+      props: { post },
+    }));
+  } catch (error) {
+    console.error("Critical Error in getStaticPaths:", error);
+    // Return empty array to allow build to proceed (but pages won't be generated)
+    // or throw to crash explicitly
+    return [];
+  }
+}
+
+const { post } = Astro.props;
+
+// Guard clause for missing post (should usually be handled by getStaticPaths/404)
+if (!post) {
+  return Astro.redirect("/404");
+}
+
+// Calculate Read Time (rough estimate)
+const wordsPerMinute = 200;
+const content = post.content || "";
+const textLength = content.split(/\s+/).length;
+const readTime = Math.ceil(textLength / wordsPerMinute);
+
+const imageURL = post.image
+  ? `${getPbImageURL(post.collectionId, post.id, post.image)}?thumb=1200x675`
+  : undefined;
+
+// JSON-LD Schema
+const schemaData = {
+  "@context": "https://schema.org",
+  "@type": "MedicalWebPage",
+  name: post.title,
+  description: post.summary,
+  audience: {
+    "@type": "MedicalAudience",
+    audienceType: "Patients",
+  },
+  mainEntity: {
+    "@type": "Article",
+    headline: post.title,
+    image: imageURL ? [imageURL] : [],
+    datePublished: post.published_date,
+    dateModified: post.updated,
+    author: {
+      "@type": "Person",
+      name: "Fizyoterapist", // Can be dynamic if author field exists
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Fizyoterapist Web Sitesi",
+      logo: {
+        "@type": "ImageObject",
+        url: new URL("/logo.svg", Astro.site),
+      },
+    },
+  },
+};
+---
+
+<BaseLayout
+  title={post.title}
+  description={post.summary}
+  image={imageURL}
+  articleDate={post.published_date}
+  showBackgroundEffects={false}
+>
+  <!-- Schema.org JSON-LD -->
+  <script
+    is:inline
+    type="application/ld+json"
+    set:html={JSON.stringify(schemaData)}
+  />
+
+  <div
+    class="relative min-h-screen pt-36 pb-20 overflow-hidden bg-gradient-to-b from-orange-50/50 to-white"
+  >
+    <!-- Decorative background elements -->
+    <div
+      class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+    >
+      <div
+        class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
+      >
+      </div>
+      <div
+        class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"
+      >
+      </div>
+    </div>
+
+    <article class="max-w-4xl mx-auto px-4 relative z-10">
+      <div class="mb-8 text-center">
+        <span
+          class="inline-block bg-green-100 text-[#1E3A1A] text-sm font-semibold px-3 py-1 rounded-full mb-4"
+        >
+          {post.category}
+        </span>
+        <h1
+          class="text-3xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight"
+        >
+          {post.title}
+        </h1>
+
+        <div
+          class="flex items-center justify-center gap-6 text-gray-500 text-sm"
+        >
+          <time datetime={post.published_date}>
+            {
+              new Date(post.published_date).toLocaleDateString("tr-TR", {
+                day: "numeric",
+                month: "long",
+                year: "numeric",
+              })
+            }
+          </time>
+          <div class="flex items-center gap-1">
+            <span>⏱</span>
+            {readTime} dk okuma
+          </div>
+          <div class="flex items-center gap-1 ml-4" title="Okunma Sayısı">
+            <span>👁️</span>
+            <span id="view-count" data-post-id={post.id}>{post.views || 0}</span
+            >
+          </div>
+        </div>
+      </div>
+
+      <!-- View Count Script -->
+      <!-- View Count Script -->
+      <script>
+        import PocketBase from "pocketbase";
+
+        const pb = new PocketBase("http://127.0.0.1:8090");
+
+        async function updateViewCount() {
+          const viewCountEl = document.getElementById("view-count");
+          if (!viewCountEl) return;
+
+          const postId = viewCountEl.dataset.postId;
+          if (!postId) return;
+
+          // SPAM PROTECTION: Time-based check (5 Seconds for testing)
+          const viewedKey = "viewed_posts_timers";
+          const EXPIRATION_MS = 5 * 1000;
+
+          interface ViewedPostData {
+            [postId: string]: number;
+          }
+          let viewedData: ViewedPostData = {};
+
+          try {
+            viewedData = JSON.parse(localStorage.getItem(viewedKey) || "{}");
+          } catch (e) {
+            console.error("LS Error", e);
+          }
+
+          const now = Date.now();
+
+          // 1. Always fetch current count properly first to show accurate number
+          let currentViews = 0;
+          try {
+            // Get latest from server
+            const currentPost = await pb.collection("posts").getOne(postId);
+            currentViews = currentPost.views || 0;
+            viewCountEl.innerText = String(currentViews);
+          } catch (e) {
+            console.error("Error fetching view count", e);
+            return;
+          }
+
+          // 2. Check Expiration
+          // If recorded time exists AND it's less than 5 seconds ago -> Block
+          if (viewedData[postId]) {
+            const timeDiff = now - viewedData[postId];
+            if (timeDiff < EXPIRATION_MS) {
+              console.log(
+                `Viewed recently (${Math.floor(timeDiff / 1000)}s ago). Skipping increment.`,
+              );
+              return;
+            }
+          }
+
+          // 3. Increment Count AND Log View
+          try {
+            // A. Increment Total Count
+            const updatedRecord = await pb.collection("posts").update(postId, {
+              views: currentViews + 1,
+            });
+
+            // B. Create Time-Series Log
+            try {
+              await pb.collection("post_view_logs").create({
+                post: postId,
+              });
+            } catch (logErr) {
+              console.error("Analytics Log Creation Failed:", logErr);
+            }
+
+            // Update UI with new value
+            viewCountEl.innerText = String(updatedRecord.views);
+
+            // Save new timestamp
+            viewedData[postId] = now;
+            localStorage.setItem(viewedKey, JSON.stringify(viewedData));
+          } catch (err) {
+            console.error("View count increment error:", err);
+          }
+        }
+
+        // Run ONLY on astro:page-load to support View Transitions
+        document.addEventListener("astro:page-load", updateViewCount);
+      </script>
+
+      {
+        imageURL && (
+          <div class="mb-12 rounded-2xl overflow-hidden shadow-lg w-full h-auto">
+            <img
+              src={imageURL}
+              alt={post.title}
+              width={1200}
+              height={675}
+              class="w-full h-auto object-cover"
+            />
+          </div>
+        )
+      }
+
+      <div
+        class="prose prose-lg prose-green mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100"
+      >
+        <Fragment set:html={post.content} />
+      </div>
+
+      {/* Share / Tags / Navigation potentially here */}
+      <div class="mt-12 text-center">
+        <a
+          href="/blog"
+          class="inline-flex items-center gap-2 text-[#1E3A1A] font-semibold hover:underline"
+        >
+          <span>←</span> Blog'a Dön
+        </a>
+      </div>
+    </article>
+  </div>
+</BaseLayout>

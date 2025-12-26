@@ -1,0 +1,364 @@
+---
+// TreatmentProcess.astro
+// Implements "Vertical Scroll" style with Card Layout (No Sidebar)
+
+const steps = [
+  {
+    id: "step-1",
+    title: "Tanışma",
+    fullTitle: "Tanışma ve Değerlendirme",
+    desc: "Sizi ve çocuğunuzu kliniğimizde ağırlıyoruz. Çocuğunuzun motor gelişimini, duyusal ihtiyaçlarını ve oyun becerilerini detaylı analizlerle değerlendiriyoruz.",
+    icon: "camera",
+    colorClass: "b-blue",
+    textClass: "c-blue",
+    // Adding explicit icon SVG strings for ease of use inside the map
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>`,
+    image: "https://i.ibb.co/n8Yrykrn/8835bae81e3b.jpg"
+  },
+  {
+    id: "step-2",
+    title: "Program",
+    fullTitle: "Bireysel Program",
+    desc: "Değerlendirme sonuçlarına göre çocuğunuza özel, oyun temelli bir yol haritası çiziyoruz. Hedeflerimizi sizinle paylaşıyor, ailenin de sürece katılımını önemsiyoruz.",
+    icon: "bolt",
+    colorClass: "b-yellow",
+    textClass: "c-yellow",
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon></svg>`,
+    image: "https://i.ibb.co/HfXhkMBq/4dbd87ecfa50.jpg" // Child playing
+  },
+  {
+    id: "step-3",
+    title: "Terapi",
+    fullTitle: "Oyun ve Terapi",
+    desc: "Çocuğunuz 'sadece oyun oynadığını' düşünürken, biz bilimsel temelli duyu bütünleme ve fizyoterapi yöntemleriyle gelişimini destekliyoruz.",
+    icon: "music",
+    colorClass: "b-red",
+    textClass: "c-red",
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18V5l12-2v13"></path><circle cx="6" cy="18" r="3"></circle><circle cx="18" cy="16" r="3"></circle></svg>`,
+    image: "https://i.ibb.co/0Rx1q4FY/b8714c57696b.jpg"
+  },
+  {
+    id: "step-4",
+    title: "Aile",
+    fullTitle: "Aile Desteği",
+    desc: "Kazanımların kalıcı olması için evde uygulanabilecek eğlenceli aktiviteler öneriyoruz. Çocuğunuzun gelişim basamaklarını birlikte takip ediyoruz.",
+    icon: "paper-plane",
+    colorClass: "b-green",
+    textClass: "c-green",
+    iconSvg: `<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>`,
+    image: "https://i.ibb.co/wrSsLHw3/3ead525db867.jpg"
+  }
+];
+---
+
+<!-- Fixed Ambient Background -->
+<div id="ambient-bg"></div>
+
+<!-- Panels -->
+{steps.map((step, index) => (
+    <section class="panel" id={step.id} data-color={step.colorClass}>
+      <article class="panel__wrapper">
+        <div class={`panel__content ${index % 2 === 1 ? 'flex-row-reverse' : ''}`}>
+          
+          <!-- Text Content in Card -->
+          <div class={`panel__text ${step.colorClass}`}> <!-- Pass color class for local styling if needed -->
+            <h1 class="panel__headline">
+                <span class="inline-block mr-4 mb-2" set:html={step.iconSvg}></span>
+                {step.fullTitle}
+            </h1>
+            <div class="panel__block"></div>
+            <p>{step.desc}</p>
+          </div>
+
+          <!-- Image -->
+          <div class="panel__image">
+            <img src={step.image} alt={step.fullTitle} />
+          </div>
+
+        </div>
+      </article>
+    </section>
+))}
+
+<style>
+/* 
+ * Variables & Global Resets
+ */
+:root {
+  --blue-hex: #81D4FA;
+  --orange-hex: #FFAB91;
+  --yellow-hex: #FFF59D;
+  --green-hex: #A5D6A7;
+  
+  --ease: all 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+/* Fixed Background Container */
+#ambient-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  z-index: 0;
+  background-color: #ffffff; /* Base white */
+  pointer-events: none;
+  
+  /* The Morphing Gradient */
+  /* Using a larger size to allow drifting without edges showing */
+  background-image: radial-gradient(circle at var(--bg-x, 50%) var(--bg-y, 50%), var(--bg-color, #81D4FA), transparent 70%);
+  
+  /* Faster transition as requested (1s) */
+  transition: --bg-color 1s cubic-bezier(0.4, 0, 0.2, 1), --bg-x 5s ease, --bg-y 5s ease;
+  
+  filter: blur(100px); /* Increased blur for softness */
+  opacity: 0.5;
+  
+  /* Continuous breathing animation */
+  animation: breathe 10s infinite ease-in-out alternate;
+}
+
+@keyframes breathe {
+  0% { opacity: 0.4; transform: scale(1); }
+  100% { opacity: 0.6; transform: scale(1.1); }
+}
+
+/* To enable smooth CSS variable transition (modern browsers) */
+@property --bg-color {
+  syntax: '<color>';
+  inherits: true;
+  initial-value: #81D4FA;
+}
+@property --bg-x {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+@property --bg-y {
+  syntax: '<percentage>';
+  inherits: true;
+  initial-value: 50%;
+}
+
+/* Base Panel */
+.panel {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+  /* Removed local background to see fixed bg */
+  background-color: transparent; 
+  z-index: 1;
+}
+
+/* Specific Blob Colors for script to grab */
+.b-blue { --target-color: #29B6F6; }
+.b-red { --target-color: #FF7043; }
+.b-green { --target-color: #66BB6A; }
+.b-yellow { --target-color: #FDD835; }
+
+/* Text Colors (Dark for white bg) */
+.c-blue { color: #0288D1; }
+.c-red { color: #D84315; }
+.c-green { color: #2E7D32; }
+.c-yellow { color: #FBC02D; }
+
+.panel__wrapper {
+  padding: 5vh 5vw;
+  perspective: 1000px;
+  width: 100%;
+  max-width: 1280px;
+}
+
+.panel__content {
+  will-change: transform, opacity;
+  transform: translateY(60px);
+  opacity: 0;
+  transition: var(--ease);
+  
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 4rem;
+}
+
+.panel__content.panel__content--active {
+  transform: none;
+  opacity: 1;
+}
+
+.flex-row-reverse {
+    flex-direction: row-reverse;
+}
+
+/* 
+   TEXT STYLING 
+*/
+.panel__text {
+    flex: 1;
+    padding: 3rem;
+    position: relative;
+    z-index: 2;
+    background: rgba(255, 255, 255, 0.7); /* Slightly more opaque for contrast */
+    backdrop-filter: blur(16px);
+    border-radius: 3rem;
+    border: 1px solid rgba(255, 255, 255, 0.6);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.04);
+}
+
+.panel__text h1 {
+    font-size: 3rem;
+    font-weight: 800;
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    color: #374151; /* Dark Slate Gray */
+    letter-spacing: -0.02em;
+}
+
+/* Icon styling in headline */
+.panel__text h1 span {
+    display: inline-flex;
+    padding: 12px;
+    border-radius: 50%;
+    background: white;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    color: inherit; /* Will take specific class color from parent class */
+}
+
+/* Use contextual classes on .panel__text now */
+.panel__text.b-blue h1 span { color: #29B6F6; background: #E1F5FE; }
+.panel__text.b-red h1 span { color: #FF7043; background: #FBE9E7; }
+.panel__text.b-yellow h1 span { color: #FBC02D; background: #FFF9C4; }
+.panel__text.b-green h1 span { color: #66BB6A; background: #E8F5E9; }
+
+.panel__text p {
+    font-size: 1.25rem;
+    line-height: 1.7;
+    color: #52525B; /* Zinc 600 */
+    font-weight: 500;
+    margin: 0;
+}
+
+.panel__block {
+  height: 6px;
+  background: currentColor;
+  margin: 0 0 25px 0;
+  width: 80px; 
+  border-radius: 3px;
+  opacity: 0.3;
+}
+/* Apply accent color to block */
+.panel__text.b-blue .panel__block { background: #29B6F6; }
+.panel__text.b-red .panel__block { background: #FF7043; }
+.panel__text.b-yellow .panel__block { background: #FDD835; }
+.panel__text.b-green .panel__block { background: #66BB6A; }
+
+
+/* Image styling */
+.panel__image {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    perspective: 1000px;
+    position: relative;
+}
+
+.panel__image img {
+    border-radius: 2.5rem;
+    box-shadow: 0 25px 60px -10px rgba(0,0,0,0.08);
+    max-width: 100%;
+    height: auto;
+    object-fit: cover;
+    transform: rotate(3deg);
+    transition: transform 0.7s ease;
+    background: white;
+    padding: 0.75rem;
+    aspect-ratio: 4/3;
+}
+
+.panel__content:hover .panel__image img {
+    transform: rotate(0deg) scale(1.03);
+    box-shadow: 0 30px 70px -15px rgba(0,0,0,0.12);
+}
+
+@media (max-width: 768px) {
+  .panel__wrapper {
+     padding: 4rem 1.5rem;
+  }
+  
+  .panel__content {
+      flex-direction: column !important;
+      gap: 3rem;
+      transform: translateY(30px);
+  }
+  
+  .panel__text {
+      padding: 2rem;
+      background: rgba(255,255,255,0.85);
+      text-align: center;
+  }
+  
+  .panel__text h1 { 
+      font-size: 2rem; 
+      justify-content: center;
+  }
+  
+  .panel__block {
+      margin: 0 auto 20px auto;
+  }
+}
+</style>
+
+<script>
+    function initScrollReveal() {
+        // Elements
+        const panels = document.querySelectorAll('.panel');
+        const bg = document.getElementById('ambient-bg');
+        
+        // Define colors map (matches CSS variables or hex)
+        const colors: Record<string, string> = {
+          'b-blue': '#29B6F6',
+          'b-yellow': '#FDD835',
+          'b-red': '#FF7043',
+          'b-green': '#66BB6A'
+        };
+
+        const observerOptions = {
+            root: null,
+            rootMargin: '-50% 0px -50% 0px', // Trigger exactly when center of element hits center of viewport
+            threshold: 0
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                const content = entry.target.querySelector('.panel__content');
+                if (entry.isIntersecting) {
+                    content?.classList.add('panel__content--active');
+                    
+                    // Change Background Color & Drifting Position
+                    const colorClass = entry.target.getAttribute('data-color');
+                    const targetColor = colorClass ? colors[colorClass] : null;
+                    
+                    if (targetColor && bg) {
+                      bg.style.setProperty('--bg-color', targetColor);
+                      
+                      // Slight random drift for each section to feel organic
+                      // We alternate sides/positions slightly so it's not static
+                      const randomX = 40 + Math.random() * 20; // 40% - 60%
+                      const randomY = 40 + Math.random() * 20; // 40% - 60%
+                      bg.style.setProperty('--bg-x', `${randomX}%`);
+                      bg.style.setProperty('--bg-y', `${randomY}%`);
+                    }
+                }
+            });
+        }, { threshold: 0.4 }); // Trigger when 40% visible
+
+        panels.forEach(panel => observer.observe(panel));
+    }
+
+    document.addEventListener('DOMContentLoaded', initScrollReveal);
+</script>
