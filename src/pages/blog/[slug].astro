@@ -196,14 +196,8 @@ const schemaData = {
               views: currentViews + 1,
             });
 
-            // B. Create Time-Series Log
-            try {
-              await pb.collection("post_view_logs").create({
-                post: postId,
-              });
-            } catch (logErr) {
-              console.error("Analytics Log Creation Failed:", logErr);
-            }
+            // B. Create Time-Series Log - REMOVED per user request
+            // Only keeping total view count
 
             // Update UI with new value
             viewCountEl.innerText = String(updatedRecord.views);

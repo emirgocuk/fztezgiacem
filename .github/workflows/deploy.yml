@@ -1,0 +1,64 @@
+
+name: Deploy to Production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install & Build
+        run: |
+          npm ci
+          npm run build
+
+      - name: Prepare Deployment Files
+        run: |
+          mkdir -p deploy/pb_public
+          cp -r dist/* deploy/pb_public/
+          cp -r pb_hooks deploy/
+          cp -r pb_migrations deploy/
+          cp docker-compose.yml deploy/
+          cp Caddyfile deploy/
+
+      - name: Copy Files to Server
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "deploy/*"
+          target: "/root/docker-site"
+          strip_components: 1
+
+      - name: Deploy via SSH
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /root/docker-site
+            # Restart containers to pick up changes
+            # We use 'up -d' which is smart enough to recreate containers only if needed
+            # But since we replaced mapped files (pb_public via volume?), wait.
+            # Volume Strategy:
+            # - ./pb_public:/pb_public
+            # We overwrote contents of ./pb_public on host.
+            # Does PB need restart? Usually no if it serves static files directly.
+            # But Caddy does if we use Caddy.
+            # If we changed pb_hooks or migrations? PB needs restart.
+            docker compose up -d --build --force-recreate
+            docker compose exec -T pocketbase ./pocketbase migrate

@@ -1,0 +1,11 @@
+
+node_modules
+dist
+.git
+.github
+.vscode
+pb_data
+deploy_pack.tar
+deploy_pack
+scripts
+*.log
