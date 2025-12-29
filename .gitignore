@@ -137,5 +137,25 @@ dist
 
 # PocketBase
 pb_data/
+pb_public/
 pocketbase.exe
 pocketbase
+pocketbase_*.zip
+
+# Archives & Deployment packages (manual deployment)
+*.tar
+*.tar.gz
+*.zip
+deploy_package/
+
+# Schema backups (optional - remove if you want to version these)
+pb_schema.json
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Test results
+test-results/
+playwright-report/

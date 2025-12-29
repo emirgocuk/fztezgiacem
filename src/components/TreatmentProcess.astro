@@ -101,21 +101,23 @@ const steps = [
   width: 100%;
   height: 100vh;
   z-index: 0;
-  background-color: #ffffff; /* Base white */
+  background-color: transparent; /* No base color, just gradient */
   pointer-events: none;
   
   /* The Morphing Gradient */
-  /* Using a larger size to allow drifting without edges showing */
   background-image: radial-gradient(circle at var(--bg-x, 50%) var(--bg-y, 50%), var(--bg-color, #81D4FA), transparent 70%);
   
-  /* Faster transition as requested (1s) */
-  transition: --bg-color 1s cubic-bezier(0.4, 0, 0.2, 1), --bg-x 5s ease, --bg-y 5s ease;
+  transition: --bg-color 1s cubic-bezier(0.4, 0, 0.2, 1), --bg-x 5s ease, --bg-y 5s ease, opacity 0.5s ease;
   
-  filter: blur(100px); /* Increased blur for softness */
-  opacity: 0.5;
+  filter: blur(100px);
+  opacity: 0; /* Hidden by default */
   
   /* Continuous breathing animation */
   animation: breathe 10s infinite ease-in-out alternate;
+}
+
+#ambient-bg.active {
+    opacity: 0.5;
 }
 
 @keyframes breathe {
@@ -148,7 +150,6 @@ const steps = [
   justify-content: center;
   overflow: hidden;
   position: relative;
-  /* Removed local background to see fixed bg */
   background-color: transparent; 
   z-index: 1;
 }
@@ -174,14 +175,20 @@ const steps = [
 
 .panel__content {
   will-change: transform, opacity;
-  transform: translateY(60px);
-  opacity: 0;
+  transform: none;
+  opacity: 1;
   transition: var(--ease);
   
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 4rem;
+}
+
+/* JS will add this class if it wants to animate */
+.panel__content.reveal-pending {
+  transform: translateY(60px);
+  opacity: 0;
 }
 
 .panel__content.panel__content--active {
@@ -319,7 +326,18 @@ const steps = [
         const panels = document.querySelectorAll('.panel');
         const bg = document.getElementById('ambient-bg');
         
-        // Define colors map (matches CSS variables or hex)
+        // Track visible panels to toggle global background
+        let visiblePanels = 0;
+
+        // Prepare for animation
+        panels.forEach(panel => {
+           const content = panel.querySelector('.panel__content');
+           if (content) {
+             content.classList.add('reveal-pending'); // Sets opacity: 0, transform: translate
+           }
+        });
+
+        // Define colors map
         const colors: Record<string, string> = {
           'b-blue': '#29B6F6',
           'b-yellow': '#FDD835',
@@ -329,14 +347,17 @@ const steps = [
 
         const observerOptions = {
             root: null,
-            rootMargin: '-50% 0px -50% 0px', // Trigger exactly when center of element hits center of viewport
-            threshold: 0
+            rootMargin: '-10% 0px -10% 0px', 
+            threshold: 0.1 
         };
 
         const observer = new IntersectionObserver((entries) => {
             entries.forEach(entry => {
                 const content = entry.target.querySelector('.panel__content');
+                
                 if (entry.isIntersecting) {
+                    visiblePanels++;
+                    content?.classList.remove('reveal-pending');
                     content?.classList.add('panel__content--active');
                     
                     // Change Background Color & Drifting Position
@@ -345,20 +366,44 @@ const steps = [
                     
                     if (targetColor && bg) {
                       bg.style.setProperty('--bg-color', targetColor);
+                      bg.classList.add('active'); // Fade in
                       
-                      // Slight random drift for each section to feel organic
-                      // We alternate sides/positions slightly so it's not static
-                      const randomX = 40 + Math.random() * 20; // 40% - 60%
-                      const randomY = 40 + Math.random() * 20; // 40% - 60%
+                      const randomX = 40 + Math.random() * 20; 
+                      const randomY = 40 + Math.random() * 20; 
                       bg.style.setProperty('--bg-x', `${randomX}%`);
                       bg.style.setProperty('--bg-y', `${randomY}%`);
                     }
+                } else {
+                    // Logic to see if we should hide BG?
+                    // IntersectionObserver triggers when LEAVING too.
+                    // But 'isIntersecting' is false.
+                    // We can't rely on simple counter here perfectly because entries order matters or fast scroll.
                 }
             });
-        }, { threshold: 0.4 }); // Trigger when 40% visible
+            
+            // Re-check visibility of any panel roughly
+            // Actually, best way is to check if ANY panel is intersecting 
+            // BUT tracking count is tricky with observer.
+            // Simplified: If entry is intersecting, make sure BG is active.
+            // If ALL panels are NOT intersecting, hide BG?
+            // Let's use a standard check.
+            const isAnyVisible = Array.from(panels).some(p => {
+                const rect = p.getBoundingClientRect();
+                return rect.top < window.innerHeight && rect.bottom > 0;
+            });
+            
+            if (bg) {
+                if (isAnyVisible) {
+                    bg.classList.add('active');
+                } else {
+                    bg.classList.remove('active');
+                }
+            }
+
+        }, observerOptions);
 
         panels.forEach(panel => observer.observe(panel));
     }
 
-    document.addEventListener('DOMContentLoaded', initScrollReveal);
+    document.addEventListener('astro:page-load', initScrollReveal);
 </script>

@@ -1,0 +1,17 @@
+[Unit]
+Description=Fzt. Ezgi Acem Website (PocketBase)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+LimitNOFILE=4096
+Restart=always
+RestartSec=5s
+WorkingDirectory=/root/site
+# IMPORTANT: Pointing correctly to pb_public
+ExecStart=/root/site/pocketbase serve --publicDir=/root/site/pb_public --hooksDir=/root/site/pb_hooks --http="127.0.0.1:8090"
+
+[Install]
+WantedBy=multi-user.target

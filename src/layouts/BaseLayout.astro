@@ -3,7 +3,6 @@ import "../styles/global.css";
 import Footer from "../components/Footer.astro";
 import { SEO } from "astro-seo";
 import ScrollToTop from "../components/ScrollToTop.astro";
-import { ClientRouter } from "astro:transitions";
 
 interface Props {
   title: string;
@@ -125,7 +124,7 @@ try {
       })}
     />
     <link rel="apple-touch-icon" href="/logo.svg" />
-    <ClientRouter />
+    <link rel="apple-touch-icon" href="/logo.svg" />
     <style is:global>
       :root {
         --color-primary: #ff8a65; /* Soft Orange */
@@ -137,29 +136,25 @@ try {
       body {
         font-family: "Nunito", sans-serif;
       }
-      /* iOS fix for View Transitions */
-      @media screen and (max-width: 768px) {
-        body {
-          -webkit-overflow-scrolling: touch;
-        }
-      }
     </style>
   </head>
   <body
-    class="bg-orange-50 text-slate-700 antialiased min-h-dvh flex flex-col relative overflow-x-hidden selection:bg-orange-200 selection:text-orange-900"
+    class="bg-[#FAFAFA] text-slate-700 antialiased min-h-dvh flex flex-col relative overflow-x-hidden selection:bg-orange-200 selection:text-orange-900"
   >
-    <!-- Mesh Gradient Background -->
+    <!-- Global Ambient Background (Static & Performant) -->
     {
       showBackgroundEffects && (
-        <div class="fixed inset-0 z-[-1] pointer-events-none opacity-70">
-          <div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] bg-pink-300 rounded-full mix-blend-multiply filter blur-[80px] animate-blob opacity-60" />
-          <div class="absolute top-[-10%] right-[-10%] w-[50vw] h-[50vw] bg-blue-300 rounded-full mix-blend-multiply filter blur-[80px] animate-blob animation-delay-2000 opacity-60" />
-          <div class="absolute bottom-[-10%] left-[20%] w-[50vw] h-[50vw] bg-yellow-200 rounded-full mix-blend-multiply filter blur-[80px] animate-blob animation-delay-4000 opacity-60" />
-        </div>
+        <div
+          class="fixed inset-0 z-[-1] pointer-events-none"
+          style="background: 
+                radial-gradient(circle at 15% 5%, rgba(255, 138, 101, 0.05), transparent 40%),
+                radial-gradient(circle at 85% 30%, rgba(77, 208, 225, 0.05), transparent 40%),
+                radial-gradient(circle at 0% 90%, rgba(174, 213, 129, 0.05), transparent 40%);"
+        />
       )
     }
     <header
-      class="fixed top-6 left-1/2 -translate-x-1/2 z-50 w-[95%] md:w-full md:max-w-5xl transition-all duration-300"
+      class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] md:w-full md:max-w-5xl transition-all duration-300"
     >
       <div
         class="bg-white/90 backdrop-blur-md border border-white/40 shadow-xl rounded-full px-6 py-3 flex items-center justify-between"
@@ -275,37 +270,30 @@ try {
       </div>
     </header>
 
-    <script>
-      // Run immediately when DOM is ready
-      document.addEventListener("DOMContentLoaded", () => {
+    <script is:inline>
+      // is:inline ensures this runs on every page load immediately
+      const initMenu = () => {
         const btn = document.getElementById("publicMobileMenuBtn");
         const menu = document.getElementById("publicMobileMenu");
 
-        // Toggle menu visibility
-        btn?.addEventListener("click", () => {
-          // Simple class toggle, no complex logic
-          menu?.classList.toggle("hidden");
-        });
+        if (btn && menu) {
+          // Clone and replace to prevent duplicate listeners if re-initializing
+          const newBtn = btn.cloneNode(true);
+          btn.parentNode.replaceChild(newBtn, btn);
 
-        // Optional: Close menu when clicking links
-        menu?.querySelectorAll("a").forEach((link) => {
-          link.addEventListener("click", () => {
-            menu?.classList.add("hidden");
+          newBtn.addEventListener("click", () => {
+            menu.classList.toggle("hidden");
           });
-        });
-      });
 
-      // Safari BFCache Fix (Blank Page on Reopen)
-      window.addEventListener("pageshow", (event) => {
-        if (event.persisted) {
-          // If page is restored from cache (back/forward or reopen)
-          // Force a small style recalc or reload if necessary
-          console.log("Page restored from BFCache");
-          document.body.style.display = "none";
-          document.body.offsetHeight; // force reflow
-          document.body.style.display = "";
+          menu.querySelectorAll("a").forEach((link) => {
+            link.addEventListener("click", () => {
+              menu.classList.add("hidden");
+            });
+          });
         }
-      });
+      };
+
+      initMenu();
     </script>
 
     <main class="flex-1 w-full">
