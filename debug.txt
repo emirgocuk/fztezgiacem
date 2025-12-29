@@ -1,0 +1,120 @@
+Dec 29 15:40:35 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:35 45-155-19-221 pocketbase[143946]: 2025/12/29 15:40:35 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:40:35 45-155-19-221 pocketbase[143946]: 2025/12/29 15:40:35 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:40:35 45-155-19-221 pocketbase[143946]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:40:35 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:40:40 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 192.
+Dec 29 15:40:40 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:40 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:40 45-155-19-221 pocketbase[143974]: 2025/12/29 15:40:40 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:40:40 45-155-19-221 pocketbase[143974]: 2025/12/29 15:40:40 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:40:40 45-155-19-221 pocketbase[143974]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:40:40 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:40:45 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 193.
+Dec 29 15:40:45 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:45 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:45 45-155-19-221 pocketbase[143982]: 2025/12/29 15:40:45 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:40:45 45-155-19-221 pocketbase[143982]: 2025/12/29 15:40:45 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:40:45 45-155-19-221 pocketbase[143982]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:40:45 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:40:50 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 194.
+Dec 29 15:40:50 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:50 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:50 45-155-19-221 pocketbase[143990]: 2025/12/29 15:40:50 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:40:50 45-155-19-221 pocketbase[143990]: 2025/12/29 15:40:50 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:40:50 45-155-19-221 pocketbase[143990]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:40:50 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:40:56 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 195.
+Dec 29 15:40:56 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:56 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:40:56 45-155-19-221 pocketbase[143997]: 2025/12/29 15:40:56 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:40:56 45-155-19-221 pocketbase[143997]: 2025/12/29 15:40:56 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:40:56 45-155-19-221 pocketbase[143997]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:40:56 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:01 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 196.
+Dec 29 15:41:01 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:01 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:01 45-155-19-221 pocketbase[144007]: 2025/12/29 15:41:01 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:01 45-155-19-221 pocketbase[144007]: 2025/12/29 15:41:01 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:01 45-155-19-221 pocketbase[144007]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:01 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:06 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 197.
+Dec 29 15:41:06 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:06 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:06 45-155-19-221 pocketbase[144014]: 2025/12/29 15:41:06 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:06 45-155-19-221 pocketbase[144014]: 2025/12/29 15:41:06 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:06 45-155-19-221 pocketbase[144014]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:06 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:11 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 198.
+Dec 29 15:41:11 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:11 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:11 45-155-19-221 pocketbase[144049]: 2025/12/29 15:41:11 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:11 45-155-19-221 pocketbase[144049]: 2025/12/29 15:41:11 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:11 45-155-19-221 pocketbase[144049]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:11 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:17 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 199.
+Dec 29 15:41:17 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:17 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:17 45-155-19-221 pocketbase[144056]: 2025/12/29 15:41:17 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:17 45-155-19-221 pocketbase[144056]: 2025/12/29 15:41:17 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:17 45-155-19-221 pocketbase[144056]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:17 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:22 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 200.
+Dec 29 15:41:22 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:22 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:22 45-155-19-221 pocketbase[144064]: 2025/12/29 15:41:22 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:22 45-155-19-221 pocketbase[144064]: 2025/12/29 15:41:22 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:22 45-155-19-221 pocketbase[144064]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:22 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:27 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 201.
+Dec 29 15:41:27 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:27 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:27 45-155-19-221 pocketbase[144071]: 2025/12/29 15:41:27 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:27 45-155-19-221 pocketbase[144071]: 2025/12/29 15:41:27 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:27 45-155-19-221 pocketbase[144071]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:27 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:32 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 202.
+Dec 29 15:41:32 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:32 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:32 45-155-19-221 pocketbase[144080]: 2025/12/29 15:41:32 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:32 45-155-19-221 pocketbase[144080]: 2025/12/29 15:41:32 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:32 45-155-19-221 pocketbase[144080]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:32 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:38 45-155-19-221 systemd[1]: fztezgiacem.service: Scheduled restart job, restart counter is at 203.
+Dec 29 15:41:38 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:38 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:38 45-155-19-221 pocketbase[144088]: 2025/12/29 15:41:38 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:38 45-155-19-221 pocketbase[144088]: 2025/12/29 15:41:38 Migration skipped: Collection 'posts' likely already exists.
+Dec 29 15:41:38 45-155-19-221 pocketbase[144088]: Error: Failed to apply migration 1766140990_created_site_settings.js: TypeError: Object has no member 'save' at <eval>:43:18(76)
+Dec 29 15:41:38 45-155-19-221 systemd[1]: fztezgiacem.service: Deactivated successfully.
+Dec 29 15:41:38 45-155-19-221 systemd[1]: Stopped Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:40 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Migration skipped: Collection 'specializations' likely already exists.
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Collection 'messages' not found, skipping rule update.
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Server started at http://127.0.0.1:8090
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: ├─ REST API:  http://127.0.0.1:8090/api/
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: └─ Dashboard: http://127.0.0.1:8090/_/
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: (!) Launch the URL below in the browser if it hasn't been open already to create your first superuser account:
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: http://127.0.0.1:8090/_/#/pbinstal/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc2NzAyNDcwMCwiaWQiOiJ1eTBlZDhrMzZyM3o2NzUiLCJyZWZyZXNoYWJsZSI6ZmFsc2UsInR5cGUiOiJhdXRoIn0.lLICudnT1BnEB66cacG6bNKw8K6T4QNDIpKhISNojdI
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: (you can also create your first superuser by running: /root/site/pocketbase superuser upsert EMAIL PASS)
+● fztezgiacem.service - Fzt. Ezgi Acem Website (PocketBase)
+     Loaded: loaded (/etc/systemd/system/fztezgiacem.service; enabled; vendor preset: enabled)
+     Active: active (running) since Mon 2025-12-29 15:41:40 UTC; 2min 35s ago
+   Main PID: 144124 (pocketbase)
+      Tasks: 8 (limit: 2226)
+     Memory: 22.0M
+        CPU: 567ms
+     CGroup: /system.slice/fztezgiacem.service
+             └─144124 /root/site/pocketbase serve --publicDir=/root/site/pb_public --hooksDir=/root/site/pb_hooks --http=127.0.0.1:8090
+
+Dec 29 15:41:40 45-155-19-221 systemd[1]: Started Fzt. Ezgi Acem Website (PocketBase).
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Migration skipped: Collection 'messages' likely already exists.
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Migration skipped: Collection 'specializations' likely already exists.
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Collection 'messages' not found, skipping rule update.
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: 2025/12/29 15:41:40 Server started at http://127.0.0.1:8090
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: ├─ REST API:  http://127.0.0.1:8090/api/
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: └─ Dashboard: http://127.0.0.1:8090/_/
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: (!) Launch the URL below in the browser if it hasn't been open already to create your first superuser account:
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: http://127.0.0.1:8090/_/#/pbinstal/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc2NzAyNDcwMCwiaWQiOiJ1eTBlZDhrMzZyM3o2NzUiLCJyZWZyZXNoYWJsZSI6ZmFsc2UsInR5cGUiOiJhdXRoIn0.lLICudnT1BnEB66cacG6bNKw8K6T4QNDIpKhISNojdI
+Dec 29 15:41:40 45-155-19-221 pocketbase[144124]: (you can also create your first superuser by running: /root/site/pocketbase superuser upsert EMAIL PASS)

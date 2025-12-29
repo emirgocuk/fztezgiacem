@@ -146,7 +146,6 @@ pocketbase_*.zip
 *.tar
 *.tar.gz
 *.zip
-deploy_package/
 
 # Schema backups (optional - remove if you want to version these)
 pb_schema.json

@@ -208,12 +208,13 @@ try {
           >
         </nav>
 
-        <!-- Mobile Menu Button -->
-        <button
-          id="publicMobileMenuBtn"
-          class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors"
-          aria-label="Menüyü Aç"
+        <!-- Mobile Menu Toggle (CSS-Only Checkbox Hack) -->
+        <label
+          class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors cursor-pointer select-none"
         >
+          <input type="checkbox" class="peer hidden" id="mobileMenuCheckbox" />
+
+          <!-- Hamburger Icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="24"
@@ -224,77 +225,67 @@ try {
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            ><line x1="3" x2="21" y1="6" y2="6"></line><line
-              x1="3"
-              x2="21"
-              y1="12"
-              y2="12"></line><line x1="3" x2="21" y1="18" y2="18"></line></svg
+            class="peer-checked:hidden"
           >
-        </button>
-      </div>
+            <line x1="3" x2="21" y1="6" y2="6"></line>
+            <line x1="3" x2="21" y1="12" y2="12"></line>
+            <line x1="3" x2="21" y1="18" y2="18"></line>
+          </svg>
 
-      <!-- Mobile Menu Dropdown (Floating Style) -->
-      <div
-        id="publicMobileMenu"
-        class="hidden absolute top-full left-0 w-full mt-2 p-2"
-      >
-        <nav
-          class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-orange-100 overflow-hidden flex flex-col p-2"
-        >
-          <a
-            href="/"
-            class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-            >Ana Sayfa</a
+          <!-- Close Icon (Shown when checked) -->
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            class="hidden peer-checked:block"
           >
-          <a
-            href="/blog"
-            class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-            >Yazılar</a
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+
+          <!-- Mobile Menu Dropdown -->
+          <div
+            class="absolute top-full left-0 w-full mt-2 p-2 hidden peer-checked:block animate-in fade-in slide-in-from-top-2 duration-200"
           >
-          <a
-            href="/hakkimda"
-            class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-            >Biyografi</a
-          >
-          <a
-            href="/uzmanlik-alanlarim"
-            class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-            >Uzmanlık Alanlarım</a
-          >
-          <a
-            href="/iletisim"
-            class="p-3 rounded-xl text-white bg-[#FF8A65] hover:bg-[#FF7043] font-bold text-center mt-2 shadow-lg shadow-orange-200"
-            >Randevu Al</a
-          >
-        </nav>
+            <nav
+              class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-orange-100 overflow-hidden flex flex-col p-2"
+            >
+              <a
+                href="/"
+                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
+                >Ana Sayfa</a
+              >
+              <a
+                href="/blog"
+                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
+                >Yazılar</a
+              >
+              <a
+                href="/hakkimda"
+                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
+                >Biyografi</a
+              >
+              <a
+                href="/uzmanlik-alanlarim"
+                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
+                >Uzmanlık Alanlarım</a
+              >
+              <a
+                href="/iletisim"
+                class="p-3 rounded-xl text-white bg-[#FF8A65] hover:bg-[#FF7043] font-bold text-center mt-2 shadow-lg shadow-orange-200"
+                >Randevu Al</a
+              >
+            </nav>
+          </div>
+        </label>
       </div>
     </header>
-
-    <script is:inline>
-      // is:inline ensures this runs on every page load immediately
-      const initMenu = () => {
-        const btn = document.getElementById("publicMobileMenuBtn");
-        const menu = document.getElementById("publicMobileMenu");
-
-        if (btn && menu) {
-          // Clone and replace to prevent duplicate listeners if re-initializing
-          const newBtn = btn.cloneNode(true);
-          btn.parentNode.replaceChild(newBtn, btn);
-
-          newBtn.addEventListener("click", () => {
-            menu.classList.toggle("hidden");
-          });
-
-          menu.querySelectorAll("a").forEach((link) => {
-            link.addEventListener("click", () => {
-              menu.classList.add("hidden");
-            });
-          });
-        }
-      };
-
-      initMenu();
-    </script>
 
     <main class="flex-1 w-full">
       <slot />

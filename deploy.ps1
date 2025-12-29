@@ -11,6 +11,9 @@ Write-Host "NOT: Sifre istendiginde lutfen sunucu sifresini girin (yazarken goru
 ssh root@$ServerIP "rm -rf /root/site/pb_migrations && mkdir -p /root/site/pb_migrations"
 scp -r dist pb_migrations pb_hooks start.sh deploy_package/nginx_site.conf "root@$($ServerIP):/root/site"
 
+# Fix: Rename dist to pb_public so PocketBase serves the new files
+ssh root@$ServerIP "rm -rf /root/site/pb_public && mv /root/site/dist /root/site/pb_public"
+
 # Nginx Setup Remote Command
 ssh root@$ServerIP "mv /root/site/nginx_site.conf /etc/nginx/sites-available/fztezgiacem && ln -sf /etc/nginx/sites-available/fztezgiacem /etc/nginx/sites-enabled/ && rm -f /etc/nginx/sites-enabled/default && systemctl enable nginx && systemctl restart nginx && systemctl restart fztezgiacem"
 
