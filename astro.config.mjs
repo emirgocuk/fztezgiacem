@@ -31,7 +31,7 @@ export default defineConfig({
   },
   site: 'https://fizyoterapist-demo.com',
   output: 'static',
-  prefetch: false,
+  prefetch: true,
   devToolbar: {
     enabled: false
   }
