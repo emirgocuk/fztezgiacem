@@ -24,11 +24,11 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
   description="Fizyoterapi, egzersiz ve sağlıklı yaşam üzerine güncel makaleler."
 >
   <section
-    class="pt-28 pb-20 relative overflow-hidden bg-gradient-to-b from-orange-50/50 to-white min-h-screen"
+    class="pt-28 pb-20 relative overflow-hidden md:bg-gradient-to-b md:from-orange-50/50 md:to-white bg-[#FAFAFA] min-h-screen"
   >
     <!-- Decorative background elements -->
     <div
-      class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+      class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none hidden md:block"
     >
       <div
         class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"

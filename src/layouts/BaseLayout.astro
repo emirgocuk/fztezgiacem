@@ -21,6 +21,8 @@ const {
   showBackgroundEffects = true,
 } = Astro.props;
 
+const isHomepage = Astro.url.pathname === "/" || Astro.url.pathname === "";
+
 const canonicalURL = new URL(Astro.url.pathname, Astro.site);
 
 // Fetch Site Settings (Dynamic SEO)
@@ -147,7 +149,7 @@ try {
     {
       showBackgroundEffects && (
         <div
-          class="fixed inset-0 z-[-1] pointer-events-none"
+          class={`fixed inset-0 z-[-1] pointer-events-none ${!isHomepage ? "hidden md:block" : ""}`}
           style="background: 
                 radial-gradient(circle at 15% 5%, rgba(255, 138, 101, 0.05), transparent 40%),
                 radial-gradient(circle at 85% 30%, rgba(77, 208, 225, 0.05), transparent 40%),
@@ -159,7 +161,7 @@ try {
       class="fixed top-6 left-1/2 -translate-x-1/2 z-[100] w-[95%] md:w-full md:max-w-5xl transition-all duration-300"
     >
       <div
-        class="bg-white/90 backdrop-blur-md border border-white/40 shadow-xl rounded-full px-6 py-3 flex items-center justify-between"
+        class={`bg-white/90 ${!isHomepage ? "md:backdrop-blur-md" : "backdrop-blur-md"} border border-white/40 shadow-xl rounded-full px-6 py-3 flex items-center justify-between`}
       >
         <!-- Logo -->
         <a
@@ -210,84 +212,205 @@ try {
           >
         </nav>
 
-        <!-- Mobile Menu Toggle (CSS-Only Checkbox Hack) -->
+        <!-- Mobile Menu Toggle Button -->
         <label
+          for="mobileMenuCheckbox"
           class="md:hidden p-2 text-gray-600 hover:bg-gray-100 rounded-full transition-colors cursor-pointer select-none"
+          aria-label="Menüyü Aç"
         >
-          <input type="checkbox" class="peer hidden" id="mobileMenuCheckbox" />
-
-          <!-- Hamburger Icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
+            width="28"
+            height="28"
             viewBox="0 0 24 24"
             fill="none"
             stroke="currentColor"
             stroke-width="2"
             stroke-linecap="round"
             stroke-linejoin="round"
-            class="peer-checked:hidden"
           >
             <line x1="3" x2="21" y1="6" y2="6"></line>
             <line x1="3" x2="21" y1="12" y2="12"></line>
             <line x1="3" x2="21" y1="18" y2="18"></line>
           </svg>
-
-          <!-- Close Icon (Shown when checked) -->
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="24"
-            height="24"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-            class="hidden peer-checked:block"
-          >
-            <line x1="18" y1="6" x2="6" y2="18"></line>
-            <line x1="6" y1="6" x2="18" y2="18"></line>
-          </svg>
-
-          <!-- Mobile Menu Dropdown -->
-          <div
-            class="absolute top-full left-0 w-full mt-2 p-2 hidden peer-checked:block animate-in fade-in slide-in-from-top-2 duration-200"
-          >
-            <nav
-              class="bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-orange-100 overflow-hidden flex flex-col p-2"
-            >
-              <a
-                href="/"
-                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-                >Ana Sayfa</a
-              >
-              <a
-                href="/blog"
-                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-                >Yazılar</a
-              >
-              <a
-                href="/hakkimda"
-                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-                >Biyografi</a
-              >
-              <a
-                href="/uzmanlik-alanlarim"
-                class="p-3 rounded-xl text-slate-700 hover:bg-orange-50 hover:text-[#FF8A65] font-medium transition-colors"
-                >Uzmanlık Alanlarım</a
-              >
-              <a
-                href="/iletisim"
-                class="p-3 rounded-xl text-white bg-[#FF8A65] hover:bg-[#FF7043] font-bold text-center mt-2 shadow-lg shadow-orange-200"
-                >Randevu Al</a
-              >
-            </nav>
-          </div>
         </label>
       </div>
     </header>
+
+    <!-- Mobile Menu Controller -->
+    <input type="checkbox" id="mobileMenuCheckbox" class="peer hidden" />
+
+    <!-- Full Screen Mobile Menu Overlay -->
+    <div
+      class="fixed inset-0 z-[200] bg-[#fff3e0] hidden peer-checked:flex flex-col items-center justify-center animate-in fade-in duration-300 md:hidden"
+    >
+      <!-- Close Button -->
+      <label
+        for="mobileMenuCheckbox"
+        class="absolute top-6 right-6 p-3 text-slate-700 hover:bg-orange-100 rounded-full cursor-pointer transition-colors"
+        aria-label="Menüyü Kapat"
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="32"
+          height="32"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </label>
+
+      <!-- Mobile Nav Links -->
+      <nav class="flex flex-col items-center gap-6 w-full px-6">
+        <a
+          href="/"
+          class="mobile-menu-link group flex items-center justify-center gap-3 w-full p-2 text-2xl font-bold text-slate-700 hover:text-[#FF8A65] transition-colors"
+        >
+          <span>Ana Sayfa</span>
+          <svg
+            class="w-6 h-6 animate-spin text-[#FF8A65] hidden group-[.loading]:block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </a>
+        <a
+          href="/blog"
+          class="mobile-menu-link group flex items-center justify-center gap-3 w-full p-2 text-2xl font-bold text-slate-700 hover:text-[#FF8A65] transition-colors"
+        >
+          <span>Yazılar</span>
+          <svg
+            class="w-6 h-6 animate-spin text-[#FF8A65] hidden group-[.loading]:block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </a>
+        <a
+          href="/hakkimda"
+          class="mobile-menu-link group flex items-center justify-center gap-3 w-full p-2 text-2xl font-bold text-slate-700 hover:text-[#FF8A65] transition-colors"
+        >
+          <span>Biyografi</span>
+          <svg
+            class="w-6 h-6 animate-spin text-[#FF8A65] hidden group-[.loading]:block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </a>
+        <a
+          href="/uzmanlik-alanlarim"
+          class="mobile-menu-link group flex items-center justify-center gap-3 w-full p-2 text-2xl font-bold text-slate-700 hover:text-[#FF8A65] transition-colors"
+        >
+          <span>Uzmanlık Alanlarım</span>
+          <svg
+            class="w-6 h-6 animate-spin text-[#FF8A65] hidden group-[.loading]:block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </a>
+        <a
+          href="/iletisim"
+          class="mobile-menu-link group flex items-center justify-center gap-3 w-full px-8 py-3 text-xl font-bold text-white bg-[#FF8A65] hover:bg-[#FF7043] rounded-full shadow-lg shadow-orange-200 transition-all"
+        >
+          <span>Randevu Al</span>
+          <svg
+            class="w-5 h-5 animate-spin text-white hidden group-[.loading]:block"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+          >
+            <circle
+              class="opacity-25"
+              cx="12"
+              cy="12"
+              r="10"
+              stroke="currentColor"
+              stroke-width="4"></circle>
+            <path
+              class="opacity-75"
+              fill="currentColor"
+              d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+            ></path>
+          </svg>
+        </a>
+      </nav>
+    </div>
+
+    <!-- Script to handle menu state -->
+    <script>
+      document.addEventListener("astro:page-load", () => {
+        const checkbox = document.getElementById("mobileMenuCheckbox");
+        const links = document.querySelectorAll(".mobile-menu-link");
+
+        links.forEach((link) => {
+          link.addEventListener("click", () => {
+            // Instead of closing immediately, we add a loading class
+            // The menu will effectively 'close' when the new page replaces this one
+            link.classList.add("loading");
+          });
+        });
+      });
+    </script>
 
     <main class="flex-1 w-full">
       <slot />

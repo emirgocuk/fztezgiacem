@@ -17,11 +17,11 @@ try {
 <BaseLayout title="Uzmanlık Alanlarım" description={description}>
     <!-- Full Width Background Wrapper -->
     <div
-        class="w-full min-h-screen relative overflow-hidden bg-gradient-to-b from-orange-50/50 to-orange-50"
+        class="w-full min-h-screen relative overflow-hidden md:bg-gradient-to-b md:from-orange-50/50 md:to-orange-50 bg-[#FAFAFA]"
     >
         <!-- Decorative background elements -->
         <div
-            class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none"
+            class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none hidden md:block"
         >
             <div
                 class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"
@@ -195,7 +195,7 @@ try {
 </style>
 
 <script>
-    document.addEventListener("DOMContentLoaded", () => {
+    document.addEventListener("astro:page-load", () => {
         const slider = document.getElementById("cardSlider");
         const btnLeft = document.getElementById("btnLeft");
         const btnRight = document.getElementById("btnRight");
