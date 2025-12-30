@@ -3,7 +3,7 @@ import BaseLayout from "../layouts/BaseLayout.astro";
 import { pb } from "../lib/pocketbase";
 
 const description =
-    "Otizm, Hiperaktivite, Duyu Bütünleme ve daha fazlası üzerine fizyoterapi temelli yaklaşımlar.";
+    "Adana Pediatrik Fizyoterapi hizmetleri: Otizm, Hiperaktivite, Duyu Bütünleme Terapisi, Serebral Palsi ve gelişimsel takip alanlarında uzman desteği.";
 
 let specializations: any[] = [];
 try {
@@ -14,7 +14,10 @@ try {
 }
 ---
 
-<BaseLayout title="Uzmanlık Alanlarım" description={description}>
+<BaseLayout
+    title="Uzmanlık Alanlarım | Adana Pediatrik Fizyoterapist"
+    description={description}
+>
     <!-- Full Width Background Wrapper -->
     <div
         class="w-full min-h-screen relative overflow-hidden md:bg-gradient-to-b md:from-orange-50/50 md:to-orange-50 bg-[#FAFAFA]"

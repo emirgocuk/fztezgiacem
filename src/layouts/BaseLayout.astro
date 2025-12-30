@@ -5,6 +5,13 @@ import { SEO } from "astro-seo";
 import ScrollToTop from "../components/ScrollToTop.astro";
 import { ClientRouter } from "astro:transitions";
 
+// Fonts
+import "@fontsource/nunito/300.css";
+import "@fontsource/nunito/400.css";
+import "@fontsource/nunito/500.css";
+import "@fontsource/nunito/600.css";
+import "@fontsource/nunito/700.css";
+
 interface Props {
   title: string;
   description?: string;
@@ -30,7 +37,7 @@ import { pb } from "../lib/pocketbase";
 let siteSettings = {
   phone: "+905555555555",
   email: "ezgiacem97@gmail.com",
-  address: "İstanbul, Türkiye",
+  address: "Adana, Türkiye",
   social_links: {},
 };
 
@@ -57,13 +64,8 @@ try {
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
     <meta name="generator" content={Astro.generator} />
 
-    <!-- Google Fonts: Nunito (Better Turkish Support) -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+    <!-- Local Fonts: Nunito -->
+    <!-- Managed by @fontsource/nunito in the frontmatter imports -->
     <ClientRouter />
 
     <SEO
@@ -100,14 +102,22 @@ try {
         "@context": "https://schema.org",
         "@type": "Physician",
         name: "Fizyoterapist Ezgi Acem",
-        image: "https://fizyoterapist-demo.com/og-image.jpg",
-        "@id": "https://fizyoterapist-demo.com",
-        url: "https://fizyoterapist-demo.com",
+        image: "https://fztezgiacem.com/og-image.jpg",
+        "@id": "https://fztezgiacem.com",
+        url: "https://fztezgiacem.com",
         telephone: siteSettings.phone,
         email: siteSettings.email,
+        medicalSpecialty: ["Pediatric", "Physiotherapy", "Rehabilitation"],
+        knowsAbout: [
+          "Duyu Bütünleme Terapisi",
+          "Pediatrik Rehabilitasyon",
+          "Riskli Bebek Takibi",
+          "Çocuk Fizyoterapisi",
+        ],
         address: {
           "@type": "PostalAddress",
-          addressLocality: "İstanbul",
+          addressLocality: "Adana",
+          addressRegion: "Adana",
           addressCountry: "TR",
           streetAddress: siteSettings.address,
         },
@@ -140,7 +150,45 @@ try {
       body {
         font-family: "Nunito", sans-serif;
       }
+
+      /* NProgress Custom Colors */
+      #nprogress .bar {
+        background: #ff8a65 !important;
+        height: 3px !important;
+      }
+      #nprogress .peg {
+        box-shadow:
+          0 0 10px #ff8a65,
+          0 0 5px #ff8a65 !important;
+      }
+      #nprogress .spinner {
+        display: none !important; /* Hide spinner, we just want the bar */
+      }
     </style>
+
+    <script>
+      import nprogress from "nprogress";
+      import "nprogress/nprogress.css";
+
+      nprogress.configure({
+        showSpinner: false,
+        minimum: 0.1,
+        speed: 500,
+      });
+
+      // Hook into Astro's View Transitions
+      document.addEventListener("astro:before-preparation", () => {
+        nprogress.start();
+      });
+
+      document.addEventListener("astro:after-swap", () => {
+        // Prepare for the new page view
+      });
+
+      document.addEventListener("astro:page-load", () => {
+        nprogress.done();
+      });
+    </script>
   </head>
   <body
     class="bg-[#FAFAFA] text-slate-700 antialiased min-h-dvh flex flex-col relative overflow-x-hidden selection:bg-orange-200 selection:text-orange-900"

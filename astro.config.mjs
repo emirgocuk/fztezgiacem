@@ -26,10 +26,11 @@ export default defineConfig({
       { protocol: 'https', hostname: 'i.ibb.co' },
       { protocol: 'http', hostname: '127.0.0.1' },
       { protocol: 'https', hostname: 'fizyoterapist-demo.com' },
+      { protocol: 'https', hostname: 'images.unsplash.com' },
     ],
-    domains: ['i.ibb.co', '127.0.0.1'],
+    domains: ['i.ibb.co', '127.0.0.1', 'images.unsplash.com'],
   },
-  site: 'https://fizyoterapist-demo.com',
+  site: 'https://fztezgiacem.com',
   output: 'static',
   prefetch: true,
   devToolbar: {
