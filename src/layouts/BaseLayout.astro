@@ -457,6 +457,46 @@ try {
             link.classList.add("loading");
           });
         });
+
+        // Homepage preloading system for logo and desktop "Ana Sayfa" link
+        const homepageLinks = document.querySelectorAll('a[href="/"]');
+
+        homepageLinks.forEach((link) => {
+          link.addEventListener("click", async (e) => {
+            const targetHref = link.getAttribute("href");
+
+            // Only intercept if going to homepage and not already on homepage
+            if (targetHref === "/" && window.location.pathname !== "/") {
+              e.preventDefault();
+
+              // Add loading state
+              link.classList.add("pointer-events-none", "opacity-75");
+
+              try {
+                // Fetch and preload the homepage
+                const response = await fetch("/");
+
+                if (response.ok) {
+                  // Parse the HTML to ensure it's valid
+                  const html = await response.text();
+
+                  // Small guaranteed delay to ensure content is ready (300ms)
+                  await new Promise((resolve) => setTimeout(resolve, 300));
+
+                  // Now navigate
+                  window.location.href = "/";
+                } else {
+                  // If fetch fails, just navigate normally
+                  window.location.href = "/";
+                }
+              } catch (error) {
+                // On error, navigate normally
+                console.error("Preload error:", error);
+                window.location.href = "/";
+              }
+            }
+          });
+        });
       });
     </script>
 
