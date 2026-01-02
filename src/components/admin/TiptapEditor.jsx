@@ -225,10 +225,12 @@ export default function TiptapEditor({ content, targetInputId }) {
         });
     }
 
+    console.log("TiptapEditor Rendered", { editor });
+
     return (
-        <div className="border rounded-xl border-gray-300 shadow-sm bg-white w-full overflow-hidden flex flex-col">
+        <div className="border rounded-xl border-gray-300 shadow-sm bg-white w-full overflow-hidden flex flex-col min-h-[400px]">
             <MenuBar editor={editor} addImage={addImage} />
-            <div className="flex-1 bg-white cursor-text" onClick={() => editor?.chain().focus().run()}>
+            <div className="flex-1 bg-white cursor-text min-h-[300px]" onClick={() => editor?.chain().focus().run()}>
                 <EditorContent editor={editor} />
             </div>
         </div>

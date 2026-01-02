@@ -278,8 +278,8 @@ const title = "Yazıyı Düzenle";
                     btn.innerText = "Görsel Yükleniyor...";
                     const res = await fetch(croppedBase64);
                     const blob = await res.blob();
-                    const file = new File([blob], "cover_image.jpg", {
-                        type: "image/jpeg",
+                    const file = new File([blob], "cover_image.webp", {
+                        type: "image/webp",
                     });
                     imageUrl = await uploadToImgBB(file);
                 }

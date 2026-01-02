@@ -8,8 +8,14 @@ const title = "Blog | Sağlık ve Rehabilitasyon Rehberi";
 // Fetch all posts sorted by date
 let posts: Post[] = [];
 try {
-  posts = await pb.collection("posts").getFullList<Post>({
-    sort: "-published_date",
+  // Fetch all posts without server-side sort to avoid schema errors (400)
+  posts = await pb.collection("posts").getFullList<Post>();
+
+  // Client-side Sort
+  posts.sort((a, b) => {
+    const dateA = new Date(a.published_date || a.created).getTime();
+    const dateB = new Date(b.published_date || b.created).getTime();
+    return dateB - dateA; // Descending
   });
 } catch (e) {
   console.error("Error fetching blog posts:", e);
@@ -216,7 +222,7 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
           let visibleCards: HTMLElement[] = []; // List of currently matching card elements
 
           // Initialize
-          const allCards = Array.from(
+          let allCards = Array.from(
             document.querySelectorAll(".blog-card"),
           ) as HTMLElement[];
           visibleCards = allCards; // Start with all visible
@@ -414,6 +420,188 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
 
           // Initial Render
           updatePagination();
+
+          // Listen for new posts injected by the other script
+          window.addEventListener("posts-updated", () => {
+            // Re-select all cards (now including new ones)
+            allCards = Array.from(
+              document.querySelectorAll(".blog-card"),
+            ) as HTMLElement[];
+            // Re-apply filters and update pagination
+            applyFilters();
+          });
+
+          // DYNAMIC LOADING OF NEW POSTS (Hybrid Approach)
+          loadNewPosts();
+
+          async function loadNewPosts() {
+            try {
+              // Import PB dynamically or reuse if possible (but we are in a module script?)
+              // Since we didn't use type="module" explicitly, Astro bundles it.
+              // To use imports, we need the top level import.
+              // But wait, the standard <script> in Astro IS processed as a module by default.
+              // So we can just use the import at the top of the file?
+              // No, this script tag is separate. Let's rely on a separate standard import from the lib.
+            } catch (err) {
+              console.error("Failed to load new posts", err);
+            }
+          }
+        });
+      </script>
+
+      <script>
+        import { pb, getPbImageURL } from "../../lib/pocketbase";
+
+        document.addEventListener("DOMContentLoaded", async () => {
+          // We need to access the variables from the previous script scope?
+          // No, Astro scripts are modules. They don't share scope easily unless attached to window.
+          // Best to MERGE the scripts or put the logic here.
+
+          // Check existing IDs
+          const grid = document.querySelector(".grid");
+          if (!grid) return;
+
+          // Map existing cards by ID for easy lookup
+          const existingCards = new Map(
+            Array.from(document.querySelectorAll(".blog-card")).map((el) => [
+              el.getAttribute("data-id"),
+              el as HTMLElement,
+            ]),
+          );
+
+          try {
+            // Fetch latest posts (safest method: no server-side sort)
+            let latestPosts = await pb.collection("posts").getFullList();
+
+            // Client-side Sort
+            latestPosts.sort((a, b) => {
+              const dateA = new Date(a.published_date || a.created).getTime();
+              const dateB = new Date(b.published_date || b.created).getTime();
+              return dateB - dateA; // Descending
+            });
+
+            let newPostsCount = 0;
+
+            // Iterate locally reversed (if we want to prepend correctly in order)
+            // actually latestPosts is sorted Newest -> Oldest.
+            // We want to insert them at the BEGINNING.
+            // So we iterate in reverse order of the array, so the newest ends up at the very top?
+            // No, just iterate normally and prepend, but be careful with order.
+            // If we have [New1, New2] and we prepend New1 then New2 -> [New2, New1, Old...]
+            // So we should iterate in reverse: start with oldest new post, prepend it, then newer..
+            // Or just generate HTML for all new ones and prepend as a block.
+
+            // 1. Create a Set of Live IDs for validation
+            const liveIds = new Set(latestPosts.map((p) => p.id));
+
+            // 2. Hide Deleted Posts: If a card exists in DOM but not in Live DB, hide it
+            let deletedCount = 0;
+            existingCards.forEach((card, id) => {
+              if (id && !liveIds.has(id)) {
+                card.remove(); // Safely remove from DOM to prevent ghost content
+                deletedCount++;
+              }
+            });
+
+            if (deletedCount > 0) {
+              console.log(
+                `Removed ${deletedCount} deleted posts from view.Syncing with DB...`,
+              );
+              // Dispatch event to update counts/pagination after removal
+              window.dispatchEvent(new CustomEvent("posts-updated"));
+            }
+
+            const newPosts = latestPosts.filter(
+              (p) => !existingCards.has(p.id),
+            );
+
+            if (newPosts.length === 0) return;
+
+            console.log(`Found ${newPosts.length} new posts. Injecting...`);
+
+            // Create HTML for new posts
+            // We need to reverse them so when we prepend one by one (or insertAdjacentHTML all), order is kept.
+            // If we use insertAdjacentHTML('afterbegin', ...), the first string becomes first.
+            // HTML: Post1 + Post2...
+
+            const newHtml = newPosts
+              .map((post) => {
+                const dateStr = new Date(
+                  post.published_date || post.created,
+                ).toLocaleDateString("tr-TR", {
+                  day: "numeric",
+                  month: "long",
+                  year: "numeric",
+                });
+                const readTime = Math.ceil(
+                  (post.content?.split(/\s+/).length || 0) / 200,
+                );
+                const imageUrl = post.image
+                  ? getPbImageURL(post.collectionId, post.id, post.image)
+                  : null;
+
+                // Construct Card HTML (matches SSR template)
+                return `
+            <article
+              class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 blog-card h-full flex flex-col cat-${post.category?.replace(/ /g, "-")}"
+              data-id="${post.id}"
+              style="display: none;" 
+            >
+              <a href="/blog/${post.slug}" class="flex flex-col h-full">
+                <div class="block aspect-video bg-gray-200 overflow-hidden relative">
+                  ${
+                    imageUrl
+                      ? `<img src="${imageUrl}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" loading="lazy" />`
+                      : `<div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">Görsel Yok</div>`
+                  }
+                </div>
+                <div class="p-8 flex flex-col flex-grow">
+                  <div class="mb-4">
+                    <span class="inline-block text-xs font-bold text-[#1E3A1A] bg-green-50 px-3 py-1 rounded-full">
+                      ${post.category}
+                    </span>
+                  </div>
+                  <h3 class="text-xl md:text-2xl font-bold mb-3 text-slate-800 group-hover:text-[#FF8A65] transition-colors">
+                    ${post.title}
+                  </h3>
+                  <p class="text-gray-600 text-base line-clamp-3 mb-6 flex-grow">
+                    ${post.summary}
+                  </p>
+                  <div class="flex items-center justify-between text-sm text-gray-400 mt-auto pt-4 border-t border-gray-50">
+                    <span>${dateStr}</span>
+                    <span class="flex items-center gap-1">
+                      ${readTime} dk okuma
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 group-hover:translate-x-1 transition-transform">
+                          <path d="M5 12h14" />
+                          <path d="m12 5 7 7-7 7" />
+                      </svg>
+                    </span>
+                  </div>
+                </div>
+              </a>
+            </article>
+                     `;
+              })
+              .join("");
+
+            // Inject
+            grid.insertAdjacentHTML("afterbegin", newHtml);
+
+            // Now we need to trigger re-init of pagination/filters
+            // Since the variables are in the other script block (module scope isolation?),
+            // we might have trouble if we don't merge them.
+            // Actually, <script> in .astro without type="module" runs in global scope?
+            // No, Astro scripts are processed.
+            // I should probably merge the scripts into one <script> block.
+            // But I can't easily merge imports into a non-prepared script.
+
+            // LET'S MERGE THE LOGIC into ONE script block if possible, or trigger a custom event.
+
+            // Dispatch event telling the other script to re-scan
+            window.dispatchEvent(new CustomEvent("posts-updated"));
+          } catch (e) {
+            console.error("Client side fetch failed", e);
+          }
         });
       </script>
 
@@ -422,6 +610,7 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
           posts.map((post) => (
             <article
               class={`bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 blog-card h-full flex flex-col cat-${post.category?.replace(/ /g, "-")}`}
+              data-id={post.id}
             >
               <a href={`/blog/${post.slug}`} class="flex flex-col h-full">
                 <div class="block aspect-video bg-gray-200 overflow-hidden relative">

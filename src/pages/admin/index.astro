@@ -82,13 +82,29 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
       try {
         // console.log("Fetching posts...");
         // Fetch all posts
-        allPosts = await pb.collection("posts").getFullList<Post>();
+        // Fetch all posts
+        // Try to sort by published_date, fallback to created if field missing/error
+        // Fetch all posts (safest method: no server-side sort to avoid schema errors)
+        try {
+          allPosts = await pb.collection("posts").getFullList<Post>();
+          console.log("Fetched posts:", allPosts.length);
+        } catch (e: any) {
+          console.error("Default fetch failed. Trying list...", e);
+          // Fallback to getList
+          const result = await pb.collection("posts").getList<Post>(1, 50);
+          allPosts = result.items;
+        }
 
-        // Client-side sort
-        allPosts.sort(
-          (a, b) =>
-            new Date(b.created).getTime() - new Date(a.created).getTime(),
-        );
+        // Client-side sort (Double check)
+        allPosts.sort((a, b) => {
+          const dateA = a.published_date
+            ? new Date(a.published_date)
+            : new Date(a.created);
+          const dateB = b.published_date
+            ? new Date(b.published_date)
+            : new Date(b.created);
+          return dateB.getTime() - dateA.getTime(); // Descending (Newest first)
+        });
 
         renderAll();
       } catch (err: any) {
@@ -193,7 +209,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                     </td>
                     <td class="px-6 py-4 text-right whitespace-nowrap">
                         <div class="flex items-center justify-end gap-3 text-sm">
-                             <a href="/admin/posts/edit?id=${post.id}" class="text-gray-500 hover:text-[#1E3A1A] font-medium transition-colors">Düzenle</a>
+                             <a href="/admin/posts/edit/?id=${post.id}" class="text-gray-500 hover:text-[#1E3A1A] font-medium transition-colors">Düzenle</a>
                              <button class="text-gray-400 hover:text-red-600 transition-colors delete-btn" data-id="${post.id}" title="Sil">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
                              </button>
@@ -244,7 +260,7 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
                 </div>
 
                 <div class="flex gap-3 pt-2 border-t border-gray-50 mt-1">
-                    <a href="/admin/posts/edit?id=${post.id}" class="flex-1 bg-gray-50 text-gray-700 hover:bg-gray-100 text-center py-2.5 rounded-xl text-sm font-bold transition-colors">
+                    <a href="/admin/posts/edit/?id=${post.id}" class="flex-1 bg-gray-50 text-gray-700 hover:bg-gray-100 text-center py-2.5 rounded-xl text-sm font-bold transition-colors">
                         Düzenle
                     </a>
                     <button class="w-12 flex items-center justify-center bg-red-50 text-red-600 hover:bg-red-100 rounded-xl transition-colors delete-btn" data-id="${post.id}" title="Sil">

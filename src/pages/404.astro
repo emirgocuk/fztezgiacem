@@ -40,3 +40,153 @@ import BaseLayout from "../layouts/BaseLayout.astro";
         </div>
     </div>
 </BaseLayout>
+
+<script>
+    import { pb, getPbImageURL } from "../lib/pocketbase";
+
+    document.addEventListener("DOMContentLoaded", async () => {
+        const path = window.location.pathname;
+
+        // Check if we are in a blog route
+        // Path might be /blog/my-slug or /blog/my-slug/
+        const blogMatch = path.match(/^\/blog\/([^/]+)\/?$/);
+
+        if (blogMatch) {
+            const slug = blogMatch[1];
+            console.log("Checking if dynamic post exists:", slug);
+
+            const container = document.querySelector(".min-h-\\[70vh\\]");
+            if (container) {
+                // Show Loading State
+                container.innerHTML = `
+            <div class="flex flex-col items-center justify-center py-20 space-y-4">
+                <div class="w-12 h-12 border-4 border-green-200 border-t-[#1E3A1A] rounded-full animate-spin"></div>
+                <p class="text-gray-500 font-medium">Yazı kontrol ediliyor...</p>
+            </div>
+          `;
+
+                try {
+                    const post = await pb
+                        .collection("posts")
+                        .getFirstListItem(`slug="${slug}"`);
+
+                    if (post) {
+                        // Render Post (Mimic [slug].astro)
+                        const wordsPerMinute = 200;
+                        const content = post.content || "";
+                        const textLength = content.split(/\s+/).length;
+                        const readTime = Math.ceil(textLength / wordsPerMinute);
+
+                        const imageURL = post.image
+                            ? `${getPbImageURL(post.collectionId, post.id, post.image)}?thumb=1200x675`
+                            : null;
+
+                        const dateStr = new Date(
+                            post.published_date || post.created,
+                        ).toLocaleDateString("tr-TR", {
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                        });
+
+                        // Replace Header/Layout parts slightly if possible or just inject the Main Article
+                        // Access the BaseLayout standard container
+
+                        const mainContent = `
+   <div class="relative min-h-screen pt-36 pb-20 overflow-hidden md:bg-gradient-to-b md:from-orange-50/50 md:to-white bg-[#FAFAFA]">
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10 pointer-events-none hidden md:block">
+      <div class="absolute top-[-10%] right-[-5%] w-96 h-96 bg-yellow-200/40 rounded-full blur-3xl animate-blob"></div>
+      <div class="absolute bottom-[-10%] left-[-5%] w-96 h-96 bg-blue-200/40 rounded-full blur-3xl animate-blob animation-delay-2000"></div>
+    </div>
+
+    <article class="max-w-4xl mx-auto px-4 relative z-10 transition-opacity duration-500 opacity-0 animate-[fadeIn_0.5s_ease-out_forwards]">
+      <div class="mb-8 text-center">
+        <span class="inline-block bg-green-100 text-[#1E3A1A] text-sm font-semibold px-3 py-1 rounded-full mb-4">
+          ${post.category || "Genel"}
+        </span>
+        <h1 class="text-3xl md:text-5xl font-bold text-gray-900 mb-6 leading-tight">
+          ${post.title}
+        </h1>
+
+        <div class="flex items-center justify-center gap-6 text-gray-500 text-sm">
+          <time>${dateStr}</time>
+          <div class="flex items-center gap-1">
+            <span>⏱</span>
+            ${readTime} dk okuma
+          </div>
+          <div class="flex items-center gap-1 ml-4">
+            <span>👁️</span>
+            <span>${post.views || 0}</span>
+          </div>
+        </div>
+      </div>
+
+      ${
+          imageURL
+              ? `
+      <div class="mb-12 rounded-2xl overflow-hidden shadow-lg w-full h-auto">
+        <img src="${imageURL}" alt="${post.title}" width="1200" height="675" class="w-full h-auto object-cover" />
+      </div>
+      `
+              : ""
+      }
+
+      <div class="prose prose-lg prose-green mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100">
+        ${post.content}
+      </div>
+
+      <div class="mt-12 text-center">
+        <a href="/blog" class="inline-flex items-center gap-2 text-[#1E3A1A] font-semibold hover:underline">
+          <span>←</span> Blog'a Dön
+        </a>
+      </div>
+    </article>
+   </div>`;
+
+                        // Replace the entire BaseLayout slot content if possible.
+                        // Since we are inside BaseLayout > slot, the parent of 'container' is usually the slot wrapper or body.
+                        // We can just replace the 'min-h-[70vh]' div with the new content.
+
+                        // However, 'BaseLayout' has a <main> or similar?
+                        // Let's just swap the container.
+                        container.outerHTML = mainContent;
+
+                        // Update Page Title
+                        document.title = `${post.title} | Fzt. Ezgi Acem`;
+
+                        // Increment View Count (Optimistic)
+                        pb.collection("posts")
+                            .update(post.id, {
+                                views: (post.views || 0) + 1,
+                            })
+                            .catch((e) => console.error("View inc failed", e));
+                    }
+                } catch (err) {
+                    console.error("Not a dynamic post or error:", err);
+                    // Restore 404 (or just leave the loading spinner failed? Better to revert)
+                    // Since we replaced innerHTML, we might want to revert if failed.
+                    // But 'container' variable still holds reference to the element.
+                    container.innerHTML = `
+            <div class="space-y-6 max-w-lg mx-auto">
+                <div class="relative">
+                    <span class="text-9xl font-bold text-gray-100 select-none">404</span>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                        <span class="text-6xl">🤔</span>
+                    </div>
+                </div>
+                <h1 class="text-3xl md:text-4xl font-bold text-[#1E3A1A]">Ops! Yazı Bulunamadı</h1>
+                <p class="text-gray-600 text-lg">
+                    Aradığınız yazı henüz yayınlanmamış veya silinmiş olabilir.
+                </p>
+                <div class="pt-6">
+                    <a href="/" class="inline-flex items-center gap-2 px-8 py-3 bg-[#1E3A1A] text-white rounded-full font-medium hover:bg-[#2d5527] transition-colors shadow-lg hover:shadow-xl">
+                        <span>←</span> Ana Sayfaya Dön
+                    </a>
+                </div>
+            </div>
+              `;
+                }
+            }
+        }
+    });
+</script>
