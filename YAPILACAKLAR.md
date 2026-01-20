@@ -1,35 +1,81 @@
 # Yapılacaklar Listesi
 
-- [x] SSS eklenecek
-<<<<<<< HEAD
-- [x] Pediatrik fizyoterapist diye anılacak
-- [x] Fizyoterapi temelli duyu bütünleme terapisi
-- [x] Daha çocuksu renklendirmeler yapılacak
-- [x] Dyu bütünleme ile ilgili website içerisinde yer ver.
-- [x] Header kısmı biraz daha süslenecek.
-- [x] Mobil için uzmanlık alanlarımda slider oku veya kaydırmayı belirleyen şeyler eklenecek.
-- [ ] Cloudflare email routing ve brevo ile mail alma verme işlerini hallet
-- [ ] PWA (Progressive Web App) desteği ekle
-- [ ] İletişim formu entegrasyonu (PocketBase)
-- [ ] Docker konteynerizasyon yapısı kur (Docker Compose)
+> **Son Güncelleme**: 20 Ocak 2026
 
-## Öneriler (Gelecek Planları)
-- [ ] **Otomatik Yedekleme Sistemi:** Sunucudaki verilerin (PocketBase) her gece otomatik olarak bir bulut alanına (Google Drive/S3) yedeklenmesi. Bir kriz anında hayat kurtarır.
-- [ ] **İnteraktif Gelişim Testi (Quiz):** Ebeveynler için "Çocuğumda duruş bozukluğu var mı?" gibi basit, 5-6 soruluk bir test. Sonucunda "Riskli olabilir, değerlendirme öneriyoruz" diyerek WhatsApp'a yönlendiren bir yapı. Müthiş etkileşim sağlar.
-- [ ] **Google Haritalar Yorum Entegrasyonu:** Google Business hesabındaki gerçek yorumları sitenin altına şık bir slider ile çekmek. Güven verir.
-- [ ] **Randevu Ön Talep Sistemi:** Sadece bir form değil, basit bir takvim görünümü ile (Calendly entegrasyonu veya özel yapı) "Müsait zamanı seç" özelliği.
-- [ ] **E-Bülten / Rehber İndirme:** "Evde Yapılabilecek 5 Temel Egzersiz" PDF'i karşılığında ziyaretçinin mailini alma (Lead Magnet). Sonrasında bu kişilere bilgilendirme maili atılabilir.
-- [ ] **Güvenlik İyileştirmeleri:** Security Headers, Rate Limiting, Form güvenliği.
-- [ ] **SEO İyileştirmeleri:** Schema markup (MedicalBusiness) detaylandırma.
-- [ ] **Performans:** Görsel optimizasyonları (otomatik WebP dönüşümü - kısmen yapıldı).
-=======
-- [x] Pediatrik fizyoterapist diye anılacak <!-- id: 6 -->x
-- [x] Fizyoterapi temelli duyu bütünleme terapisi <!-- id:  -->x
-- [x] Daha çocuksu renklendirmeler yapılacak <!-- id: 5 -->x- [x] yazılar kısmında hastalıklar ile ilgili şeyler için şuanimasyon kulxanxılacak https://codepen.io/rpsthecoder/pen/EaPREMe
-- [x] Dyu bütünleme ile ilgili website içerisinde yer ver. Amerikada bir kadxn yapmaya başlamış ilk olarak. 
-- [x] Header kısmı biraz daha süslenecek. 
-- [x] Mobil için uzmanlık alanlarımda slider oku veya kaydırmayı belirleyen şeylr eklenecek.
-- [ ] Cloudflare email routing ve brevo ile mail alma verme işlerini hallet 
-- [ ] PWA (Progressive Web App) desteği ekle
-- [ ] İletişim formu entegrasyonu (PocketBase)
->>>>>>> a0a5951afd4bdfdb76e462b59043cbcf1e482b9b
+## ✅ Tamamlananlar
+
+- [x] SSS (Sık Sorulan Sorular) eklendi
+- [x] Pediatrik fizyoterapist olarak tanıtım
+- [x] Fizyoterapi temelli duyu bütünleme terapisi
+- [x] Çocuksu renklendirmeler ve tasarım
+- [x] Duyu bütünleme ile ilgili içerik
+- [x] Header süslemeleri
+- [x] Mobil slider okları (uzmanlık alanları)
+- [x] SSR geçişi (yeni postlar anında görünüyor)
+- [x] İletişim formu email entegrasyonu
+- [x] SEO optimizasyonları
+- [x] WebP görsel optimizasyonu
+
+---
+
+## 🔴 Öncelikli - Yapılacak
+
+### 1. Email Pazarlama Sistemi
+- [ ] Lead capture form component oluştur
+- [ ] PocketBase'de `subscribers` collection
+- [ ] Brevo API entegrasyonu (subscriber ekleme)
+- [ ] Otomatik email dizisi kurulumu (Brevo'da)
+- [ ] Homepage'de popup/slide-in form
+- [ ] Blog yazılarının sonunda email formu
+- [ ] KVKK onay metni
+
+### 2. İnteraktif Gelişim Testi (Quiz)
+- [ ] `/quiz` sayfası oluştur
+- [ ] Quiz soruları hazırla (6-8 soru)
+- [ ] React form component
+- [ ] Skor hesaplama mantığı
+- [ ] Sonuç sayfası tasarımı
+- [ ] Email capture entegrasyonu
+- [ ] WhatsApp yönlendirme butonu
+- [ ] PocketBase'e quiz sonuçlarını kaydet
+
+### 3. PDF Lead Magnet
+- [ ] "Evde 5 Duyu Bütünleme Egzersizi" PDF hazırla
+- [ ] Download sayfası/modal
+- [ ] Email karşılığı indirme akışı
+
+---
+
+## 🟡 Orta Öncelik
+
+### 4. PWA (Progressive Web App)
+- [ ] Service Worker ekle
+- [ ] Web App Manifest
+- [ ] Offline fallback sayfası
+- [ ] Install prompt
+
+### 5. Kod Temizliği
+- [ ] Blog sayfasındaki gereksiz client-side scripts temizle
+- [ ] Environment variables düzenle
+
+---
+
+## 🟢 Gelecekte (Klinik Açıldığında)
+
+- [ ] Google Reviews widget
+- [ ] Randevu/Calendly entegrasyonu
+- [ ] Çoklu lokasyon desteği
+
+---
+
+## 📊 İlerleme
+
+| Kategori | Durum |
+|----------|-------|
+| Core Website | ✅ Tamamlandı |
+| Admin Panel | ✅ Tamamlandı |
+| SEO | ✅ Tamamlandı |
+| Email Sistemi (gelen) | ✅ Tamamlandı |
+| Email Pazarlama | 🔴 Başlanmadı |
+| Quiz | 🔴 Başlanmadı |
+| PWA | 🟡 Beklemede |

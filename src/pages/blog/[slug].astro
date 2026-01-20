@@ -1,25 +1,22 @@
 ---
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { pb, type Post, getPbImageURL } from "../../lib/pocketbase";
+import LeadCaptureForm from "../../components/LeadCaptureForm.jsx";
 
-export async function getStaticPaths() {
-  try {
-    const posts = await pb.collection("posts").getFullList<Post>();
-    return posts.map((post) => ({
-      params: { slug: post.slug },
-      props: { post },
-    }));
-  } catch (error) {
-    console.error("Critical Error in getStaticPaths:", error);
-    // Return empty array to allow build to proceed (but pages won't be generated)
-    // or throw to crash explicitly
-    return [];
-  }
+// SSR Mode: Get slug from URL params and fetch post dynamically
+const { slug } = Astro.params;
+
+let post: Post | null = null;
+
+try {
+  // Fetch post by slug
+  post = await pb.collection("posts").getFirstListItem<Post>(`slug="${slug}"`);
+} catch (error) {
+  console.error("Error fetching post:", error);
+  // Post not found - will redirect to 404 below
 }
 
-const { post } = Astro.props;
-
-// Guard clause for missing post (should usually be handled by getStaticPaths/404)
+// Guard clause for missing post
 if (!post) {
   return Astro.redirect("/404");
 }
@@ -67,12 +64,17 @@ const schemaData = {
 ---
 
 <BaseLayout
-  title={post.title}
-  description={post.summary}
+  title={post.seo_title || post.title}
+  description={post.seo_description || post.summary}
   image={imageURL}
   articleDate={post.published_date}
   showBackgroundEffects={false}
 >
+  {
+    post.keywords && (
+      <meta slot="head" name="keywords" content={post.keywords} />
+    )
+  }
   <!-- Schema.org JSON-LD -->
   <script
     is:inline
@@ -139,7 +141,8 @@ const schemaData = {
       <script>
         import PocketBase from "pocketbase";
 
-        const pb = new PocketBase("http://127.0.0.1:8090");
+        // Use relative URL - Nginx proxies /api/ to PocketBase
+        const pb = new PocketBase("/");
 
         async function updateViewCount() {
           const viewCountEl = document.getElementById("view-count");
@@ -232,6 +235,15 @@ const schemaData = {
         class="prose prose-lg prose-green mx-auto bg-white p-8 md:p-12 rounded-2xl shadow-sm border border-gray-100"
       >
         <Fragment set:html={post.content} />
+      </div>
+
+      <div class="max-w-2xl mx-auto mt-12">
+        <LeadCaptureForm
+          client:visible
+          source={`blog_post_${post.slug}`}
+          title="Bu yazıyı beğendiniz mi?"
+          className="bg-orange-50/50 border-orange-100"
+        />
       </div>
 
       {/* Share / Tags / Navigation potentially here */}

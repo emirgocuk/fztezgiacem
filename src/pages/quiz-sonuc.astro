@@ -1,0 +1,36 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import QuizResult from "../components/QuizResult.jsx";
+
+const title = "Test Sonucunuz | Fizyoterapist Ezgi Acem";
+const description =
+    "Duyu Bütünleme Farkındalık Testi sonucunuzu görüntüleyin ve size özel önerileri inceleyin.";
+---
+
+<BaseLayout title={title} description={description}>
+    <div class="min-h-screen pt-36 pb-20 relative overflow-hidden bg-[#FAFAFA]">
+        <!-- Background Decor -->
+        <div
+            class="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none"
+        >
+            <div
+                class="absolute top-[-10%] right-[-10%] w-[500px] h-[500px] bg-purple-200/30 rounded-full blur-3xl"
+            >
+            </div>
+            <div
+                class="absolute bottom-[-10%] left-[-10%] w-[500px] h-[500px] bg-orange-200/30 rounded-full blur-3xl"
+            >
+            </div>
+        </div>
+
+        <div class="container mx-auto px-4 relative z-10">
+            <div class="text-center mb-12">
+                <h1 class="text-3xl md:text-4xl font-bold text-slate-800">
+                    Test Sonucunuz
+                </h1>
+            </div>
+
+            <QuizResult client:only="react" />
+        </div>
+    </div>
+</BaseLayout>

@@ -4,6 +4,7 @@ import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
+import node from '@astrojs/node';
 
 import sitemap from '@astrojs/sitemap';
 
@@ -31,7 +32,10 @@ export default defineConfig({
     domains: ['i.ibb.co', '127.0.0.1', 'images.unsplash.com'],
   },
   site: 'https://fztezgiacem.com',
-  output: 'static',
+  output: 'server',
+  adapter: node({
+    mode: 'standalone'
+  }),
   prefetch: true,
   devToolbar: {
     enabled: false

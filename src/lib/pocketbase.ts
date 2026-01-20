@@ -28,6 +28,11 @@ export interface Post {
   views: number;
   is_featured?: boolean;
   featured_order?: number;
+
+  // SEO Fields
+  seo_title?: string;
+  seo_description?: string;
+  keywords?: string;
 }
 
 // Helper to get image URL

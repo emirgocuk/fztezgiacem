@@ -104,217 +104,346 @@ const title = "Yazıyı Düzenle";
                 </div>
             </div>
 
-            <div>
-                <label class="block text-sm font-medium text-gray-700 mb-2"
-                    >İçerik</label
+            <!-- SEO Section -->
+            <div class="md:col-span-2 border-t pt-6 mt-2">
+                <h3
+                    class="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2"
                 >
-                <TiptapEditor
-                    client:only="react"
-                    content=""
-                    targetInputId="contentHidden"
-                />
-                <input
-                    type="text"
-                    name="content"
-                    id="contentHidden"
-                    class="opacity-0 h-1 pointer-events-none"
-                />
-            </div>
+                    <span>🔍</span> SEO Ayarları
+                </h3>
+                <div
+                    class="grid grid-cols-1 md:grid-cols-2 gap-6 bg-gray-50 p-6 rounded-xl border border-gray-200"
+                >
+                    <!-- SEO Title -->
+                    <div class="md:col-span-2">
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                            SEO Başlığı <span
+                                class="text-xs text-gray-500 font-normal"
+                                >(Opsiyonel - Google'da görünecek başlık)</span
+                            >
+                        </label>
+                        <input
+                            type="text"
+                            name="seo_title"
+                            maxlength="60"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                            placeholder="Örn: Bel Ağrısı Tedavisi | Fzt. Ezgi Acem"
+                        />
+                        <div class="text-right text-xs text-gray-400 mt-1">
+                            <span id="seoTitleCount">0</span>/60
+                        </div>
+                    </div>
 
-            <div class="flex justify-end pt-4">
-                <button
-                    type="submit"
-                    id="submitBtn"
-                    class="bg-[#1E3A1A] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#1E3A1A]/90 transition"
-                >
-                    Güncelle
-                </button>
+                    <!-- SEO Description -->
+                    <div class="md:col-span-2">
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                            SEO Açıklaması <span
+                                class="text-xs text-gray-500 font-normal"
+                                >(Opsiyonel - Meta Description)</span
+                            >
+                        </label>
+                        <textarea
+                            name="seo_description"
+                            rows="2"
+                            maxlength="160"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none resize-none"
+                            placeholder="Arama sonuçlarında görünecek kısa açıklama..."
+                        ></textarea>
+                        <div class="text-right text-xs text-gray-400 mt-1">
+                            <span id="seoDescCount">0</span>/160
+                        </div>
+                    </div>
+
+                    <!-- Keywords -->
+                    <div class="md:col-span-2">
+                        <label
+                            class="block text-sm font-medium text-gray-700 mb-1"
+                        >
+                            Anahtar Kelimeler <span
+                                class="text-xs text-gray-500 font-normal"
+                                >(Virgülle ayırın)</span
+                            >
+                        </label>
+                        <input
+                            type="text"
+                            name="keywords"
+                            class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[#1E3A1A] outline-none"
+                            placeholder="fizyoterapi, adana, bel ağrısı, manuel terapi"
+                        />
+                    </div>
+                </div>
             </div>
         </form>
+
+        <div>
+            <label class="block text-sm font-medium text-gray-700 mb-2"
+                >İçerik</label
+            >
+            <TiptapEditor
+                client:only="react"
+                content=""
+                targetInputId="contentHidden"
+            />
+            <input
+                type="text"
+                name="content"
+                id="contentHidden"
+                class="opacity-0 h-1 pointer-events-none"
+            />
+        </div>
+
+        <div class="flex justify-end pt-4">
+            <button
+                type="submit"
+                id="submitBtn"
+                class="bg-[#1E3A1A] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#1E3A1A]/90 transition"
+            >
+                Güncelle
+            </button>
+        </div>
     </div>
+</AdminLayout>
 
-    <script>
-        import { pb } from "../../../lib/pocketbase";
-        import { uploadToImgBB } from "../../../lib/imgbb";
+<script>
+    import { pb } from "../../../lib/pocketbase";
+    import { uploadToImgBB } from "../../../lib/imgbb";
 
-        // Turkish Character Map
-        const trMap: { [key: string]: string } = {
-            ç: "c",
-            ğ: "g",
-            ş: "s",
-            ü: "u",
-            ö: "o",
-            ı: "i",
-            Ç: "c",
-            Ğ: "g",
-            Ş: "s",
-            Ü: "u",
-            Ö: "o",
-            İ: "i",
-        };
+    // Turkish Character Map
+    const trMap: { [key: string]: string } = {
+        ç: "c",
+        ğ: "g",
+        ş: "s",
+        ü: "u",
+        ö: "o",
+        ı: "i",
+        Ç: "c",
+        Ğ: "g",
+        Ş: "s",
+        Ü: "u",
+        Ö: "o",
+        İ: "i",
+    };
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const postId = urlParams.get("id");
-        const form = document.getElementById("postForm") as HTMLFormElement;
-        const loadingState = document.getElementById("loadingState");
-        let post: any;
+    const urlParams = new URLSearchParams(window.location.search);
+    const postId = urlParams.get("id");
+    const form = document.getElementById("postForm") as HTMLFormElement;
+    const loadingState = document.getElementById("loadingState");
+    let post: any;
 
-        if (!postId) {
-            alert("Hata: Yazı ID bulunamadı.");
+    if (!postId) {
+        alert("Hata: Yazı ID bulunamadı.");
+        window.location.href = "/admin";
+    }
+
+    async function init() {
+        try {
+            if (!postId) return;
+            post = await pb.collection("posts").getOne(postId);
+
+            // Fill Form
+            (document.getElementById("postId") as HTMLInputElement).value =
+                post.id;
+            (
+                document.querySelector(
+                    'input[name="title"]',
+                ) as HTMLInputElement
+            ).value = post.title;
+            (
+                document.querySelector('input[name="slug"]') as HTMLInputElement
+            ).value = post.slug;
+            (
+                document.querySelector(
+                    'select[name="category"]',
+                ) as HTMLSelectElement
+            ).value = post.category || "Genel";
+            (
+                document.querySelector(
+                    'textarea[name="summary"]',
+                ) as HTMLTextAreaElement
+            ).value = post.summary || "";
+
+            // SEO Fields
+            (
+                document.querySelector(
+                    'input[name="seo_title"]',
+                ) as HTMLInputElement
+            ).value = post.seo_title || "";
+            (
+                document.querySelector(
+                    'textarea[name="seo_description"]',
+                ) as HTMLTextAreaElement
+            ).value = post.seo_description || "";
+            (
+                document.querySelector(
+                    'input[name="keywords"]',
+                ) as HTMLInputElement
+            ).value = post.keywords || "";
+
+            // Trigger input events to update counters
+            document
+                .querySelector('input[name="seo_title"]')
+                ?.dispatchEvent(new Event("input"));
+            document
+                .querySelector('textarea[name="seo_description"]')
+                ?.dispatchEvent(new Event("input"));
+
+            if (post.published_date) {
+                (
+                    document.querySelector(
+                        'input[name="published_date"]',
+                    ) as HTMLInputElement
+                ).value = new Date(post.published_date)
+                    .toISOString()
+                    .split("T")[0];
+            }
+
+            if (post.image) {
+                const setImageInterval = setInterval(() => {
+                    window.dispatchEvent(
+                        new CustomEvent("set-initial-image", {
+                            detail: post.image,
+                        }),
+                    );
+                }, 500);
+                setTimeout(() => clearInterval(setImageInterval), 3000);
+            }
+
+            const content = post.content || "";
+            const setContentInterval = setInterval(() => {
+                const event = new CustomEvent("set-tiptap-content", {
+                    detail: content,
+                });
+                window.dispatchEvent(event);
+            }, 500);
+
+            setTimeout(() => clearInterval(setContentInterval), 3000);
+            (
+                document.getElementById("contentHidden") as HTMLInputElement
+            ).value = content;
+
+            loadingState?.classList.add("hidden");
+            form?.classList.remove("hidden");
+        } catch (err: any) {
+            alert("Yazı yüklenirken hata: " + err.message);
             window.location.href = "/admin";
         }
+    }
 
-        async function init() {
-            try {
-                if (!postId) return;
-                post = await pb.collection("posts").getOne(postId);
+    init();
 
-                // Fill Form
-                (document.getElementById("postId") as HTMLInputElement).value =
-                    post.id;
-                (
-                    document.querySelector(
-                        'input[name="title"]',
-                    ) as HTMLInputElement
-                ).value = post.title;
-                (
-                    document.querySelector(
-                        'input[name="slug"]',
-                    ) as HTMLInputElement
-                ).value = post.slug;
-                (
-                    document.querySelector(
-                        'select[name="category"]',
-                    ) as HTMLSelectElement
-                ).value = post.category || "Genel";
-                (
-                    document.querySelector(
-                        'textarea[name="summary"]',
-                    ) as HTMLTextAreaElement
-                ).value = post.summary || "";
-
-                if (post.published_date) {
-                    (
-                        document.querySelector(
-                            'input[name="published_date"]',
-                        ) as HTMLInputElement
-                    ).value = new Date(post.published_date)
-                        .toISOString()
-                        .split("T")[0];
-                }
-
-                if (post.image) {
-                    const setImageInterval = setInterval(() => {
-                        window.dispatchEvent(
-                            new CustomEvent("set-initial-image", {
-                                detail: post.image,
-                            }),
-                        );
-                    }, 500);
-                    setTimeout(() => clearInterval(setImageInterval), 3000);
-                }
-
-                const content = post.content || "";
-                const setContentInterval = setInterval(() => {
-                    const event = new CustomEvent("set-tiptap-content", {
-                        detail: content,
-                    });
-                    window.dispatchEvent(event);
-                }, 500);
-
-                setTimeout(() => clearInterval(setContentInterval), 3000);
-                (
-                    document.getElementById("contentHidden") as HTMLInputElement
-                ).value = content;
-
-                loadingState?.classList.add("hidden");
-                form?.classList.remove("hidden");
-            } catch (err: any) {
-                alert("Yazı yüklenirken hata: " + err.message);
-                window.location.href = "/admin";
-            }
-        }
-
-        init();
-
-        document
-            .querySelector('input[name="title"]')
-            ?.addEventListener("input", (e) => {
-                const val = (e.target as HTMLInputElement).value;
-                let slug = val
-                    .split("")
-                    .map((c) => trMap[c] || c)
-                    .join("")
-                    .toLowerCase();
-                slug = slug
-                    .replace(/[^a-z0-9\s-]/g, "")
-                    .replace(/\s+/g, "-")
-                    .replace(/-+/g, "-");
-                const slugInput = document.querySelector(
-                    'input[name="slug"]',
-                ) as HTMLInputElement;
-                if (slugInput) slugInput.value = slug;
-            });
-
-        form?.addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const btn = document.getElementById(
-                "submitBtn",
-            ) as HTMLButtonElement;
-            const originalText = btn.innerText;
-            const contentInput = document.getElementById(
-                "contentHidden",
+    document
+        .querySelector('input[name="title"]')
+        ?.addEventListener("input", (e) => {
+            const val = (e.target as HTMLInputElement).value;
+            let slug = val
+                .split("")
+                .map((c) => trMap[c] || c)
+                .join("")
+                .toLowerCase();
+            slug = slug
+                .replace(/[^a-z0-9\s-]/g, "")
+                .replace(/\s+/g, "-")
+                .replace(/-+/g, "-");
+            const slugInput = document.querySelector(
+                'input[name="slug"]',
             ) as HTMLInputElement;
+            if (slugInput) slugInput.value = slug;
+        });
 
-            try {
-                btn.disabled = true;
-                btn.innerText = "Güncelleniyor...";
-
-                const formData = new FormData(form);
-                let imageUrl = "";
-
-                const croppedBase64 = formData.get("cropped_image") as string;
-                if (croppedBase64 && croppedBase64.startsWith("data:image")) {
-                    btn.innerText = "Görsel Yükleniyor...";
-                    const res = await fetch(croppedBase64);
-                    const blob = await res.blob();
-                    const file = new File([blob], "cover_image.webp", {
-                        type: "image/webp",
-                    });
-                    imageUrl = await uploadToImgBB(file);
-                }
-
-                let isoDate = "";
-                let pDate = formData.get("published_date");
-                if (pDate) {
-                    let d = new Date(pDate as string);
-                    if (!isNaN(d.getTime())) isoDate = d.toISOString();
-                }
-
-                const data: any = {
-                    title: formData.get("title"),
-                    slug: formData.get("slug"),
-                    category: formData.get("category"),
-                    summary: formData.get("summary"),
-                    published_date: isoDate || null,
-                    content: contentInput.value,
-                };
-                if (imageUrl) {
-                    data.image = imageUrl;
-                }
-
-                if (!postId) throw new Error("ID Missing");
-
-                await pb.collection("posts").update(postId, data);
-                alert("Güncelleme başarılı!");
-                window.location.href = "/admin";
-            } catch (err: any) {
-                console.error(err);
-                alert("Hata: " + err.message);
-            } finally {
-                btn.disabled = false;
-                btn.innerText = originalText;
+    // SEO Character Counters
+    document
+        .querySelector('input[name="seo_title"]')
+        ?.addEventListener("input", (e) => {
+            const el = e.target as HTMLInputElement;
+            const count = el.value.length;
+            const countEl = document.getElementById("seoTitleCount");
+            if (countEl) {
+                countEl.innerText = String(count);
+                countEl.parentElement!.classList.toggle(
+                    "text-red-500",
+                    count > 60,
+                );
             }
         });
-    </script>
-</AdminLayout>
+
+    document
+        .querySelector('textarea[name="seo_description"]')
+        ?.addEventListener("input", (e) => {
+            const el = e.target as HTMLTextAreaElement;
+            const count = el.value.length;
+            const countEl = document.getElementById("seoDescCount");
+            if (countEl) {
+                countEl.innerText = String(count);
+                countEl.parentElement!.classList.toggle(
+                    "text-red-500",
+                    count > 160,
+                );
+            }
+        });
+
+    form?.addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const btn = document.getElementById("submitBtn") as HTMLButtonElement;
+        const originalText = btn.innerText;
+        const contentInput = document.getElementById(
+            "contentHidden",
+        ) as HTMLInputElement;
+
+        try {
+            btn.disabled = true;
+            btn.innerText = "Güncelleniyor...";
+
+            const formData = new FormData(form);
+            let imageUrl = "";
+
+            const croppedBase64 = formData.get("cropped_image") as string;
+            if (croppedBase64 && croppedBase64.startsWith("data:image")) {
+                btn.innerText = "Görsel Yükleniyor...";
+                const res = await fetch(croppedBase64);
+                const blob = await res.blob();
+                const file = new File([blob], "cover_image.webp", {
+                    type: "image/webp",
+                });
+                imageUrl = await uploadToImgBB(file);
+            }
+
+            let isoDate = "";
+            let pDate = formData.get("published_date");
+            if (pDate) {
+                let d = new Date(pDate as string);
+                if (!isNaN(d.getTime())) isoDate = d.toISOString();
+            }
+
+            const data: any = {
+                title: formData.get("title"),
+                slug: formData.get("slug"),
+                category: formData.get("category"),
+                summary: formData.get("summary"),
+                published_date: isoDate || null,
+                content: contentInput.value,
+                seo_title: formData.get("seo_title"),
+                seo_description: formData.get("seo_description"),
+                keywords: formData.get("keywords"),
+            };
+            if (imageUrl) {
+                data.image = imageUrl;
+            }
+
+            if (!postId) throw new Error("ID Missing");
+
+            await pb.collection("posts").update(postId, data);
+            alert("Güncelleme başarılı!");
+            window.location.href = "/admin";
+        } catch (err: any) {
+            console.error(err);
+            alert("Hata: " + err.message);
+        } finally {
+            btn.disabled = false;
+            btn.innerText = originalText;
+        }
+    });
+</script>

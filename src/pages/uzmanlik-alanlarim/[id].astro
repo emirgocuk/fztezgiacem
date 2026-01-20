@@ -2,31 +2,31 @@
 import BaseLayout from "../../layouts/BaseLayout.astro";
 import { pb } from "../../lib/pocketbase";
 
-// Generate static paths for all specializations
-export const prerender = true;
+// SSR Mode: Get id/slug from URL params and fetch record dynamically
+const { id } = Astro.params;
 
-export async function getStaticPaths() {
-    console.log("Building Specialization Paths...");
-    try {
-        const records = await pb
-            .collection("specializations")
-            .getFullList({ requestKey: null });
-        return records.map((record) => {
-            // Create paths for both ID and Slug to be safe, or just prefer Slug if available
-            // Here we render the page for the unique identifier used in the URL
-            const paramId = record.slug || record.id;
-            return {
-                params: { id: paramId },
-                props: { record },
-            };
-        });
-    } catch (e) {
-        console.error("Error fetching specializations:", e);
-        return [];
-    }
+if (!id) {
+    return Astro.redirect("/404");
 }
 
-const { record } = Astro.props;
+let record;
+
+try {
+    // Try to find by ID first, then by slug if using slugs
+    // Using getFirstListItem to support both ID lookup or Slug lookup if we wanted
+    // But standard usage here is likely ID or Slug passed as param.
+    // Let's try to fetch by ID or filter by slug if it fails.
+    try {
+        record = await pb.collection("specializations").getOne(id);
+    } catch {
+        // If getOne fails (invalid ID format), try slug
+        record = await pb
+            .collection("specializations")
+            .getFirstListItem(`slug="${id}"`);
+    }
+} catch (e) {
+    console.error("Error fetching specialization:", e);
+}
 
 if (!record) {
     return Astro.redirect("/404");

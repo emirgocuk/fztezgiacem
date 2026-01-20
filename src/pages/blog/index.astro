@@ -30,7 +30,7 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
   description="Fizyoterapi, egzersiz ve sağlıklı yaşam üzerine güncel makaleler."
 >
   <section
-    class="pt-28 pb-20 relative overflow-hidden md:bg-gradient-to-b md:from-orange-50/50 md:to-white bg-[#FAFAFA] min-h-screen"
+    class="pt-28 pb-20 relative md:bg-gradient-to-b md:from-orange-50/50 md:to-white bg-[#FAFAFA] min-h-screen"
   >
     <!-- Decorative background elements -->
     <div
@@ -55,6 +55,7 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
           <div class="relative">
             <button
               id="filterBtn"
+              type="button"
               class="flex items-center gap-2 px-4 py-2 bg-white border border-gray-200 rounded-full text-gray-600 hover:text-[#1E3A1A] hover:border-[#1E3A1A] transition-all shadow-sm group"
             >
               <svg
@@ -86,7 +87,7 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
             {/* Filter Dropdown */}
             <div
               id="filterDropdown"
-              class="hidden absolute top-full left-0 mt-3 w-64 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-xl p-4 z-30 origin-top-left transition-all animate-in fade-in slide-in-from-top-2"
+              class="hidden absolute top-full left-0 mt-3 w-64 bg-white/95 backdrop-blur-xl border border-gray-100 rounded-2xl shadow-xl p-4 z-30 origin-top-left transition-all"
             >
               <div class="flex items-center justify-between mb-3 px-1">
                 <h3
@@ -206,27 +207,27 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
       </div>
 
       <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        import { pb, getPbImageURL } from "../../lib/pocketbase";
+
+        function initBlog() {
           const filterBtn = document.getElementById("filterBtn");
           const filterDropdown = document.getElementById("filterDropdown");
           const closeFilter = document.getElementById("closeFilter");
           const clearFiltersBtn = document.getElementById("clearFiltersBtn");
           const categoryBtns = document.querySelectorAll(".category-btn");
-          const searchInput = document.getElementById(
-            "searchInput",
-          ) as HTMLInputElement | null;
+          const searchInput = document.getElementById("searchInput");
           const totalPostsCountEl = document.getElementById("totalPostsCount");
+          const grid = document.querySelector(".grid");
 
           let currentPage = 1;
           const itemsPerPage = 10;
-          let visibleCards: HTMLElement[] = []; // List of currently matching card elements
+          let visibleCards = [];
 
-          // Initialize
-          let allCards = Array.from(
-            document.querySelectorAll(".blog-card"),
-          ) as HTMLElement[];
-          visibleCards = allCards; // Start with all visible
+          // Initialize with currently present cards
+          let allCards = Array.from(document.querySelectorAll(".blog-card"));
+          visibleCards = allCards;
 
+          // --- Pagination & Filter Logic ---
           function updatePagination() {
             const totalItems = visibleCards.length;
             const totalPages = Math.ceil(totalItems / itemsPerPage);
@@ -253,23 +254,21 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
             renderPaginationControls(totalPages);
           }
 
-          function renderPaginationControls(totalPages: number) {
+          function renderPaginationControls(totalPages) {
             const containerId = "paginationControls";
             let container = document.getElementById(containerId);
 
             if (!container) {
-              // Create container if missing
               container = document.createElement("div");
               container.id = containerId;
               container.className =
                 "flex justify-center items-center gap-4 mt-12";
-              const grid = document.querySelector(".grid");
               if (grid) grid.after(container);
             }
 
-            if (container) container.innerHTML = "";
+            container.innerHTML = "";
 
-            if (totalPages <= 1) return; // No controls needed
+            if (totalPages <= 1) return;
 
             // Prev Button
             const prevBtn = document.createElement("button");
@@ -283,13 +282,13 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }
             };
-            container?.appendChild(prevBtn);
+            container.appendChild(prevBtn);
 
             // Page Info
             const info = document.createElement("span");
             info.className = "text-slate-500 font-medium text-sm";
             info.innerText = `Sayfa ${currentPage} / ${totalPages}`;
-            container?.appendChild(info);
+            container.appendChild(info);
 
             // Next Button
             const nextBtn = document.createElement("button");
@@ -303,25 +302,14 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }
             };
-            container?.appendChild(nextBtn);
+            container.appendChild(nextBtn);
           }
 
-          // Search Logic
-          const handleSearch = (e: Event) => {
-            const target = e.target as HTMLInputElement;
-            const val = target.value.toLowerCase();
-            applyFilters(val);
-          };
-          searchInput?.addEventListener("input", handleSearch);
-
-          // Combined Filter Logic
-          const applyFilters = (searchTerm: string | null = null) => {
-            // 1. Determine active categories
+          const applyFilters = (searchTerm = null) => {
             const activeCats = Array.from(
               document.querySelectorAll(".category-btn.bg-green-50"),
             ).map((btn) => btn.getAttribute("data-category"));
 
-            // 2. Determine search term (use passed or current value)
             const currentSearch =
               searchTerm !== null
                 ? searchTerm
@@ -329,7 +317,6 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
                   ? searchInput.value.toLowerCase()
                   : "";
 
-            // 3. Filter the list
             visibleCards = allCards.filter((card) => {
               const text = card.innerText.toLowerCase();
               const matchesSearch = text.includes(currentSearch);
@@ -350,12 +337,17 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
               return matchesSearch && matchesCat;
             });
 
-            // 4. Reset to page 1 and update UI
             currentPage = 1;
             updatePagination();
           };
 
-          // Toggle Filter Menu
+          // Event Listeners
+          if (searchInput) {
+            searchInput.addEventListener("input", (e) => {
+              applyFilters(e.target.value.toLowerCase());
+            });
+          }
+
           filterBtn?.addEventListener("click", (e) => {
             e.stopPropagation();
             filterDropdown?.classList.toggle("hidden");
@@ -365,33 +357,29 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
             filterDropdown?.classList.add("hidden");
           });
 
-          // Clear Filters
           clearFiltersBtn?.addEventListener("click", () => {
-            categoryBtns.forEach((btn) => deselect(btn as HTMLButtonElement));
+            categoryBtns.forEach((btn) => deselect(btn));
             applyFilters();
           });
 
-          // Click Outside
           document.addEventListener("click", (e) => {
             if (
               filterDropdown &&
               !filterDropdown.classList.contains("hidden")
             ) {
-              const target = e.target as Node;
               if (
-                !filterDropdown.contains(target) &&
+                !filterDropdown.contains(e.target) &&
                 filterBtn &&
-                !filterBtn.contains(target)
+                !filterBtn.contains(e.target)
               ) {
                 filterDropdown.classList.add("hidden");
               }
             }
           });
 
-          // Category Selection
           categoryBtns.forEach((btn) => {
             btn.addEventListener("click", (e) => {
-              const btnEl = e.currentTarget as HTMLButtonElement;
+              const btnEl = e.currentTarget;
               if (btnEl.classList.contains("bg-green-50")) {
                 deselect(btnEl);
               } else {
@@ -401,7 +389,7 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
             });
           });
 
-          function select(btn: HTMLButtonElement) {
+          function select(btn) {
             btn.classList.remove("text-gray-600");
             btn.classList.add("bg-green-50", "text-green-900", "font-bold");
             if (!btn.querySelector(".check-icon")) {
@@ -412,197 +400,99 @@ const categories = [...new Set(posts.map((p) => p.category).filter(Boolean))];
             }
           }
 
-          function deselect(btn: HTMLButtonElement) {
+          function deselect(btn) {
             btn.classList.remove("bg-green-50", "text-green-900", "font-bold");
             btn.classList.add("text-gray-600");
             btn.querySelector(".check-icon")?.remove();
           }
 
-          // Initial Render
+          // Initial Filter Apply
           updatePagination();
 
-          // Listen for new posts injected by the other script
-          window.addEventListener("posts-updated", () => {
-            // Re-select all cards (now including new ones)
-            allCards = Array.from(
-              document.querySelectorAll(".blog-card"),
-            ) as HTMLElement[];
-            // Re-apply filters and update pagination
-            applyFilters();
-          });
+          // --- Live Post Injection ---
+          (async () => {
+            if (!grid) return;
 
-          // DYNAMIC LOADING OF NEW POSTS (Hybrid Approach)
-          loadNewPosts();
-
-          async function loadNewPosts() {
             try {
-              // Import PB dynamically or reuse if possible (but we are in a module script?)
-              // Since we didn't use type="module" explicitly, Astro bundles it.
-              // To use imports, we need the top level import.
-              // But wait, the standard <script> in Astro IS processed as a module by default.
-              // So we can just use the import at the top of the file?
-              // No, this script tag is separate. Let's rely on a separate standard import from the lib.
-            } catch (err) {
-              console.error("Failed to load new posts", err);
-            }
-          }
-        });
-      </script>
-
-      <script>
-        import { pb, getPbImageURL } from "../../lib/pocketbase";
-
-        document.addEventListener("DOMContentLoaded", async () => {
-          // We need to access the variables from the previous script scope?
-          // No, Astro scripts are modules. They don't share scope easily unless attached to window.
-          // Best to MERGE the scripts or put the logic here.
-
-          // Check existing IDs
-          const grid = document.querySelector(".grid");
-          if (!grid) return;
-
-          // Map existing cards by ID for easy lookup
-          const existingCards = new Map(
-            Array.from(document.querySelectorAll(".blog-card")).map((el) => [
-              el.getAttribute("data-id"),
-              el as HTMLElement,
-            ]),
-          );
-
-          try {
-            // Fetch latest posts (safest method: no server-side sort)
-            let latestPosts = await pb.collection("posts").getFullList();
-
-            // Client-side Sort
-            latestPosts.sort((a, b) => {
-              const dateA = new Date(a.published_date || a.created).getTime();
-              const dateB = new Date(b.published_date || b.created).getTime();
-              return dateB - dateA; // Descending
-            });
-
-            let newPostsCount = 0;
-
-            // Iterate locally reversed (if we want to prepend correctly in order)
-            // actually latestPosts is sorted Newest -> Oldest.
-            // We want to insert them at the BEGINNING.
-            // So we iterate in reverse order of the array, so the newest ends up at the very top?
-            // No, just iterate normally and prepend, but be careful with order.
-            // If we have [New1, New2] and we prepend New1 then New2 -> [New2, New1, Old...]
-            // So we should iterate in reverse: start with oldest new post, prepend it, then newer..
-            // Or just generate HTML for all new ones and prepend as a block.
-
-            // 1. Create a Set of Live IDs for validation
-            const liveIds = new Set(latestPosts.map((p) => p.id));
-
-            // 2. Hide Deleted Posts: If a card exists in DOM but not in Live DB, hide it
-            let deletedCount = 0;
-            existingCards.forEach((card, id) => {
-              if (id && !liveIds.has(id)) {
-                card.remove(); // Safely remove from DOM to prevent ghost content
-                deletedCount++;
-              }
-            });
-
-            if (deletedCount > 0) {
-              console.log(
-                `Removed ${deletedCount} deleted posts from view.Syncing with DB...`,
+              const existingCardsMap = new Map(
+                Array.from(document.querySelectorAll(".blog-card")).map(
+                  (el) => [el.getAttribute("data-id"), el],
+                ),
               );
-              // Dispatch event to update counts/pagination after removal
-              window.dispatchEvent(new CustomEvent("posts-updated"));
-            }
 
-            const newPosts = latestPosts.filter(
-              (p) => !existingCards.has(p.id),
-            );
+              let latestPosts = await pb.collection("posts").getFullList();
 
-            if (newPosts.length === 0) return;
+              // Sort Descending Date
+              latestPosts.sort((a, b) => {
+                const dateA = new Date(a.published_date || a.created).getTime();
+                const dateB = new Date(b.published_date || b.created).getTime();
+                return dateB - dateA;
+              });
 
-            console.log(`Found ${newPosts.length} new posts. Injecting...`);
+              // Filter out existing
+              const newPosts = latestPosts.filter(
+                (p) => !existingCardsMap.has(p.id),
+              );
 
-            // Create HTML for new posts
-            // We need to reverse them so when we prepend one by one (or insertAdjacentHTML all), order is kept.
-            // If we use insertAdjacentHTML('afterbegin', ...), the first string becomes first.
-            // HTML: Post1 + Post2...
+              if (newPosts.length === 0) return;
 
-            const newHtml = newPosts
-              .map((post) => {
-                const dateStr = new Date(
-                  post.published_date || post.created,
-                ).toLocaleDateString("tr-TR", {
-                  day: "numeric",
-                  month: "long",
-                  year: "numeric",
-                });
-                const readTime = Math.ceil(
-                  (post.content?.split(/\s+/).length || 0) / 200,
-                );
-                const imageUrl = post.image
-                  ? getPbImageURL(post.collectionId, post.id, post.image)
-                  : null;
+              // Generate HTML
+              const newHtml = newPosts
+                .map((post) => {
+                  const dateStr = new Date(
+                    post.published_date || post.created,
+                  ).toLocaleDateString("tr-TR", {
+                    day: "numeric",
+                    month: "long",
+                    year: "numeric",
+                  });
+                  const readTime = Math.ceil(
+                    (post.content?.split(/\s+/).length || 0) / 200,
+                  );
+                  const imageUrl = post.image
+                    ? getPbImageURL(post.collectionId, post.id, post.image)
+                    : null;
 
-                // Construct Card HTML (matches SSR template)
-                return `
-            <article
-              class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 blog-card h-full flex flex-col cat-${post.category?.replace(/ /g, "-")}"
-              data-id="${post.id}"
-              style="display: none;" 
-            >
+                  return `
+            <article class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 group border border-gray-100 blog-card h-full flex flex-col cat-${post.category?.replace(/ /g, "-")}" data-id="${post.id}" style="display: none;">
               <a href="/blog/${post.slug}" class="flex flex-col h-full">
                 <div class="block aspect-video bg-gray-200 overflow-hidden relative">
-                  ${
-                    imageUrl
-                      ? `<img src="${imageUrl}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" loading="lazy" />`
-                      : `<div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">Görsel Yok</div>`
-                  }
+                  ${imageUrl ? `<img src="${imageUrl}" alt="${post.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-700" loading="lazy" />` : `<div class="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100">Görsel Yok</div>`}
                 </div>
                 <div class="p-8 flex flex-col flex-grow">
                   <div class="mb-4">
-                    <span class="inline-block text-xs font-bold text-[#1E3A1A] bg-green-50 px-3 py-1 rounded-full">
-                      ${post.category}
-                    </span>
+                    <span class="inline-block text-xs font-bold text-[#1E3A1A] bg-green-50 px-3 py-1 rounded-full">${post.category}</span>
                   </div>
-                  <h3 class="text-xl md:text-2xl font-bold mb-3 text-slate-800 group-hover:text-[#FF8A65] transition-colors">
-                    ${post.title}
-                  </h3>
-                  <p class="text-gray-600 text-base line-clamp-3 mb-6 flex-grow">
-                    ${post.summary}
-                  </p>
+                  <h3 class="text-xl md:text-2xl font-bold mb-3 text-slate-800 group-hover:text-[#FF8A65] transition-colors">${post.title}</h3>
+                  <p class="text-gray-600 text-base line-clamp-3 mb-6 flex-grow">${post.summary}</p>
                   <div class="flex items-center justify-between text-sm text-gray-400 mt-auto pt-4 border-t border-gray-50">
                     <span>${dateStr}</span>
-                    <span class="flex items-center gap-1">
-                      ${readTime} dk okuma
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 group-hover:translate-x-1 transition-transform">
-                          <path d="M5 12h14" />
-                          <path d="m12 5 7 7-7 7" />
-                      </svg>
-                    </span>
+                    <span class="flex items-center gap-1">${readTime} dk okuma</span>
                   </div>
                 </div>
               </a>
-            </article>
-                     `;
-              })
-              .join("");
+            </article>`;
+                })
+                .join("");
 
-            // Inject
-            grid.insertAdjacentHTML("afterbegin", newHtml);
+              // Insert at the beginning of grid
+              grid.insertAdjacentHTML("afterbegin", newHtml);
 
-            // Now we need to trigger re-init of pagination/filters
-            // Since the variables are in the other script block (module scope isolation?),
-            // we might have trouble if we don't merge them.
-            // Actually, <script> in .astro without type="module" runs in global scope?
-            // No, Astro scripts are processed.
-            // I should probably merge the scripts into one <script> block.
-            // But I can't easily merge imports into a non-prepared script.
+              // Update lists and re-run filter
+              allCards = Array.from(document.querySelectorAll(".blog-card"));
+              visibleCards = allCards; // or re-filter if search was active, but simpler to reset
+              applyFilters();
+            } catch (e) {
+              console.error("Error fetching new posts:", e);
+            }
+          })();
+        }
 
-            // LET'S MERGE THE LOGIC into ONE script block if possible, or trigger a custom event.
+        // Run on load
+        initBlog();
 
-            // Dispatch event telling the other script to re-scan
-            window.dispatchEvent(new CustomEvent("posts-updated"));
-          } catch (e) {
-            console.error("Client side fetch failed", e);
-          }
-        });
+        // Support View Transitions
+        document.addEventListener("astro:page-load", initBlog);
       </script>
 
       <div class="grid grid-cols-1 gap-12 max-w-3xl mx-auto">
