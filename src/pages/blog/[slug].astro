@@ -141,8 +141,10 @@ const schemaData = {
       <script>
         import PocketBase from "pocketbase";
 
-        // Use relative URL - Nginx proxies /api/ to PocketBase
-        const pb = new PocketBase("/");
+        // Use Absolute URL for Client-Side (Browser)
+        // Since we are not proxying /api/ on the main domain (Coolify handles it via subdomains)
+        // we must point directly to the PocketBase subdomain.
+        const pb = new PocketBase("https://pb.fztezgiacem.com");
 
         async function updateViewCount() {
           const viewCountEl = document.getElementById("view-count");
