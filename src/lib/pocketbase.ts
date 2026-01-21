@@ -5,9 +5,15 @@ import PocketBase from 'pocketbase';
 // - If Server-Side (SSR): Use direct local address (fastest, reliable internal network)
 // - If Client-Side (Browser): Use relative URL "/" (Proxied by Vite/Ngrok automatically)
 const isServer = typeof window === 'undefined';
-const DEFAULT_URL = isServer ? 'http://127.0.0.1:8090' : '/';
 
-const PB_URL = import.meta.env.PUBLIC_POCKETBASE_URL || DEFAULT_URL;
+// Docker Environment Logic
+// Server (SSR): Needs to talk to 'pocketbase' container directly.
+// Client (Browser): Needs to talk to 'localhost:8090' (Host).
+const internalURL = isServer ? (process.env.INTERNAL_POCKETBASE_URL || 'http://pocketbase:8090') : null;
+const publicURL = import.meta.env.PUBLIC_POCKETBASE_URL || 'http://localhost:8090';
+
+const PB_URL = internalURL || publicURL;
+
 export const pb = new PocketBase(PB_URL);
 
 // TypeScript Interface for 'posts' collection
@@ -40,5 +46,7 @@ export function getPbImageURL(collectionId: string, recordId: string, fileName: 
   if (fileName.startsWith('http')) {
     return fileName;
   }
-  return `${PB_URL}/api/files/${collectionId}/${recordId}/${fileName}`;
+  // Images are always accessed by the client (browser), so we must use the Public URL.
+  // Even if this runs on SSR, the resulting HTML <img src="..."> must point to the public address.
+  return `${publicURL}/api/files/${collectionId}/${recordId}/${fileName}`;
 }

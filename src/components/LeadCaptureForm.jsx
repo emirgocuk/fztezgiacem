@@ -28,7 +28,7 @@ const LeadCaptureForm = ({
         setMessage("");
 
         try {
-            const res = await fetch("/api/subscribe", {
+            const res = await fetch("/actions/subscribe", {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

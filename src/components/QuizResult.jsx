@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ResultContactForm from './ResultContactForm';
 
 export default function QuizResult() {
     const [score, setScore] = useState(0);
@@ -56,9 +57,13 @@ export default function QuizResult() {
                 </a>
             </div>
 
-            <a href="/quiz" className="text-slate-400 hover:text-slate-600 text-sm font-semibold underline">
+            <a href="/quiz" className="text-slate-400 hover:text-slate-600 text-sm font-semibold underline block mb-8">
                 Testi Tekrarla
             </a>
+
+            <div className="border-t border-slate-100 pt-8">
+                <ResultContactForm />
+            </div>
         </div>
     );
 }
