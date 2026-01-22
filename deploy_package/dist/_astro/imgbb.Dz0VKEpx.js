@@ -1,1 +1,0 @@
-async function r(o){const s="8ab17bcf2c1347f94a929352547a29ba",e=new FormData;e.append("image",o);const a=await(await fetch(`https://api.imgbb.com/1/upload?key=${s}`,{method:"POST",body:e})).json();if(!a.success)throw new Error(a.error?.message||"Resim yükleme başarısız.");return a.data.url}export{r as u};

@@ -13,7 +13,12 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
-      allowedHosts: ['.ngrok-free.app'],
+      allowedHosts: [
+        '.ngrok-free.app',
+        'fztezgiacem.com',
+        'www.fztezgiacem.com',
+        '45.155.19.221'
+      ],
       proxy: {
         '/api': 'http://127.0.0.1:8090',
         '/_/': 'http://127.0.0.1:8090',

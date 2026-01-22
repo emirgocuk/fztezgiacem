@@ -158,3 +158,6 @@ Desktop.ini
 # Test results
 test-results/
 playwright-report/
+
+# Legacy Deployment Archive
+legacy_archive/
