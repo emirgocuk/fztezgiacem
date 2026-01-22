@@ -10,16 +10,20 @@ import sitemap from '@astrojs/sitemap';
 
 // https://astro.build/config
 export default defineConfig({
+  server: {
+    host: '0.0.0.0',
+    port: 4321,
+    allowedHosts: [
+      '.ngrok-free.app',
+      'fztezgiacem.com',
+      'www.fztezgiacem.com',
+      '45.155.19.221'
+    ]
+  },
   vite: {
     plugins: [tailwindcss()],
     server: {
-      allowedHosts: [
-        '.ngrok-free.app',
-        'fztezgiacem.com',
-        'www.fztezgiacem.com',
-        '45.155.19.221'
-      ],
-      proxy: {
+       proxy: {
         '/api': process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090',
         '/_/': process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090',
       }
