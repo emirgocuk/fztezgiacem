@@ -20,8 +20,8 @@ export default defineConfig({
         '45.155.19.221'
       ],
       proxy: {
-        '/api': 'http://127.0.0.1:8090',
-        '/_/': 'http://127.0.0.1:8090',
+        '/api': process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090',
+        '/_/': process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090',
       }
     }
   },
