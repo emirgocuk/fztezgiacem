@@ -15,7 +15,8 @@ try {
     # Check if remote folder exists first (suppress error if not)
     scp -r "$User@${ServerIP}:$RemotePath/pb_data" "$LocalBackupPath"
     Write-Host "   Database backup saved to: $LocalBackupPath" -ForegroundColor Green
-} catch {
+}
+catch {
     Write-Host "   Warning: Could not download pb_data. Maybe it doesn't exist yet?" -ForegroundColor Magenta
 }
 
@@ -38,13 +39,14 @@ scp -r dist start_remote.sh "$User@${ServerIP}:$RemotePath"
 Write-Host "5. Restoring database..." -ForegroundColor Yellow
 if (Test-Path "$LocalBackupPath\pb_data") {
     scp -r "$LocalBackupPath\pb_data" "$User@${ServerIP}:$RemotePath"
-} else {
+}
+else {
     Write-Host "   No database backup found to restore (clean install?)." -ForegroundColor Gray
 }
 
 # 6. Start Services
 Write-Host "6. Starting remote services..." -ForegroundColor Yellow
-ssh "$User@$ServerIP" "chmod +x $RemotePath/start_remote.sh && cd $RemotePath && ./start_remote.sh"
+ssh "$User@$ServerIP" "sed -i 's/\r$//' $RemotePath/start_remote.sh && chmod +x $RemotePath/start_remote.sh && cd $RemotePath && ./start_remote.sh"
 
 Write-Host "=== Deployment Successful! ===" -ForegroundColor Green
 Write-Host "Verify at https://fztezgiacem.com" -ForegroundColor White
