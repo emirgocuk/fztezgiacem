@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { pb } from "../lib/pocketbase";
 
 const LeadCaptureForm = ({
     source = "newsletter",
@@ -28,29 +29,29 @@ const LeadCaptureForm = ({
         setMessage("");
 
         try {
-            const res = await fetch("/actions/subscribe", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, source }),
+            // Direct PocketBase Call (Client-Side)
+            await pb.collection("subscribers").create({
+                email,
+                source,
+                active: true
             });
 
-            const data = await res.json();
-
-            if (res.ok && data.success) {
-                setStatus("success");
-                setMessage(successMessage);
-                setEmail("");
-                if (onSuccess) onSuccess();
-            } else {
-                setStatus("error");
-                setMessage(data.message || "Bir hata oluştu.");
-            }
+            // Simulate success since PB create worked
+            setStatus("success");
+            setMessage(successMessage);
+            setEmail("");
+            if (onSuccess) onSuccess();
         } catch (err) {
             console.error(err);
             setStatus("error");
-            setMessage(" Bağlantı hatası. Lütfen tekrar deneyin.");
+            // Check for unique constraint (400) - treat as success "Already subscribed" or show error
+            // If status 400, it's likely "email already exists"
+            if (err.status === 400) {
+                setStatus("success");
+                setMessage("Zaten abonesiniz veya e-posta geçersiz.");
+            } else {
+                setMessage("Bağlantı hatası. Lütfen tekrar deneyin.");
+            }
         }
     };
 
@@ -82,8 +83,9 @@ const LeadCaptureForm = ({
                     </p>
                 )}
 
-                <form onSubmit={handleSubmit} className="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-                    <div className="flex-grow">
+
+                <form onSubmit={handleSubmit} className="flex flex-col gap-3 max-w-lg mx-auto">
+                    <div className="w-full">
                         <label htmlFor="email" className="sr-only">Email Adresi</label>
                         <input
                             type="email"
@@ -99,7 +101,7 @@ const LeadCaptureForm = ({
                     <button
                         type="submit"
                         disabled={status === "loading"}
-                        className={buttonClassName || "whitespace-nowrap bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"}
+                        className={buttonClassName || "w-full whitespace-nowrap bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-8 rounded-lg transition-all transform hover:scale-[1.02] active:scale-[0.98] shadow-md hover:shadow-lg disabled:opacity-70 disabled:cursor-not-allowed flex items-center justify-center"}
                     >
                         {status === "loading" ? (
                             <>
@@ -114,7 +116,7 @@ const LeadCaptureForm = ({
                         )}
                     </button>
                 </form>
-                <p className="text-xs text-gray-400 mt-4">
+                <p className="text-xs text-gray-400 mt-4 text-center">
                     İstediğiniz zaman tek tıkla abonelikten çıkabilirsiniz.
                 </p>
             </div>

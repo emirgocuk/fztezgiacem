@@ -9,8 +9,10 @@ const isServer = typeof window === 'undefined';
 // Docker Environment Logic
 // Server (SSR): Needs to talk to 'pocketbase' container directly.
 // Client (Browser): Needs to talk to 'localhost:8090' (Host).
-const internalURL = isServer ? (process.env.INTERNAL_POCKETBASE_URL || 'http://pocketbase:8090') : null;
-const publicURL = import.meta.env.PUBLIC_POCKETBASE_URL || 'http://localhost:8090';
+const internalURL = isServer ? (process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090') : null;
+const publicURL = import.meta.env.PROD
+  ? 'https://pb.fztezgiacem.com'
+  : (import.meta.env.PUBLIC_POCKETBASE_URL || 'http://localhost:8090');
 
 const PB_URL = internalURL || publicURL;
 

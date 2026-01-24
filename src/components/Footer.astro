@@ -43,7 +43,9 @@ const currentYear = new Date().getFullYear();
     </div>
 
     <div class="container mx-auto px-4 relative z-20">
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12 text-center">
+        <div
+            class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-12 text-center"
+        >
             <!-- Quick Links -->
             <div>
                 <h4
@@ -186,23 +188,78 @@ const currentYear = new Date().getFullYear();
                 >
                     Çalışma Saatleri
                 </h4>
-                <div
-                    class="bg-white/10 rounded-lg p-4 backdrop-blur-sm max-w-xs mx-auto"
-                >
-                    <ul class="space-y-2 text-sm">
-                        <li class="flex justify-between">
-                            <span class="opacity-80">Pzt - Cuma:</span>
-                            <span class="font-medium">09:00 - 18:00</span>
-                        </li>
-                        <li class="flex justify-between">
-                            <span class="opacity-80">Cumartesi:</span>
-                            <span class="font-medium">10:00 - 15:00</span>
-                        </li>
-                        <li class="flex justify-between text-red-200">
-                            <span class="opacity-80">Pazar:</span>
-                            <span class="font-medium">Kapalı</span>
-                        </li>
-                    </ul>
+
+                <!-- Mobile: Cards -->
+                <div class="flex flex-col gap-3 max-w-xs mx-auto md:hidden">
+                    <div
+                        class="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">🗓️</span>
+                                <span class="text-sm font-medium text-gray-800"
+                                    >Pzt - Cuma</span
+                                >
+                            </div>
+                            <span class="text-sm font-semibold text-gray-800"
+                                >09:00 - 18:00</span
+                            >
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-white/10 backdrop-blur-sm rounded-lg p-3 border border-white/20"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">📅</span>
+                                <span class="text-sm font-medium text-gray-800"
+                                    >Cumartesi</span
+                                >
+                            </div>
+                            <span class="text-sm font-semibold text-gray-800"
+                                >10:00 - 15:00</span
+                            >
+                        </div>
+                    </div>
+
+                    <div
+                        class="bg-red-500/20 backdrop-blur-sm rounded-lg p-3 border border-red-300/30"
+                    >
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center gap-2">
+                                <span class="text-xl">🚫</span>
+                                <span class="text-sm font-medium text-red-800"
+                                    >Pazar</span
+                                >
+                            </div>
+                            <span class="text-sm font-semibold text-red-800"
+                                >Kapalı</span
+                            >
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Desktop: Single Table -->
+                <div class="hidden md:block">
+                    <div
+                        class="bg-black/20 rounded-lg p-4 backdrop-blur-sm max-w-xs mx-auto border border-white/10"
+                    >
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex justify-between">
+                                <span class="opacity-90">Pzt - Cuma:</span>
+                                <span class="font-medium">09:00 - 18:00</span>
+                            </li>
+                            <li class="flex justify-between">
+                                <span class="opacity-90">Cumartesi:</span>
+                                <span class="font-medium">10:00 - 15:00</span>
+                            </li>
+                            <li class="flex justify-between text-red-200">
+                                <span class="opacity-90">Pazar:</span>
+                                <span class="font-medium">Kapalı</span>
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

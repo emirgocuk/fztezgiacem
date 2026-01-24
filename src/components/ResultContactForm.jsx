@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { pb } from "../lib/pocketbase";
 
 export default function ResultContactForm() {
     const [formData, setFormData] = useState({
@@ -14,31 +15,17 @@ export default function ResultContactForm() {
         setStatus('loading');
 
         try {
-            // Using the PocketBase API via local proxy or direct fetch if simpler.
-            // Since we have a 'messages' collection, let's try to post there.
-            // Typically we authenticate or use a public create rule. 
-            // The existing 'iletisim' page implies 'messages' collection exists and is creatable.
-
-            // Note: We'll use the pb_proxy or standard fetch. 
-            // Since I don't want to import the full PB SDK here to keep it light, 
-            // I'll make a server action or just a simple fetch to the DB if public.
-            // BUT, usually we should use an action for better security/validation.
-
-            // Let's assume we can POST to a new action /actions/contact
-            const response = await fetch('/actions/contact', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+            // Direct Client-Side create
+            await pb.collection("messages").create({
+                name: formData.name,
+                email: formData.email,
+                phone: formData.phone,
+                message: formData.message || "Quiz sonucu üzerinden iletişim talebi."
             });
 
-            const result = await response.json();
+            setStatus('success');
+            setFormData({ name: '', email: '', phone: '', message: '' });
 
-            if (response.ok && result.success) {
-                setStatus('success');
-                setFormData({ name: '', email: '', phone: '', message: '' });
-            } else {
-                setStatus('error');
-            }
         } catch (error) {
             console.error(error);
             setStatus('error');

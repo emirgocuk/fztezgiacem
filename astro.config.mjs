@@ -4,7 +4,7 @@ import { defineConfig } from 'astro/config';
 
 import tailwindcss from '@tailwindcss/vite';
 import react from '@astrojs/react';
-import node from '@astrojs/node';
+
 
 import sitemap from '@astrojs/sitemap';
 
@@ -23,7 +23,7 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     server: {
-       proxy: {
+      proxy: {
         '/api': process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090',
         '/_/': process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090',
       }
@@ -35,16 +35,15 @@ export default defineConfig({
     remotePatterns: [
       { protocol: 'https', hostname: 'i.ibb.co' },
       { protocol: 'http', hostname: '127.0.0.1' },
+      { protocol: 'http', hostname: 'localhost' },
       { protocol: 'https', hostname: 'fizyoterapist-demo.com' },
       { protocol: 'https', hostname: 'images.unsplash.com' },
+      { protocol: 'https', hostname: 'img.freepik.com' },
     ],
-    domains: ['i.ibb.co', '127.0.0.1', 'images.unsplash.com'],
+    domains: ['i.ibb.co', '127.0.0.1', 'localhost', 'images.unsplash.com', 'img.freepik.com'],
   },
   site: 'https://fztezgiacem.com',
-  output: 'server',
-  adapter: node({
-    mode: 'standalone'
-  }),
+  output: 'static',
   prefetch: true,
   devToolbar: {
     enabled: false

@@ -105,7 +105,7 @@
         "listRule": "",
         "viewRule": "",
         "createRule": "@request.auth.id != ''",
-        "updateRule": "@request.auth.id != ''",
+        "updateRule": "",
         "deleteRule": "@request.auth.id != ''",
         "options": {}
     },
