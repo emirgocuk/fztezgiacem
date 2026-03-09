@@ -161,3 +161,5 @@ playwright-report/
 
 # Legacy Deployment Archive
 legacy_archive/
+create_frontend_admin.mjs
+update_frontend_admin.mjs

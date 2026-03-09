@@ -11,7 +11,7 @@ const isServer = typeof window === 'undefined';
 // Client (Browser): Needs to talk to 'localhost:8090' (Host).
 const internalURL = isServer ? (process.env.INTERNAL_POCKETBASE_URL || 'http://127.0.0.1:8090') : null;
 const publicURL = import.meta.env.PROD
-  ? 'https://pb.fztezgiacem.com'
+  ? 'https://fztezgiacem.com'
   : (import.meta.env.PUBLIC_POCKETBASE_URL || 'http://localhost:8090');
 
 const PB_URL = internalURL || publicURL;
