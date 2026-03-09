@@ -23,6 +23,8 @@ jobs:
         run: |
           npm ci
           npm run build
+        env:
+          INTERNAL_POCKETBASE_URL: https://fztezgiacem.com
 
       - name: Prepare Deployment Files
         run: |
