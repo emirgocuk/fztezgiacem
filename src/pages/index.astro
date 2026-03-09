@@ -14,6 +14,7 @@ try {
   // Fetch recent 3 posts
   const result = await pb.collection("posts").getList<Post>(1, 3, {
     sort: "-published_date",
+    requestKey: null,
   });
   latestPosts = result.items;
 } catch (e) {
