@@ -18,11 +18,20 @@ export async function getStaticPaths() {
 }
 
 const { slug } = Astro.params;
-const { post } = Astro.props;
+let { post } = Astro.props;
 
-// No need to fetch here anymore since we pass it in props
-// But if we wanted to be safe/hybrid, we could keep the fetch as fallback,
-// strictly for SSG though, props are guaranteed.
+if (!post && slug) {
+  try {
+    post = await pb.collection("posts").getFirstListItem<Post>(`slug="${slug}"`);
+  } catch (err) {
+    console.error(`Error fetching post with slug ${slug}:`, err);
+    return Astro.redirect("/404");
+  }
+}
+
+if (!post) {
+  return Astro.redirect("/404");
+}
 
 // Calculate Read Time (rough estimate)
 const wordsPerMinute = 200;

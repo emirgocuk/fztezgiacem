@@ -1,132 +1,77 @@
 # Progress
 
 > **Project Status**: 🟢 Production - Actively Maintained
+> **Latest Milestone**: Transition to Full SSR and Sensory Profile Quiz Integration (March 2026)
 
 ## What Works ✅
 
 ### Core Features
 - [x] **Homepage** - Hero section, services, treatment process
-- [x] **Blog System** - Posts with rich text, images, SEO fields
-- [x] **Admin Panel** - Login, post management, settings
-- [x] **Contact Page** - Info display, WhatsApp integration
-- [x] **About Page** - Bio, credentials, specializations
-- [x] **Specializations Page** - Service areas with slider
+- [x] **Sensory Profile Quiz** - 38-question interactive assessment with detailed scored results (March 2026)
+- [x] **Blog System** - Dynamic posts with rich text, images, SEO fields
+- [x] **Admin Panel** - Subdomain-based API connection, post management, settings
+- [x] **Contact Page** - WhatsApp integration and info display
+- [x] **About Page** - Bio, credentials, and specializations
+- [x] **Specializations Page** - Service areas with interactive slider
 
 ### Technical Infrastructure
-- [x] **SSR Rendering** - Fresh data on every request
-- [x] **Image Optimization** - Sharp + WebP conversion
-- [x] **Mobile Responsive** - All pages work on mobile
-- [x] **SEO** - Meta tags, sitemap, schema markup
-- [x] **SSL/HTTPS** - Let's Encrypt via Cloudflare
-- [x] **Auto-restart** - Systemd services with Restart=always
+- [x] **Full SSR Rendering** - Fresh data on every request, fixed iOS caching issues
+- [x] **Subdomain Split** - `pb.fztezgiacem.com` for API, main domain for frontend
+- [x] **Runtime Image Optimization** - Sharp-powered `/ _image` endpoint on VPS
+- [x] **Mobile-First Design** - Fully responsive with optimized performance
+- [x] **Automated Deployment** - `scripts/deploy_dist.js` handles bundling and SSR restart
 
 ### Admin Capabilities
-- [x] Create/Edit blog posts
-- [x] Rich text editor (Tiptap)
-- [x] Image upload with crop
-- [x] SEO fields (title, description, keywords)
-- [x] Site settings management
+- [x] Create/Edit blog posts with Tiptap
+- [x] Image upload with crop logic
+- [x] Site settings and specialization management
+- [x] Full visibility of backend data via PocketBase Admin UI
 
 ## What's Left to Build 📋
 
-### High Priority
-- [ ] **Email Integration**
+### Phase 1: Advanced SEO & Content
+- [ ] **SEO Automation**
+  - Add `robots.txt` linked to sitemap
+  - Dynamic JSON-LD Schema injection (Article/MedicalBusiness)
+- [ ] **Related Posts Widget**
+  - Internal linking at the end of each blog post
+- [ ] **Image ALT text enforcement**
+  - Validation within the admin panel
+
+### Phase 2: Integrations
+- [ ] **Email Infrastructure**
   - Cloudflare email routing for `info@fztezgiacem.com`
-  - Brevo integration for sending emails
-  - Contact form submissions stored in PocketBase
-  
+  - Transactional emails via Brevo for contact forms
+- [ ] **Backup Automation**
+  - Scheduled daily backups of `pb_data` to cloud storage (S3/GDrive)
+
+### Phase 3: PWA & Performance
 - [ ] **PWA Support**
-  - Service worker for offline access
-  - Web app manifest
-  - Install prompt
-
-### Medium Priority
-- [ ] **Docker Containerization**
-  - Dockerfile for Astro SSR
-  - Docker Compose for full stack
-  - Easier deployment and portability
-
-- [ ] **Backup System**
-  - Daily automated backups of pb_data
-  - Upload to cloud storage (S3/Google Drive)
-  - Retention policy
-
-- [ ] **Security Hardening**
-  - Rate limiting on forms
-  - Enhanced security headers
-  - Form honeypots for spam
-
-### Low Priority / Future
-- [ ] **Interactive Quiz**
-  - "Does my child need therapy?" assessment
-  - Lead generation tool
-  - WhatsApp redirect with results
-
-- [ ] **Google Reviews Widget**
-  - Display reviews from Google Business
-  - Trust signal for visitors
-
-- [ ] **Calendly Integration**
-  - Embedded scheduling widget
-  - Appointment pre-booking
-
-- [ ] **E-Bülten / Lead Magnet**
-  - "5 Home Exercises" PDF download
-  - Email capture for marketing
+  - Service worker and manifest for "Install" prompt
+- [ ] **Dockerization** (Medium Priority)
+  - Containerization for easier scaling and replication
 
 ## Current Status
 
 ### Production Environment
-| Component | Status | Port | Service |
-|-----------|--------|------|---------|
-| Nginx | 🟢 Running | 80/443 | nginx.service |
-| PocketBase | 🟢 Running | 8090 | fztezgiacem-pocketbase |
-| Astro SSR | 🟢 Running | 4321 | fztezgiacem-astro |
+| Component | Status | URL | Service |
+|-----------|--------|-----|---------|
+| Nginx | 🟢 Running | `fztezgiacem.com` | `nginx.service` |
+| Astro SSR | 🟢 Running | `localhost:4321` | `fztezgiacem-astro.service` |
+| PocketBase | 🟢 Running | `pb.fztezgiacem.com` | `fztezgiacem.service` |
 
-### Key Metrics
-- **Blog Posts**: 13 published
-- **PageSpeed Mobile**: ~85+ (after optimizations)
-- **Uptime**: 99.9% (Cloudflare monitoring)
+### Key Metrics (Post-March Update)
+- **Blog Posts**: 13+ published
+- **Quiz Performance**: ~2s load time, fully client-side interactivity
+- **Uptime**: Monitored via Cloudflare
 
 ## Known Issues 🐛
-
-1. **YAPILACAKLAR.md Git Conflicts**
-   - File has merge conflict markers (`<<<<<<`, `>>>>>>`)
-   - Needs manual cleanup
-
-2. **SSH Password Prompts**
-   - Deploy script requires multiple password entries
-   - Consider setting up SSH keys
-
-3. **No Automated Backups**
-   - pb_data not backed up automatically
-   - Manual backup required currently
+1. **YAPILACAKLAR.md Cleanup**
+   - High priority: Merge conflicts in the manually maintained todo list needs resolution.
+2. **Maintenance Script Documentation**
+   - Moved scripts to `scripts/server-maintenance`; need a README update there.
 
 ## Evolution of Project Decisions
-
-### Phase 1: Initial Setup (October 2025)
-- Basic Astro static site
-- PocketBase for data storage
-- Manual deployment via scp
-
-### Phase 2: Feature Build (November-December 2025)
-- Added admin panel with React
-- Blog system with Tiptap editor
-- Image optimization pipeline
-- SEO enhancements
-
-### Phase 3: Optimization (December 2025 - January 2026)
-- Mobile performance fixes
-- PageSpeed improvements
-- Font optimization (self-hosted)
-- WebP image conversion
-
-### Phase 4: SSR Migration (January 2026)
-- Switched to server-side rendering
-- Fixed stale content issue
-- Dual-service architecture
-
-### Next Phase: Integrations (Planned)
-- Email handling (Cloudflare + Brevo)
-- PWA support
-- Docker deployment
+- **Phase 4: SSR & Subdomain Fix (March 2026)**: Moved to full SSR to eliminate caching. Split backend to `pb.` subdomain to resolve port conflicts and improve modularity.
+- **Phase 3: Optimization (Jan 2026)**: Mobile flicker fixes and initial SSR exploration.
+- **Phase 2: Admin Suite (Late 2025)**: Tiptap and Image cropping integration.

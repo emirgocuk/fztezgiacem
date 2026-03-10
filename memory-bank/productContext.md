@@ -29,7 +29,8 @@ Fzt. Ezgi Acem is a pediatric physiotherapist who needed a professional online p
 1. Search "Adana çocuk fizyoterapisti" or similar
 2. Land on homepage or blog post
 3. Read about services and expertise
-4. Contact via WhatsApp or form
+4. **Take the "Duyu Bütünleme Farkındalık Testi" (Sensory Profile Quiz)**
+5. Contact via WhatsApp or form with results in mind
 
 **Admin Content Management:**
 1. Login at `/admin`

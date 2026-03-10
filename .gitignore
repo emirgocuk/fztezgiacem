@@ -163,3 +163,11 @@ playwright-report/
 legacy_archive/
 create_frontend_admin.mjs
 update_frontend_admin.mjs
+
+# Scripts & Sensitive Tools
+scripts/
+.env*
+node_modules/
+dist/
+.DS_Store
+*.tar.gz

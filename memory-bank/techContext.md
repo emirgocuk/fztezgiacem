@@ -3,22 +3,23 @@
 ## Technology Stack
 
 ### Frontend Framework
-- **Astro 5.x** - Static site generator with SSR support
-- **React 19** - For interactive components (admin panel, editor)
+- **Astro 5.x** - Web framework for content-driven sites
+  - Mode: `server` (SSR)
+  - Adapter: `@astrojs/node`
+- **React 19** - For interactive components (admin panel, sensory quiz)
 - **TailwindCSS 4** - Utility-first styling
 
 ### Backend/Database
 - **PocketBase** - Lightweight backend with SQLite
-  - Collections: `posts`, `site_settings`, `specializations`
-  - REST API at `/_/` and `/api/`
-  - Built-in admin panel at `/_/`
+  - Version: latest stable
+  - API Domain: `pb.fztezgiacem.com`
+  - Internal Port: `127.0.0.1:8090`
 
 ### Hosting & Infrastructure
 - **VPS**: Single Ubuntu server (45.155.19.221)
-- **Nginx**: Reverse proxy, SSL termination
-- **Cloudflare**: DNS, CDN, DDoS protection
-- **Let's Encrypt**: SSL certificates (auto-renewed via Certbot)
-- **Systemd**: Service management
+- **Nginx**: Reverse proxy and SSL termination (Let's Encrypt)
+- **Cloudflare**: DNS, CDN, and Security
+- **Systemd**: Service management for Astro and PocketBase
 
 ## Development Setup
 
@@ -34,99 +35,89 @@ npm run build         # Creates dist/client & dist/server
 
 ### Environment Variables
 ```env
-PUBLIC_POCKETBASE_URL=/    # Client-side (proxied)
-# Server uses http://127.0.0.1:8090 directly
+# Client-side
+PUBLIC_POCKETBASE_URL=https://pb.fztezgiacem.com
+
+# Server-side
+INTERNAL_POCKETBASE_URL=http://127.0.0.1:8090
 ```
 
 ### Key Directories
 ```
 /src
   /pages           # Astro pages (.astro files)
-    /admin         # Admin panel pages
-    /blog          # Blog listing and posts
-  /components      # Reusable components
-  /layouts         # Page layouts (BaseLayout)
-  /lib             # Utilities (pocketbase.ts, imgbb.ts)
+    /admin         # Admin panel (React-heavy)
+    /blog          # Blog listing and dynamic posts
+    /quiz          # Sensory Profile Quiz
+  /components      # Reusable UI components
+  /lib             # Utilities (pocketbase connection, state)
+/scripts           # Deployment and maintenance scripts
+  /server-maintenance # Diagnostic and fix utilities
 /dist
-  /client          # Static assets (CSS, JS, images)
-  /server          # Node.js SSR server (entry.mjs)
-/pb_data           # PocketBase data (SQLite, uploads)
-/pb_hooks          # PocketBase JS hooks
-/pb_migrations     # Database migrations
+  /client          # Prerendered assets
+  /server          # Node entry for production execution
+/pb_data           # PocketBase data and backups
 ```
 
 ## Deployment Architecture
 
 ### Server Setup (Production)
 ```
+          [User Browser]
+               ↓
         [Cloudflare CDN]
-              ↓
-    [Nginx :80/:443]
-         ↓        ↓
-[Astro SSR :4321] [PocketBase :8090]
-                        ↓
-                 [pb_data/SQLite]
+               ↓
+    [Nginx Reverse Proxy :443]
+      ↙                  ↘
+[pb. subdomain]     [Main Domain]
+      ↓                  ↓
+[PocketBase :8090]  [Astro SSR :4321]
+      ↓                  ↑
+ [SQLite DB] ←←←←←←←←← [API Calls]
 ```
 
 ### Systemd Services
 ```bash
-# Two separate services:
-fztezgiacem-pocketbase.service  # API + Admin
-fztezgiacem-astro.service       # SSR Web Server
+fztezgiacem.service          # PocketBase (listening on loopback)
+fztezgiacem-astro.service    # Astro SSR application
 ```
 
-### Deployment Commands
+### Deployment Workflow
 ```powershell
 # From Windows:
 npm run build
-.\deploy.ps1    # Uploads to server, restarts services
+node scripts/deploy_dist.js    # Bundles, uploads, and restarts SSR
 ```
 
 ## Technical Constraints
 
 ### Performance Requirements
-- Mobile PageSpeed > 90
-- First Contentful Paint < 2s
-- Images auto-converted to WebP
-
-### Browser Support
-- Modern browsers (Chrome, Firefox, Safari, Edge)
-- Mobile-first responsive design
+- Dynamic data delivery (no stale blog posts)
+- Runtime image optimization (Sharp)
+- Mobile-first responsiveness and WebP support
 
 ### Security Considerations
-- Admin behind PocketBase authentication
-- HTTPS enforced via Cloudflare
-- Security headers in Nginx
+- PocketBase only accessible via Nginx proxy (no direct ports)
+- Admin authentication required for sensitive collections
+- Secure SMTP for contact forms (Cloudflare/Brevo)
 
 ## Dependencies (Key)
 
 ### Production
-- `astro` - Core framework
-- `@astrojs/node` - SSR adapter
-- `@astrojs/react` - React integration
-- `pocketbase` - Backend SDK
-- `sharp` - Image optimization
-- `@tiptap/*` - Rich text editor
+- `astro`, `@astrojs/node`, `@astrojs/react`
+- `pocketbase` - SDK
+- `sharp` - **Critical runtime dependency** for images
+- `react`, `react-dom`
+- `framer-motion` - For quiz animations
 
-### Dev Only
-- `playwright` - E2E testing
-- `ssh2` - Deployment scripting
+### Maintenance & DevOps
+- `ssh2` - For automated remote deployment
+- `node-archive` (tar) - For bundling builds
 
 ## Tool Usage Patterns
 
-### Adding a Blog Post
-1. Admin → `/admin/blog/new`
-2. Fill form with Tiptap editor
-3. Upload image (stored in PocketBase)
-4. Submit → PocketBase record created
-5. SSR fetches fresh data on next request
-
-### Modifying Site Settings
-1. Admin → `/admin/settings`
-2. Update site name, description, social links
-3. Submit → Stored in `site_settings` collection
-
-### Image Handling
-1. Upload via admin panel
-2. Sharp optimizes server-side
-3. Astro Image component serves WebP
+### Maintaining the Server
+Diagnostic scripts are located in `scripts/server-maintenance`. These include:
+- `nuke_final.mjs`: Forcefully kills port blockers and restarts all services.
+- `diag_ports.mjs`: Lists active processes on ports 80/443.
+- `check_images.mjs`: Scans the live site for 404/500 image errors.

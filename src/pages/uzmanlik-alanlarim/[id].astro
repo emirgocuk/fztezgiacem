@@ -26,7 +26,20 @@ export async function getStaticPaths() {
 
 // SSG Mode: Get record from props
 const { id } = Astro.params;
-const { record } = Astro.props;
+let { record } = Astro.props;
+
+if (!record && id) {
+    try {
+        // Try to fetch by ID first, then by slug if it fails or returns nothing
+        record = await pb.collection("specializations").getOne(id).catch(() => null);
+        
+        if (!record) {
+            record = await pb.collection("specializations").getFirstListItem(`slug="${id}"`).catch(() => null);
+        }
+    } catch (err) {
+        console.error(`Error fetching specialization with id/slug ${id}:`, err);
+    }
+}
 
 if (!record) {
     return Astro.redirect("/404");

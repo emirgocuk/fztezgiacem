@@ -1,12 +1,12 @@
-
+import 'dotenv/config';
 import { Client } from 'ssh2';
 import path from 'path';
 
 const config = {
-    host: '45.155.19.221',
+    host: process.env.SERVER_HOST || '45.155.19.221',
     port: 22,
-    username: 'root',
-    password: 'pRQSCT342g!diyo@'
+    username: process.env.SERVER_USER || 'root',
+    password: process.env.SERVER_PASSWORD
 };
 
 const localTar = path.resolve('docker_deploy.tar');

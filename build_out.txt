@@ -1,0 +1,22 @@
+[2m23:30:32[22m [31m[1m[vite][22m[39m [31m[2m(ssr)[22m[39m [31mError when evaluating SSR module D:\Projects\fztezgiacem\astro.config.mjs: Cannot find module '@astrojs/tailwind' imported from 'D:/Projects/fztezgiacem/astro.config.mjs'[39m
+      at fetchModule (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:46842:19)
+      at RunnableDevEnvironment.fetchModule (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47933:12)
+      at fetchModule (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47887:21)
+      at handleInvoke (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:39002:28)
+      at EventEmitter.listenerForInvokeHandler (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:39075:25)
+      at EventEmitter.emit (node:events:518:28)
+      at Object.send (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:25190:40)
+      at Object.invoke (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/module-runner.js:621:34)
+      at Object.invoke (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/module-runner.js:682:34)
+      at SSRCompatModuleRunner.getModuleInformation (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/module-runner.js:1205:94)
+[1m[31m[astro][39m[22m Unable to load your Astro config
+
+Cannot find module '@astrojs/tailwind' imported from 'D:/Projects/fztezgiacem/astro.config.mjs'
+  [1mLocation:[22m
+    [4mD:\Projects\fztezgiacem\node_modules\vite\dist\node\chunks\dep-D4NMHUTW.js:46842:19[24m
+  [1mStack trace:[22m
+[2m    at fetchModule (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:46842:19)
+    at fetchModule (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:47887:21)
+    at EventEmitter.listenerForInvokeHandler (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:39075:25)
+    at Object.send (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/chunks/dep-D4NMHUTW.js:25190:40)
+    at Object.invoke (file:///D:/Projects/fztezgiacem/node_modules/vite/dist/node/module-runner.js:682:34)[22m

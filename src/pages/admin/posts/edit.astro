@@ -121,7 +121,7 @@ const title = "Yazıyı Düzenle";
                         >
                             SEO Başlığı <span
                                 class="text-xs text-gray-500 font-normal"
-                                >(Opsiyonel - Google'da görünecek başlık)</span
+                               >(Opsiyonel - Google'da görünecek başlık)</span
                             >
                         </label>
                         <input
@@ -143,7 +143,7 @@ const title = "Yazıyı Düzenle";
                         >
                             SEO Açıklaması <span
                                 class="text-xs text-gray-500 font-normal"
-                                >(Opsiyonel - Meta Description)</span
+                               >(Opsiyonel - Meta Description)</span
                             >
                         </label>
                         <textarea
@@ -165,7 +165,7 @@ const title = "Yazıyı Düzenle";
                         >
                             Anahtar Kelimeler <span
                                 class="text-xs text-gray-500 font-normal"
-                                >(Virgülle ayırın)</span
+                               >(Virgülle ayırın)</span
                             >
                         </label>
                         <input
@@ -177,34 +177,34 @@ const title = "Yazıyı Düzenle";
                     </div>
                 </div>
             </div>
+
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2"
+                    >İçerik</label
+                >
+                <TiptapEditor
+                    client:only="react"
+                    content=""
+                    targetInputId="contentHidden"
+                />
+                <input
+                    type="text"
+                    name="content"
+                    id="contentHidden"
+                    class="opacity-0 h-1 pointer-events-none"
+                />
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button
+                    type="submit"
+                    id="submitBtn"
+                    class="bg-[#1E3A1A] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#1E3A1A]/90 transition"
+                >
+                    Güncelle
+                </button>
+            </div>
         </form>
-
-        <div>
-            <label class="block text-sm font-medium text-gray-700 mb-2"
-                >İçerik</label
-            >
-            <TiptapEditor
-                client:only="react"
-                content=""
-                targetInputId="contentHidden"
-            />
-            <input
-                type="text"
-                name="content"
-                id="contentHidden"
-                class="opacity-0 h-1 pointer-events-none"
-            />
-        </div>
-
-        <div class="flex justify-end pt-4">
-            <button
-                type="submit"
-                id="submitBtn"
-                class="bg-[#1E3A1A] text-white px-8 py-3 rounded-lg font-bold hover:bg-[#1E3A1A]/90 transition"
-            >
-                Güncelle
-            </button>
-        </div>
     </div>
 </AdminLayout>
 

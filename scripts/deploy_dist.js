@@ -1,32 +1,38 @@
+import 'dotenv/config';
 import { Client } from 'ssh2';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { exec } from 'child_process';
+import util from 'util';
 
+const execPromise = util.promisify(exec);
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const config = {
-    host: '45.155.19.221',
+    host: process.env.SERVER_HOST || '45.155.19.221',
     port: 22,
-    username: 'root',
-    password: 'pRQSCT342g!diyo@'
+    username: process.env.SERVER_USER || 'root',
+    password: process.env.SERVER_PASSWORD
 };
 
-const localDistFile = path.resolve(__dirname, '../dist.tar.gz');
-const remoteDistDir = '/root/docker-site/pb_public';
+const localArchive = path.resolve(__dirname, '../site_build.tar.gz');
 
-console.log('🚀 Starting deployment of dist folder...');
-
-import { exec } from 'child_process';
-import util from 'util';
-const execPromise = util.promisify(exec);
+console.log('🚀 Starting deployment of SSR build...');
 
 async function deploy() {
     try {
-        console.log('📦 Taring up the dist folder...');
-        await execPromise('tar -czf dist.tar.gz -C dist .', { cwd: path.resolve(__dirname, '..') });
-        console.log('✅ Tar created successfully.');
+        console.log('🧹 Cleaning up old archive...');
+        if (fs.existsSync(localArchive)) {
+            fs.unlinkSync(localArchive);
+        }
+
+        console.log('📦 Taring up the dist folder and package files...');
+        // tar dist folder AND package files
+        const { stdout, stderr } = await execPromise('tar -cvzf site_build.tar.gz dist package.json package-lock.json', { cwd: path.resolve(__dirname, '..') });
+        console.log('STDOUT (tar):', stdout.substring(0, 500) + '...');
+        console.log('✅ Archive created successfully.');
 
         const conn = new Client();
         conn.on('ready', () => {
@@ -35,24 +41,26 @@ async function deploy() {
             conn.sftp((err, sftp) => {
                 if (err) throw err;
 
-                console.log(`📤 Uploading archive to /root/docker-site/dist.tar.gz...`);
-                sftp.fastPut(localDistFile, '/root/docker-site/dist.tar.gz', (err) => {
+                console.log(`📤 Uploading archive to /root/site/site_build.tar.gz...`);
+                sftp.fastPut(localArchive, '/root/site/site_build.tar.gz', (err) => {
                     if (err) throw err;
                     console.log('✅ File uploaded successfully!');
 
-                    console.log('🔄 Extracting and restarting PocketBase service...');
-                    // Command based on deploy.yml: we will extract into pb_public and then restart container
-                    const cmd = `cd /root/docker-site && rm -rf pb_public/* && tar -xzf dist.tar.gz -C pb_public && rm dist.tar.gz && docker compose restart pocketbase`;
+                    console.log('🔄 Extracting, installing dependencies, and restarting SSR service...');
+                    const cmd = `cd /root/site && rm -rf dist && tar -xzf site_build.tar.gz && rm site_build.tar.gz && npm install --omit=dev && systemctl restart fztezgiacem-astro`;
+
                     conn.exec(cmd, (err, stream) => {
                         if (err) throw err;
 
                         stream.on('close', (code, signal) => {
-                            console.log('✅ Service restart command executed (Exit code: ' + code + ')');
-                            console.log('🎉 DEPLOYMENT COMPLETE! Site should be updated.');
+                            console.log('✅ Deployment command executed (Exit code: ' + code + ')');
+                            console.log('🎉 DEPLOYMENT COMPLETE! Site should be updated and SSR running.');
                             conn.end();
 
                             // Clean up local tar
-                            fs.unlinkSync(localDistFile);
+                            if (fs.existsSync(localArchive)) {
+                                fs.unlinkSync(localArchive);
+                            }
                         }).on('data', (data) => {
                             console.log('STDOUT: ' + data);
                         }).stderr.on('data', (data) => {
@@ -65,7 +73,7 @@ async function deploy() {
             console.error('❌ Connection Error:', err);
         }).connect(config);
     } catch (err) {
-        console.error('Failed to create tar', err);
+        console.error('Failed to deploy', err);
     }
 }
 
