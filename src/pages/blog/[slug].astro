@@ -80,13 +80,9 @@ const schemaData = {
   description={post.seo_description || post.summary}
   image={imageURL}
   articleDate={post.published_date}
+  keywords={post.keywords}
   showBackgroundEffects={false}
 >
-  {
-    post.keywords && (
-      <meta slot="head" name="keywords" content={post.keywords} />
-    )
-  }
   <!-- Schema.org JSON-LD -->
   <script
     is:inline
