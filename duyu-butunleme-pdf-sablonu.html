@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Duyu Bütünleme Ev Destek Programı - PDF Şablonu</title>
+    <!-- Google Fonts: Nunito (Sitenizin ana fontu) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;0,800&display=swap" rel="stylesheet">
+    <!-- TailwindCSS for quick styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Nunito', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            orange: '#FF8A65',
+                            teal: '#4DD0E1',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Genel Arka Plan ve Düzen */
+        body {
+            background-color: #f8fafc;
+            color: #334155;
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            margin: 0;
+            padding: 0;
+        }
+
+        /* Ekranda ortalanmış A4 görünümü */
+        .page-container {
+            max-width: 210mm; /* A4 Genişliği */
+            margin: 2rem auto;
+            background: white;
+            padding: 20mm;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            border-radius: 1rem;
+        }
+
+        /* Yazdırma Kuralları */
+        @media print {
+            body {
+                background: white;
+            }
+            .page-container {
+                margin: 0;
+                padding: 10mm;
+                box-shadow: none;
+                max-width: none;
+                border-radius: 0;
+            }
+            /* Ekranda görünen butonu yazdırırken gizle */
+            .no-print {
+                display: none !important;
+            }
+            /* Sayfa Kesilmelerini Engelle */
+            h1, h2, h3 {
+                page-break-after: avoid;
+            }
+            .avoid-break {
+                page-break-inside: avoid;
+                break-inside: avoid;
+            }
+            /* Her sayfanın altına otomatik link yazdırmayı engelle (tarayıcı ayarı gerekir ama bunu ekliyoruz) */
+            @page {
+                margin: 15mm 15mm;
+                size: A4 portrait;
+            }
+        }
+        
+        /* Dekoratif Çizgiler */
+        .header-decoration {
+            background: linear-gradient(90deg, #FF8A65 0%, #FFB74D 50%, #4DD0E1 100%);
+            height: 6px;
+            width: 100%;
+            border-radius: 3px;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <!-- Kontrol Butonu (Yazdırıldığında Gizlenir) -->
+    <div class="no-print fixed top-4 right-4 z-50 flex flex-col gap-2">
+        <button onclick="window.print()" class="bg-brand-orange hover:bg-orange-500 text-white font-bold py-3 px-6 rounded-xl shadow-lg transition-all flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M6.728 13.682a4.5 4.5 0 010-6.364l4.5-4.5a4.5 4.5 0 016.364 6.364l-4.5 4.5a4.5 4.5 0 01-6.364 0zm0 0l-2.121 2.122A4.5 4.5 0 0013.09 24.24l3.182-3.181" />
+            </svg>
+            PDF Olarak Kaydet / Yazdır
+        </button>
+        <div class="bg-white p-3 rounded-lg shadow-md border border-slate-200 text-sm max-w-xs">
+            <p class="font-bold text-slate-700 mb-1">💡 İpuçları:</p>
+            <ul class="list-disc pl-4 text-slate-600">
+                <li>Yazdır diyip Hedef: <b>PDF Olarak Kaydet</b> seçin.</li>
+                <li>Daha fazla ayar -> <b>Arka plan grafiklerini</b> işaretleyin.</li>
+                <li>Kenar boşluklarını "Varsayılan" veya "Yok" seçebilirsiniz.</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- PDF DÖKÜMANI -->
+    <div class="page-container relative">
+        
+        <!-- Üst Kısım: Başlık ve İntro Birlikte Kalmalı -->
+        <div class="mb-5">
+            <!-- Header -->
+            <div class="text-center mb-5">
+                <h1 class="text-3xl md:text-3xl font-extrabold text-slate-800 mb-1">Duyu Bütünleme Ev Destek Programı</h1>
+                <p class="text-[17px] md:text-lg font-semibold text-brand-orange">Fzt. Ezgi Acem - Pediatrik Fizyoterapist</p>
+                <div class="header-decoration mt-4 mb-0"></div>
+            </div>
+
+            <!-- Yasal Uyarı / Bilgi -->
+            <div class="bg-orange-50 border-l-4 border-brand-orange p-5 rounded-r-xl border border-orange-100">
+                <p class="text-slate-700 leading-relaxed text-[15px]">
+                    <strong class="text-brand-orange">Nasıl Faydalanılır?</strong> Aşağıdaki aktiviteler, çocuğunuzun duyusal sistemini regüle etmek ve gelişimi desteklemek amacıyla hazırlanmıştır. Bu oyunları rutin bir şekilde; <span class="font-bold underline">kıyafet değiştirmeden, banyo yapmadan, uykuya geçmeden</span> veya günlük yaşamda problem yaşadığınız durumlardan hemen önce sakinleştirici/hazırlayıcı olarak uygulayabilirsiniz.
+                </p>
+            </div>
+        </div>
+
+        <div class="space-y-4">
+            
+            <!-- Kategori 1: Dokunsal (Taktil) Algı -->
+            <div class="bg-white border-2 border-slate-100 p-5 rounded-2xl">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-100 pb-3">
+                    <div class="bg-indigo-100 p-2 rounded-lg text-indigo-600 text-2xl">🖐️</div>
+                    <h2 class="text-xl font-bold text-slate-800">1. Dokunsal (Taktil) Algı</h2>
+                </div>
+                <p class="text-[15px] text-slate-700 leading-relaxed mb-4">
+                    Taktil algısı zayıf olan çocuklar, nesneleri keşfetmekte ve çevreleriyle fiziksel etkileşime girmekte zorlanabilirler. Bu aktiviteler, dokunma duyusunu zenginleştirerek çevreyi anlamlandırmalarına yardımcı olur.
+                </p>
+                <div class="bg-indigo-50 border-l-4 border-indigo-500 p-4 rounded-r-lg mb-5">
+                    <p class="text-sm text-indigo-800 italic">
+                        <span class="font-bold">Önemli İpucu:</span> Eğer çocuğunuz dokunsal nesnelerden rahatsızlık duyuyorsa, onu motive eden keyifli oyunların içine nesneleri ufak ufak (minimal şekilde) ekleyerek kabul etmesini kolaylaştırabilirsiniz.
+                    </p>
+                </div>
+                <ul class="space-y-4">
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-indigo-400 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Kremşanti Hazinesi:</span> 
+                            <span class="text-slate-600 leading-relaxed">Kremşanti dolu bir kabın içine meyve parçalarını (çilek, muz vb.) görünmeyecek şekilde saklayın. Çocuğunuz elleriyle veya ağzıyla meyveleri bulduğunda yiyebilir. Bu oyun hem yoğun bir dokunsal girdi sağlar hem de çiğneme eylemini tetikleyerek sinir sisteminin organize olmasına yardımcı olur.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-indigo-400 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Tıraş Köpüğüyle Araba Yıkama:</span> 
+                            <span class="text-slate-600 leading-relaxed">Oyuncak arabaları veya hayvan figürlerini masanın üzerinde bolca tıraş köpüğüyle kaplayın ve ardından su dolu bir leğende yıkama/temizleme oyunu oynayın.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-indigo-400 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Nohut ve Fasulye Havuzu:</span> 
+                            <span class="text-slate-600 leading-relaxed">Geniş bir kabı kuru nohut ve fasulyelerle doldurun. İçine renkli ponponları veya küçük oyuncakları saklayın. Çocuğunuzun elleriyle kazı yaparak bu nesneleri bulmasını isteyin. Bu doğal bir dokunsal ayırt etme çalışmasıdır.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Kategori 2: Vestibüler Sistem -->
+            <div class="bg-white border-2 border-slate-100 p-5 rounded-2xl">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-100 pb-3">
+                    <div class="bg-emerald-100 p-2 rounded-lg text-emerald-600 text-2xl">🤸‍♀️</div>
+                    <h2 class="text-xl font-bold text-slate-800">2. Vestibüler Sistem (Denge ve Hareket)</h2>
+                </div>
+                <p class="text-[15px] text-slate-700 leading-relaxed mb-4">
+                    Yerçekimiyle olan ilişkimizi, dengemizi ve hareket algımızı yöneten vestibüler sistem, çocuğun kendini güvende hissetmesi ve dikkatini odaklayabilmesi için temeldir.
+                </p>
+                <ul class="space-y-4">
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-emerald-500 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Atlama Oyunları:</span> 
+                            <span class="text-slate-600 leading-relaxed">Güvenlik için yere kalın yorganlar veya büyük minderler sererek koltuktan yere güvenli atlama/zıplama oyunları oynayabilirsiniz. Bu hareket doğrusal vestibüler girdi sağlar.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-emerald-500 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Pilates Topu Egzersizleri:</span> 
+                            <span class="text-slate-600 leading-relaxed">Çocuğunuzu pilates topunun üzerine oturtarak aşağı-yukarı esnetin/zıplatın veya topun üzerine yüzüstü uzandırıp topu ileri-geri yavaşça hareket ettirin.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-emerald-500 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Halıda Sosis Rulo:</span> 
+                            <span class="text-slate-600 leading-relaxed">Geniş bir halının veya yatağın üzerinde bol kahkahalı yuvarlanma yarışları yapın. Rotasyonel (dairesel) hareketler vestibüler sistem için güçlü uyaranlardır.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Kategori 3: Propriyoseptif Girdi -->
+            <div class="bg-white border-2 border-slate-100 p-5 rounded-2xl">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-100 pb-3">
+                    <div class="bg-teal-100 p-2 rounded-lg text-teal-600 text-2xl">💪</div>
+                    <h2 class="text-xl font-bold text-slate-800">3. Propriyoseptif Sistem (Bedensel Farkındalık)</h2>
+                </div>
+                <p class="text-[15px] text-slate-700 leading-relaxed mb-4">
+                    Eklemlerden, kaslardan ve bağlardan gelen bilgileri işleyen sistemdir. Proprioseptif aktiviteler genellikle <b>sakinleştirici ve regüle edici</b> özelliktedir. Heyecanlandığında veya aşırı hareketlendiğinde bu oyunlara yönelebilirsiniz.
+                </p>
+                <ul class="space-y-4">
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-brand-teal text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Yastık Savaşı:</span> 
+                            <span class="text-slate-600 leading-relaxed">Hem yoğun bir enerji boşaltımı hem yüksek beden farkındalığı sağlar hem de kaliteli bir ebeveyn-çocuk birlikteliği (bağ kurma) aktivitesidir.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-brand-teal text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Dürüm / Tost Yapma Oyunu:</span> 
+                            <span class="text-slate-600 leading-relaxed">Çocuğunuzu ağır bir battaniyeye sarıp rulo halinde açarak ondan bir "dürüm" yapabilirsiniz. Veya onu iki büyük yastık arasına alıp hafifçe ve eşit şekilde ağırlık/bası uygulayarak (asla çok sert olmadan) <i>"Makine seni pişiriyor, birazdan yemeye hazır olacaksın!"</i> diyerek sıkıştırabilirsiniz. Derin bası, sinir sistemini en çok sakinleştiren girdilerden biridir.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4 avoid-break">
+                        <span class="text-brand-teal text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Ağır Yük Taşıma Görevleri:</span> 
+                            <span class="text-slate-600 leading-relaxed">Plastik bir çamaşır sepetine kitaplar veya ağır oyuncaklar koyup ucuna kalın bir ip bağlayın. Çocuğunuzun evin içinde bir odadan diğerine bu ağırlığı itmesini veya çekmesini teşvik edin. Kaslara verilen bu direnç, odaklanmayı artırır.</span>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Kategori 4: Görsel ve Oral-Motor -->
+            <div class="bg-white border-2 border-slate-100 p-5 rounded-2xl">
+                <div class="flex items-center gap-3 mb-4 border-b border-slate-100 pb-3">
+                    <div class="bg-rose-100 p-2 rounded-lg text-rose-600 text-2xl">👀</div>
+                    <h2 class="text-xl font-bold text-slate-800">4. Görsel-Uzamsal Algı ve Oral-Motor Aktiviteleri</h2>
+                </div>
+                <p class="text-[15px] text-slate-700 leading-relaxed mb-4">
+                    Bu bölümde yer alan özellikle oral-motor (ağız içi kasları kullanan) aktiviteler, çocuğun uyarılmışlık düzeyini düşüren ve anksiyeteyi azaltan çok pratik regülasyon yöntemleridir.
+                </p>
+                <ul class="space-y-4">
+                    <li class="flex gap-4">
+                        <span class="text-rose-400 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Görsel-Uzamsal: Solucan Yolu</span> 
+                            <span class="text-slate-600 leading-relaxed mt-1 block">Yemek sandalyelerini yan yana veya zikzak şeklinde dizin. Çocuğunuzun bu dar ve karanlık alanların altından sürünerek / bir solucan gibi sürünerek geçmesini isteyin. Bu bedenin uzaydaki pozisyonunu anlamlandırmasını sağlar.</span>
+                        </div>
+                    </li>
+                    <li class="flex gap-4">
+                        <span class="text-rose-400 text-xl font-black mt-1">•</span>
+                        <div>
+                            <span class="font-extrabold text-slate-800 text-[16px]">Oral-Motor (Ağız İçi) Regülasyon Çalışmaları:</span> 
+                            <ul class="list-disc pl-5 mt-3 space-y-2 text-slate-700 text-[15px]">
+                                <li>Halka aparatından <b>Balon Köpüğü (Balköpüğü)</b> üfleme çalışmaları yapmak.</li>
+                                <li>Sert çubuk kraker, grissini veya havuç gibi çene kaslarını çalıştıran yiyecekler çiğnemek.</li>
+                                <li>Kefir, milkshake veya meyve püresi gibi yoğun sıvıları ince bir pipetle çekmeye çalışmak.</li>
+                                <li>Uzun düdüklere/kavallara üflemek veya parti kornaları, sıradan plastik balonlar şişirmek.</li>
+                            </ul>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Footer -->
+        <div class="mt-8 pt-4 border-t border-slate-200 text-center">
+            <div class="flex justify-center items-center gap-4 mb-3">
+                <span class="text-brand-orange font-bold text-lg">Fzt. Ezgi Acem</span>
+                <span class="text-slate-300">|</span>
+                <span class="text-slate-600 font-medium">Pediatrik Fizyoterapist</span>
+            </div>
+            <p class="text-slate-500 text-sm mb-2">Bu belge bilgilendirme amaçlıdır. Çocuğunuzun gelişimiyle ilgili daima uzmanınıza danışınız.</p>
+            <p class="text-slate-400 font-semibold tracking-wider uppercase text-xs">www.fztezgiacem.com</p>
+        </div>
+
+    </div>
+
+</body>
+</html>

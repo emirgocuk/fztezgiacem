@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import LeadCaptureForm from './LeadCaptureForm';
 
 const optionsTemplate = [
     { text: "Her Zaman", score: 1 },
@@ -70,35 +69,28 @@ const allQuestions = [
 export default function QuizApp() {
     const [currentQuestion, setCurrentQuestion] = useState(0);
     const [answers, setAnswers] = useState({});
-    const [showEmailGate, setShowEmailGate] = useState(false);
 
     const handleAnswer = (score) => {
-        // Save answer for current question
-        setAnswers(prev => ({
-            ...prev,
+        const newAnswers = {
+            ...answers,
             [currentQuestion]: score
-        }));
+        };
+        setAnswers(newAnswers);
 
         if (currentQuestion < allQuestions.length - 1) {
             setCurrentQuestion(currentQuestion + 1);
         } else {
-            setShowEmailGate(true);
+            finishQuiz(newAnswers);
         }
     };
 
     const handleBack = () => {
-        if (showEmailGate) {
-            setShowEmailGate(false);
-            return;
-        }
-
         if (currentQuestion > 0) {
             setCurrentQuestion(currentQuestion - 1);
         }
     };
 
-    const handleEmailSubmitted = () => {
-        // Calculate total score per category
+    const finishQuiz = (finalAnswers) => {
         const categoryScores = {
             dokunsal: 0,
             tatKoku: 0,
@@ -109,13 +101,12 @@ export default function QuizApp() {
             gorselIsitsel: 0
         };
 
-        Object.keys(answers).forEach((questionIndex) => {
+        Object.keys(finalAnswers).forEach((questionIndex) => {
             const index = parseInt(questionIndex);
             const questionData = allQuestions[index];
-            categoryScores[questionData.category] += answers[index];
+            categoryScores[questionData.category] += finalAnswers[index];
         });
 
-        // Encode as base64 to pass easily via URL parameter, or just send a comma separated list
         const scoreParams = `d=${categoryScores.dokunsal}&t=${categoryScores.tatKoku}&h=${categoryScores.hareket}&u=${categoryScores.uyaran}&i=${categoryScores.isitsel}&e=${categoryScores.enerji}&g=${categoryScores.gorselIsitsel}`;
 
         window.location.href = `/quiz-sonuc?${scoreParams}`;
@@ -125,11 +116,9 @@ export default function QuizApp() {
     const categoryTitle = categories.find(c => c.id === question?.category)?.title;
 
     // Calculate progress width
-    const progressWidth = showEmailGate
-        ? '100%'
-        : `${((currentQuestion) / allQuestions.length) * 100}%`;
+    const progressWidth = `${((currentQuestion) / allQuestions.length) * 100}%`;
 
-    const showBackButton = currentQuestion > 0 || showEmailGate;
+    const showBackButton = currentQuestion > 0;
 
     return (
         <div className="max-w-5xl mx-auto">
@@ -142,53 +131,8 @@ export default function QuizApp() {
             </div>
 
             <div className="bg-white p-6 md:p-12 rounded-[2rem] md:rounded-[3rem] shadow-xl border border-white/50 backdrop-blur-sm relative h-[78vh] md:h-[550px] flex items-stretch transition-all duration-500 overflow-hidden">
-                {showEmailGate ? (
-                    <div className="w-full h-full flex flex-col relative animate-in fade-in zoom-in-95 duration-500">
-                        {/* Back Button for Email Gate */}
-                        <div className="absolute top-0 left-0">
-                            <button
-                                onClick={handleBack}
-                                className="p-2 -ml-2 text-slate-400 hover:text-slate-600 hover:bg-slate-50 rounded-full transition-all"
-                                aria-label="Önceki soruya dön"
-                            >
-                                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                                    <path d="M19 12H5" />
-                                    <path d="M12 19l-7-7 7-7" />
-                                </svg>
-                            </button>
-                        </div>
-
-                        <div className="flex-1 flex items-center justify-center pt-8 md:pt-0">
-                            <div className="max-w-xl w-full text-center">
-                                <div className="mb-8">
-                                    <h2 className="text-3xl font-bold text-slate-800 mb-3">Sonuca Çok Az Kaldı!</h2>
-                                    <p className="text-slate-600">Test sonucunuzu ve çocuğunuzun duyu profili analizini detaylı görmek için lütfen aşağıdan devam edin.</p>
-                                </div>
-
-                                <LeadCaptureForm
-                                    source="quiz_result"
-                                    title=""
-                                    buttonText="Detaylı Raporumu Göster"
-                                    successMessage="Harika! Sonucunuz hazırlanıyor..."
-                                    onSuccess={handleEmailSubmitted}
-                                    className="shadow-none border-0 p-0 bg-transparent"
-                                    buttonClassName="w-full bg-[#FF8A65] hover:bg-[#FF7043] text-white font-bold py-4 px-8 rounded-xl transition-all shadow-lg shadow-orange-200 mt-4"
-                                />
-
-                                <div className="mt-6">
-                                    <button
-                                        onClick={handleEmailSubmitted}
-                                        className="text-slate-400 hover:text-slate-600 text-sm font-medium transition-colors"
-                                    >
-                                        Şimdilik e-posta girmeden devam et
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-stretch w-full h-full animate-in fade-in slide-in-from-right-4 duration-300">
-                        {/* Left: Question Header & Text */}
+                <div className="flex flex-col md:flex-row gap-8 md:gap-12 items-stretch w-full h-full animate-in fade-in slide-in-from-right-4 duration-300">
+                    {/* Left: Question Header & Text */}
                         <div className="md:w-5/12 flex flex-col justify-start border-b md:border-b-0 md:border-r border-slate-100 pb-6 md:pb-0 md:pr-6 pt-2 shrink-0 relative">
                             {/* Back Button */}
                             <div className={`transition-opacity duration-300 mb-2 ${showBackButton ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}>
@@ -243,7 +187,6 @@ export default function QuizApp() {
                             ))}
                         </div>
                     </div>
-                )}
             </div>
         </div>
     );
