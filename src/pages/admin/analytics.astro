@@ -1,0 +1,403 @@
+---
+import AdminLayout from "../../layouts/AdminLayout.astro";
+---
+
+<AdminLayout title="İstatistikler">
+  <!-- Top header -->
+  <div class="flex justify-between items-center mb-8">
+    <h1 class="text-2xl font-bold text-gray-800">📊 İstatistikler</h1>
+    <div class="text-xs text-gray-400 bg-white border border-gray-100 rounded-xl px-3 py-2">
+      Son güncelleme: <span id="lastUpdated">—</span>
+    </div>
+  </div>
+
+  <!-- Time Range Filter -->
+  <div class="flex gap-2 mb-8 flex-wrap">
+    <button data-range="24h" class="range-btn active-range px-4 py-2 rounded-xl text-sm font-semibold bg-[#1E3A1A] text-white transition">Son 24 Saat</button>
+    <button data-range="7d"  class="range-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition">Son 7 Gün</button>
+    <button data-range="30d" class="range-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition">Son 30 Gün</button>
+    <button data-range="all" class="range-btn px-4 py-2 rounded-xl text-sm font-semibold bg-white text-gray-600 border border-gray-200 hover:bg-gray-50 transition">Tüm Zamanlar</button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col gap-1">
+      <div class="text-2xl">🌐</div>
+      <div class="text-2xl font-bold text-gray-900" id="statPageViews">—</div>
+      <div class="text-xs text-gray-400 font-medium">Sayfa Görüntüleme</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col gap-1">
+      <div class="text-2xl">📄</div>
+      <div class="text-2xl font-bold text-gray-900" id="statPostViews">—</div>
+      <div class="text-xs text-gray-400 font-medium">Yazı Okunması</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col gap-1">
+      <div class="text-2xl">📝</div>
+      <div class="text-2xl font-bold text-gray-900" id="statPostCount">—</div>
+      <div class="text-xs text-gray-400 font-medium">Toplam Yazı</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex flex-col gap-1">
+      <div class="text-2xl">📬</div>
+      <div class="text-2xl font-bold text-gray-900" id="statMessages">—</div>
+      <div class="text-xs text-gray-400 font-medium">Mesaj</div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <!-- Daily Page Views Chart -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <h2 class="text-sm font-bold text-gray-700 mb-4">Günlük Sayfa Ziyareti</h2>
+      <div id="chartContainer" class="w-full overflow-x-auto">
+        <div class="flex items-end gap-1 h-32 min-w-0" id="barChart">
+          <div class="flex-1 flex items-center justify-center text-xs text-gray-300">Yükleniyor...</div>
+        </div>
+        <div id="chartLabels" class="flex gap-1 mt-1 text-[9px] text-gray-400"></div>
+      </div>
+    </div>
+
+    <!-- Top Pages -->
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+      <h2 class="text-sm font-bold text-gray-700 mb-4">En Çok Ziyaret Edilen Sayfalar</h2>
+      <div id="topPages" class="space-y-2 text-sm">
+        <div class="text-gray-300 text-xs">Yükleniyor...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Top Posts Table -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden mb-8">
+    <div class="px-6 py-4 border-b border-gray-50 flex items-center justify-between">
+      <h2 class="text-sm font-bold text-gray-700">🔥 En Çok Okunan Yazılar</h2>
+      <span class="text-xs text-gray-400" id="topPostsRange">—</span>
+    </div>
+    <div id="topPostsContainer">
+      <div class="p-6 text-center text-gray-300 text-xs">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <!-- All Posts Views Table -->
+  <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    <div class="px-6 py-4 border-b border-gray-50">
+      <h2 class="text-sm font-bold text-gray-700">Tüm Yazılar (Okunma Sırası)</h2>
+    </div>
+    <div id="allPostsContainer" class="divide-y divide-gray-50">
+      <div class="p-6 text-center text-gray-300 text-xs">Yükleniyor...</div>
+    </div>
+  </div>
+
+  <script>
+    import { pb } from "../../lib/pocketbase";
+
+    // ── State ──────────────────────────────────────────────────────────────
+    let currentRange: '24h' | '7d' | '30d' | 'all' = '24h';
+    let allPageViews: any[] = [];
+    let allPosts: any[] = [];
+    let allMessages: any[] = [];
+
+    // ── Helpers ─────────────────────────────────────────────────────────────
+    function getRangeStart(range: string): Date | null {
+      const now = new Date();
+      if (range === '24h') return new Date(now.getTime() - 24 * 60 * 60 * 1000);
+      if (range === '7d')  return new Date(now.getTime() - 7  * 24 * 60 * 60 * 1000);
+      if (range === '30d') return new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
+      return null; // all
+    }
+
+    function filterByRange(items: any[], dateField: string, range: string): any[] {
+      const start = getRangeStart(range);
+      if (!start) return items;
+      return items.filter(item => new Date(item[dateField]) >= start);
+    }
+
+    function fmtDate(d: Date, range: string): string {
+      if (range === '24h') return d.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+      return d.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+    }
+
+    function rangeLabel(range: string): string {
+      if (range === '24h') return 'Son 24 Saat';
+      if (range === '7d')  return 'Son 7 Gün';
+      if (range === '30d') return 'Son 30 Gün';
+      return 'Tüm Zamanlar';
+    }
+
+    // ── Data Fetch ──────────────────────────────────────────────────────────
+    async function fetchAll() {
+      try {
+        // Fetch all page views (up to 2000 records)
+        try {
+          const pvRes = await pb.collection('page_views').getList(1, 2000, {
+            sort: '-created',
+          });
+          allPageViews = pvRes.items;
+        } catch {
+          allPageViews = [];
+        }
+
+        // Fetch all posts
+        allPosts = await pb.collection('posts').getFullList({ sort: '-views' });
+
+        // Fetch messages count
+        try {
+          const msgRes = await pb.collection('messages').getList(1, 1);
+          allMessages = [{ _count: msgRes.totalItems }];
+        } catch {
+          allMessages = [];
+        }
+
+        render();
+      } catch (err) {
+        console.error('Analytics fetch error:', err);
+      }
+    }
+
+    // ── Render ───────────────────────────────────────────────────────────────
+    function render() {
+      const filteredPV = filterByRange(allPageViews, 'created', currentRange);
+
+      // Post views are cumulative (stored as total), so for posts we always
+      // show the total (views field), but we note the range label clearly.
+      // page_views can be filtered by range since they are individual records.
+
+      renderSummaryCards(filteredPV);
+      renderBarChart(filteredPV);
+      renderTopPages(filteredPV);
+      renderTopPosts();
+      renderAllPosts();
+
+      // Update range label
+      const rangeEl = document.getElementById('topPostsRange');
+      if (rangeEl) rangeEl.textContent = rangeLabel(currentRange);
+
+      // Last updated
+      const lu = document.getElementById('lastUpdated');
+      if (lu) lu.textContent = new Date().toLocaleTimeString('tr-TR');
+    }
+
+    function renderSummaryCards(filteredPV: any[]) {
+      const pageViews = filteredPV.length;
+      const totalPostViews = allPosts.reduce((s: number, p: any) => s + (p.views || 0), 0);
+      const totalPosts = allPosts.length;
+      const msgCount = allMessages[0]?._count ?? allMessages.length;
+
+      setText('statPageViews', pageViews.toLocaleString('tr-TR'));
+      setText('statPostViews', totalPostViews.toLocaleString('tr-TR'));
+      setText('statPostCount', totalPosts.toLocaleString('tr-TR'));
+      setText('statMessages', msgCount.toLocaleString('tr-TR'));
+    }
+
+    function renderBarChart(filteredPV: any[]) {
+      const chart = document.getElementById('barChart');
+      const labelsEl = document.getElementById('chartLabels');
+      if (!chart || !labelsEl) return;
+
+      if (filteredPV.length === 0) {
+        chart.innerHTML = '<div class="flex-1 flex items-center justify-center text-xs text-gray-300">Bu aralıkta veri yok</div>';
+        labelsEl.innerHTML = '';
+        return;
+      }
+
+      // Group by time bucket
+      const buckets = buildBuckets(filteredPV, currentRange);
+      const maxVal = Math.max(...Object.values(buckets).map(Number), 1);
+
+      chart.innerHTML = Object.entries(buckets).map(([label, count]) => {
+        const heightPct = Math.max(4, Math.round(((count as number) / maxVal) * 100));
+        return `
+          <div class="flex flex-col items-center flex-1 min-w-0 gap-0.5 group relative">
+            <div class="absolute -top-6 left-1/2 -translate-x-1/2 bg-gray-800 text-white text-[9px] rounded px-1 py-0.5 hidden group-hover:block whitespace-nowrap z-10">
+              ${count} ziyaret
+            </div>
+            <div class="w-full rounded-t-sm bg-[#1E3A1A]/80 hover:bg-[#1E3A1A] transition-colors cursor-default"
+                 style="height: ${heightPct}%"></div>
+          </div>`;
+      }).join('');
+
+      labelsEl.innerHTML = Object.keys(buckets).map((label, i, arr) => {
+        // Show label only every N items to avoid clutter
+        const show = arr.length <= 12 || i % Math.ceil(arr.length / 12) === 0;
+        return `<div class="flex-1 text-center truncate">${show ? label : ''}</div>`;
+      }).join('');
+    }
+
+    function buildBuckets(items: any[], range: string): Record<string, number> {
+      const buckets: Record<string, number> = {};
+      const now = new Date();
+
+      if (range === '24h') {
+        // Hourly buckets for last 24 hours
+        for (let h = 23; h >= 0; h--) {
+          const d = new Date(now.getTime() - h * 60 * 60 * 1000);
+          const key = d.toLocaleTimeString('tr-TR', { hour: '2-digit' }) + ':00';
+          buckets[key] = 0;
+        }
+        items.forEach(item => {
+          const d = new Date(item.created);
+          const key = d.toLocaleTimeString('tr-TR', { hour: '2-digit' }) + ':00';
+          if (key in buckets) buckets[key]++;
+        });
+      } else if (range === '7d') {
+        for (let d = 6; d >= 0; d--) {
+          const date = new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
+          const key = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+          buckets[key] = 0;
+        }
+        items.forEach(item => {
+          const key = new Date(item.created).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+          if (key in buckets) buckets[key]++;
+        });
+      } else if (range === '30d') {
+        for (let d = 29; d >= 0; d--) {
+          const date = new Date(now.getTime() - d * 24 * 60 * 60 * 1000);
+          const key = date.toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+          buckets[key] = 0;
+        }
+        items.forEach(item => {
+          const key = new Date(item.created).toLocaleDateString('tr-TR', { day: 'numeric', month: 'short' });
+          if (key in buckets) buckets[key]++;
+        });
+      } else {
+        // All time — group by month
+        items.forEach(item => {
+          const key = new Date(item.created).toLocaleDateString('tr-TR', { month: 'short', year: 'numeric' });
+          buckets[key] = (buckets[key] || 0) + 1;
+        });
+      }
+
+      return buckets;
+    }
+
+    function renderTopPages(filteredPV: any[]) {
+      const el = document.getElementById('topPages');
+      if (!el) return;
+
+      if (filteredPV.length === 0) {
+        el.innerHTML = '<div class="text-gray-300 text-xs">Bu aralıkta veri yok</div>';
+        return;
+      }
+
+      // Count by path
+      const counts: Record<string, number> = {};
+      filteredPV.forEach(pv => {
+        const p = pv.path || '/';
+        counts[p] = (counts[p] || 0) + 1;
+      });
+
+      const sorted = Object.entries(counts).sort((a, b) => b[1] - a[1]).slice(0, 8);
+      const maxCount = sorted[0]?.[1] || 1;
+
+      el.innerHTML = sorted.map(([path, count]) => {
+        const pct = Math.round((count / maxCount) * 100);
+        return `
+          <div class="flex items-center gap-3 group">
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-center mb-0.5">
+                <span class="text-xs text-gray-600 truncate font-medium" title="${path}">${path}</span>
+                <span class="text-xs font-bold text-gray-800 ml-2 flex-shrink-0">${count}</span>
+              </div>
+              <div class="h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                <div class="h-full bg-[#1E3A1A]/60 rounded-full transition-all" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          </div>`;
+      }).join('');
+    }
+
+    function renderTopPosts() {
+      const el = document.getElementById('topPostsContainer');
+      if (!el) return;
+
+      const top5 = [...allPosts].sort((a, b) => (b.views || 0) - (a.views || 0)).slice(0, 5);
+
+      if (top5.length === 0) {
+        el.innerHTML = '<div class="p-6 text-center text-gray-300 text-xs">Henüz yazı yok</div>';
+        return;
+      }
+
+      const maxV = top5[0]?.views || 1;
+
+      el.innerHTML = `
+        <div class="divide-y divide-gray-50">
+          ${top5.map((post, i) => {
+            const pct = Math.max(4, Math.round(((post.views || 0) / maxV) * 100));
+            const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+            return `
+              <div class="px-6 py-4 flex items-center gap-4 hover:bg-gray-50/50 transition">
+                <span class="text-lg w-8 flex-shrink-0 text-center">${medal}</span>
+                <div class="flex-1 min-w-0">
+                  <div class="font-semibold text-gray-800 text-sm line-clamp-1">${post.title}</div>
+                  <div class="flex gap-2 mt-1 items-center">
+                    <span class="text-xs text-gray-400 bg-green-50 text-[#1E3A1A] px-2 py-0.5 rounded-full">${post.category || 'Genel'}</span>
+                    <div class="flex-1 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                      <div class="h-full bg-orange-400 rounded-full" style="width: ${pct}%"></div>
+                    </div>
+                  </div>
+                </div>
+                <div class="text-right flex-shrink-0">
+                  <div class="text-lg font-bold text-gray-900">${(post.views || 0).toLocaleString('tr-TR')}</div>
+                  <div class="text-[10px] text-gray-400">okunma</div>
+                </div>
+              </div>`;
+          }).join('')}
+        </div>`;
+    }
+
+    function renderAllPosts() {
+      const el = document.getElementById('allPostsContainer');
+      if (!el) return;
+
+      const sorted = [...allPosts].sort((a, b) => (b.views || 0) - (a.views || 0));
+
+      if (sorted.length === 0) {
+        el.innerHTML = '<div class="p-6 text-center text-gray-300 text-xs">Henüz yazı yok</div>';
+        return;
+      }
+
+      el.innerHTML = sorted.map((post, i) => `
+        <div class="px-6 py-3 flex items-center gap-4 hover:bg-gray-50/30 transition text-sm">
+          <span class="text-gray-300 w-6 text-xs text-center flex-shrink-0">${i + 1}</span>
+          <div class="flex-1 min-w-0">
+            <span class="font-medium text-gray-800 line-clamp-1">${post.title}</span>
+          </div>
+          <span class="text-xs text-gray-400 bg-green-50 text-[#1E3A1A] px-2 py-0.5 rounded-full flex-shrink-0">${post.category || 'Genel'}</span>
+          <div class="flex items-center gap-1 flex-shrink-0">
+            <span class="text-gray-400">👁️</span>
+            <span class="font-semibold text-gray-700">${(post.views || 0).toLocaleString('tr-TR')}</span>
+          </div>
+          <a href="/admin/posts/edit/?id=${post.id}" class="text-xs text-gray-400 hover:text-[#1E3A1A] transition flex-shrink-0">Düzenle →</a>
+        </div>`).join('');
+    }
+
+    // ── Utility ──────────────────────────────────────────────────────────────
+    function setText(id: string, val: string) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = val;
+    }
+
+    // ── Range Buttons ────────────────────────────────────────────────────────
+    document.querySelectorAll('.range-btn').forEach(btn => {
+      btn.addEventListener('click', (e) => {
+        const target = e.currentTarget as HTMLElement;
+        const range = target.dataset.range as '24h' | '7d' | '30d' | 'all';
+        currentRange = range;
+
+        // Update button styles
+        document.querySelectorAll('.range-btn').forEach(b => {
+          b.classList.remove('bg-[#1E3A1A]', 'text-white', 'active-range');
+          b.classList.add('bg-white', 'text-gray-600', 'border', 'border-gray-200');
+        });
+        target.classList.add('bg-[#1E3A1A]', 'text-white', 'active-range');
+        target.classList.remove('bg-white', 'text-gray-600', 'border', 'border-gray-200');
+
+        render();
+      });
+    });
+
+    // ── Init ────────────────────────────────────────────────────────────────
+    fetchAll();
+
+    // Auto-refresh every 2 minutes
+    setInterval(fetchAll, 2 * 60 * 1000);
+  </script>
+</AdminLayout>

@@ -8,8 +8,31 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
 ---
 
 <AdminLayout title="Dashboard">
-  <div class="flex justify-between items-center mb-8">
-    <h1 class="text-2xl font-bold text-gray-800">Yazılar</h1>
+  <div class="flex justify-between items-center mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">Yönetim Paneli</h1>
+  </div>
+
+  <!-- Quick Stats Row -->
+  <div class="grid grid-cols-2 md:grid-cols-3 gap-4 mb-8" id="quickStats">
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+      <div class="text-xs text-gray-400 font-medium mb-1">Toplam Yazı</div>
+      <div class="text-2xl font-bold text-gray-900" id="qs-posts">—</div>
+    </div>
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-5">
+      <div class="text-xs text-gray-400 font-medium mb-1">Toplam Okunma</div>
+      <div class="text-2xl font-bold text-gray-900" id="qs-views">—</div>
+    </div>
+    <div class="col-span-2 md:col-span-1 bg-white rounded-2xl shadow-sm border border-gray-100 p-5 flex justify-between items-center">
+      <div>
+        <div class="text-xs text-gray-400 font-medium mb-1">En Çok Okunan</div>
+        <div class="text-sm font-bold text-gray-900 line-clamp-1" id="qs-top">—</div>
+      </div>
+      <a href="/admin/analytics" class="ml-3 flex-shrink-0 text-xs bg-[#1E3A1A] text-white px-3 py-1.5 rounded-lg hover:bg-[#1E3A1A]/80 transition">📊 Detay</a>
+    </div>
+  </div>
+
+  <div class="flex justify-between items-center mb-6">
+    <h2 class="text-xl font-bold text-gray-800">Yazılar</h2>
     <a
       href="/admin/posts/new"
       class="bg-[#1E3A1A] text-white px-4 py-2 rounded-lg font-medium hover:bg-[#1E3A1A]/90 transition"
@@ -118,10 +141,28 @@ import AdminLayout from "../../layouts/AdminLayout.astro";
     }
 
     function renderAll() {
+      renderSummaryStats();
       renderFeaturedSection();
       renderDesktopTable();
       renderMobileList();
       bindEvents();
+    }
+
+    function renderSummaryStats() {
+      const postsCount = allPosts.length;
+      const viewsCount = allPosts.reduce((sum, p) => sum + (p.views || 0), 0);
+      
+      const topPost = [...allPosts].sort((a, b) => (b.views || 0) - (a.views || 0))[0];
+
+      const elPosts = document.getElementById('qs-posts');
+      const elViews = document.getElementById('qs-views');
+      const elTop = document.getElementById('qs-top');
+
+      if (elPosts) elPosts.textContent = postsCount.toLocaleString('tr-TR');
+      if (elViews) elViews.textContent = viewsCount.toLocaleString('tr-TR');
+      if (elTop) {
+        elTop.textContent = topPost ? topPost.title : 'Henüz Yazı Yok';
+      }
     }
 
     function renderFeaturedSection() {

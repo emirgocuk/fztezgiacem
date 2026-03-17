@@ -32,8 +32,8 @@ ssh "$User@$ServerIP" "rm -rf $RemotePath && mkdir -p $RemotePath"
 
 # 4. Upload Files
 Write-Host "4. Uploading new files..." -ForegroundColor Yellow
-# Upload dist, start_remote.sh
-scp -r dist start_remote.sh "$User@${ServerIP}:$RemotePath"
+# Upload dist, start_remote.sh, pb_schema.json
+scp -r dist start_remote.sh pb_schema.json "$User@${ServerIP}:$RemotePath"
 
 # 5. Restore Database
 Write-Host "5. Restoring database..." -ForegroundColor Yellow

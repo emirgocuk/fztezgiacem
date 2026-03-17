@@ -176,7 +176,52 @@
         "viewRule": "@request.auth.id != ''",
         "createRule": "",
         "updateRule": null,
-        "deleteRule": "@request.auth.id != ''",
+        "options": {}
+    },
+    {
+        "id": "pageviews_coll_id_123",
+        "name": "page_views",
+        "type": "base",
+        "system": false,
+        "schema": [
+            {
+                "system": false,
+                "id": "path_field",
+                "name": "path",
+                "type": "text",
+                "required": true,
+                "presentable": true,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            },
+            {
+                "system": false,
+                "id": "ua_field",
+                "name": "user_agent",
+                "type": "text",
+                "required": false,
+                "presentable": false,
+                "unique": false,
+                "options": {
+                    "min": null,
+                    "max": null,
+                    "pattern": ""
+                }
+            }
+        ],
+        "indexes": [
+            "CREATE INDEX `idx_page_views_created` ON `page_views` (`created`)",
+            "CREATE INDEX `idx_page_views_path` ON `page_views` (`path`)"
+        ],
+        "listRule": "@request.auth.id != ''",
+        "viewRule": "@request.auth.id != ''",
+        "createRule": "",
+        "updateRule": null,
+        "deleteRule": null,
         "options": {}
     }
 ]

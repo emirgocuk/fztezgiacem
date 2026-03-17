@@ -188,4 +188,19 @@ const schemaData = {
       </div>
     </article>
   </div>
+
+  <!-- Post View Tracking (runs once per session per post) -->
+  <script define:vars={{ postId: post.id }}>
+    (function() {
+      const key = 'viewed_post_' + postId;
+      if (sessionStorage.getItem(key)) return;
+      sessionStorage.setItem(key, '1');
+      fetch('https://pb.fztezgiacem.com/api/track-view', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ type: 'post', postId: postId }),
+        keepalive: true,
+      }).catch(() => {});
+    })();
+  </script>
 </BaseLayout>

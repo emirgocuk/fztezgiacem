@@ -587,6 +587,24 @@ try {
       });
     </script>
 
+    <!-- Page View Tracking (fires once per path per session) -->
+    <script>
+      (function() {
+        const path = window.location.pathname;
+        // Don't track admin pages
+        if (path.startsWith('/admin')) return;
+        const key = 'pv_' + path;
+        if (sessionStorage.getItem(key)) return;
+        sessionStorage.setItem(key, '1');
+        fetch('https://pb.fztezgiacem.com/api/track-view', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: 'page', path: path }),
+          keepalive: true,
+        }).catch(() => {});
+      })();
+    </script>
+
     <main class="flex-1 w-full">
       <slot />
     </main>
